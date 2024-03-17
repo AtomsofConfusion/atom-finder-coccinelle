@@ -3,10 +3,12 @@
 
 int main() {
     int a = 10;
-    // this is an atom
     int b = a++;
+    int c = 0;
+    // this is an atom
     b++;
     b = 1 - 10 + b++ + 3;
+    c = b++;
     
     // this is not an atom
     for(int i = 0; i < 5; i++) {

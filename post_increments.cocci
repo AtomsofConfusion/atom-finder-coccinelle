@@ -1,6 +1,22 @@
+@non_atoms@
+expression e,x;
+statement S;
+type t;
+identifier i;
+position p;
+@@
+
+(
+e@p++;
+|
+for(...;...;e@p++) S
+|
+for(t i = x;...;e@p++) S
+)
+
 @post_increment@
 expression e;
-position p;
+position p != non_atoms.p;
 @@
 
 e@p++
