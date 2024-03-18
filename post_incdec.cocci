@@ -12,6 +12,12 @@ e@p++;
 for(...;...;e@p++) S
 |
 for(t i = x;...;e@p++) S
+|
+e@p--;
+|
+for(...;...;e@p--) S
+|
+for(t i = x;...;e@p--) S
 )
 
 @post_increment@
@@ -19,7 +25,11 @@ expression e;
 position p != non_atoms.p;
 @@
 
+(
 e@p++
+|
+e@p--
+)
 
 @script:python@
 p << post_increment.p;
