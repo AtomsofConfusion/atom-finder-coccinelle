@@ -9,7 +9,8 @@ int main() {
 
     if (x > y) {
         printf("'if' with braces\n");
-    }
+    } else
+        printf("'else' without braces\n");
 
     while (x < 5)
         printf("'while' without braces, x: %d\n", x++);

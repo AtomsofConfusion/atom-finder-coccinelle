@@ -4,14 +4,18 @@ expression e, x;
 position p;
 type t;
 identifier i;
+statement S;
 @@
 
 (
 if(...) @p
 e;
 |
-while(...) @p
+if(...) S 
+else @p
 e;
+|
+while(...) @p e;
 |
 for(t i = x;...;...) @p
 e;
