@@ -1,10 +1,6 @@
 @r@
-expression E;
 constant c;
 position p;
-type t;
-identifier x;
-statement S;
 @@
 
 c@p
