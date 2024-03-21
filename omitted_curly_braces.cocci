@@ -1,6 +1,6 @@
 
 @omitted_braces@
-expression e, x;
+expression e, x, e1, e2;
 position p;
 type t;
 identifier i;
@@ -8,12 +8,13 @@ statement S;
 @@
 
 (
-if(...) @p
-e;
-|
 if(...) S 
 else @p
 e;
+|
+if(...) @p
+e;
+S
 |
 while(...) @p e;
 |
