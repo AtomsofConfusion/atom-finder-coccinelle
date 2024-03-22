@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#define M1 (64-1)
+#define M1 64-1
 
 int main() {
     int result = 2 * M1;

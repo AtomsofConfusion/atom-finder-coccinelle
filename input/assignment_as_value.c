@@ -9,7 +9,6 @@ int main() {
 
     v1 = v2 = v3 + 5;
 
-
     v1 = v2 = v3 = 5;
 
     printf("v1: %d, v2: %d\n", v1, v2);

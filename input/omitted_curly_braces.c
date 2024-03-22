@@ -17,6 +17,12 @@ int main() {
     } else
         printf("'else' without braces after if with braces\n");
 
+    if (x > y) 
+        printf("'if' with braces\n");
+    else {
+        printf("'else' without braces after if with braces\n");
+    }
+
     while (x < 5)
         printf("'while' without braces, x: %d\n", x++);
 
