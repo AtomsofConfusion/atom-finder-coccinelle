@@ -6,6 +6,7 @@ int main() {
 
     if (x < y-1)
         printf("'if' without braces\n");
+
     if (x < y)  // this is currently not getting detected
         printf("'if' without braces\n");
     else 

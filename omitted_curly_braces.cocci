@@ -8,12 +8,13 @@ statement S;
 @@
 
 (
-if(...) S 
+if(...) S
 else @p
 e;
 |
 if(...) @p
 e;
+else 
 S
 |
 while(...) @p e;

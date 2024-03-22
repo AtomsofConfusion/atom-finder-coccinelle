@@ -9,7 +9,9 @@ expression e;
 @macro_use_rule@
 identifier macro_def_rule.macro_name;
 position p;
+expression e;
 @@
+
 
 macro_name@p
 

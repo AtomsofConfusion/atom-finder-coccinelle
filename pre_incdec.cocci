@@ -7,13 +7,13 @@ position p;
 @@
 
 (
-++e@p;
+ ++e@p;
 |
 for(...;...;++e@p) S
 |
 for(t i = x;...;++e@p) S
 |
---e@p;
+ --e@p;
 |
 for(...;...;--e@p) S
 |
@@ -26,9 +26,9 @@ position p != non_atoms.p;
 @@
 
 (
-++e@p
+ ++e@p
 |
---e@p
+ --e@p
 )
 
 @script:python@
