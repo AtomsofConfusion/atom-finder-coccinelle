@@ -1,11 +1,10 @@
 @conditional@
-expression e1, e2, e3, e4;
-identifier x;
-type t;
+expression e, e1, e2, e3, e4;
 position p;
+binary operator bop;
 @@
 
-x = e1 == e2 ? e3 : e4 @p
+e@p = e1 bop e2 ? e3 : e4
 
 
 @script:python@

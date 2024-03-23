@@ -12,6 +12,7 @@ c << r.c;
 
 import re
 
+# this can be only done in a script
 def is_non_decimal(n):
     # Check if the string representation of the number is octal or hexadecimal
     return n!= "0" and re.match(r'^0[0-7]*$', n) or re.match(r'^0[xX][0-9a-fA-F]+$', n)

@@ -8,19 +8,19 @@ int main() {
         printf("'if' without braces\n");
 
     if (x < y)  // this is currently not getting detected
-        printf("'if' without braces\n");
+        printf("'if' without braces before an else\n");
     else 
         printf("'else' without braces after if without braces\n");
 
     if (x > y) {
-        printf("'if' with braces\n");
+        printf("'if' with braces before else without braces\n");
     } else
         printf("'else' without braces after if with braces\n");
 
     if (x > y) 
-        printf("'if' with braces\n");
+        printf("'if' wuthout braces with an else after it\n");
     else {
-        printf("'else' without braces after if with braces\n");
+        printf("'else' with braces after if without braces\n");
     }
 
     while (x < 5)

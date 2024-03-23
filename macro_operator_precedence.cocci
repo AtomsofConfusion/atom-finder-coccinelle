@@ -6,7 +6,7 @@ expression e1, e2;
 binary operator bop;
 @@
 
-// (e1 bop e2) is not a problem, but no parathesis is
+// (e1 bop e2) is not a problem, but no paretheses is
 #define macro_name e1 bop e2
 
 @macro_use_rule@
