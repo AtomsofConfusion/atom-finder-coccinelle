@@ -1,0 +1,91 @@
+@rule1 disable braces0, neg_if@
+position p;
+statement S;
+@@
+
+(
+  if (...) {...} else {...}
+|
+  if (...)@p S else {...}
+)
+
+@script:python@
+p << rule1.p;
+@@
+
+print(f"Rule1: Line {p[0].line} in file {p[0].file}")
+
+@rule2 disable braces0, neg_if@
+position p;
+statement S;
+@@
+
+(
+  if (...) {...} else {...}
+|
+  if (...) {...} else@p S
+)
+
+@script:python@
+p << rule2.p;
+@@
+
+print(f"Rule2: Line {p[0].line} in file {p[0].file}")
+
+@rule3 disable braces0@
+position p;
+statement S;
+@@
+
+(
+  if (...) {...}
+|
+  if (...)@p S
+)
+
+@script:python@
+p << rule3.p;
+@@
+
+print(f"Rule3: Line {p[0].line} in file {p[0].file}")
+
+@test1@ 
+expression e, e1, e2;
+position p, p1, p2;
+constant c;
+identifier i, i1, i2;
+statement s;
+@@ 
+
+// for the "else if" sequences between "if" and "else"
+(
+  if (...) {...}
+  else if (...)@p {...}
+  else {...}
+)
+
+@script:python@
+p << test1.p;
+@@
+
+print(f"Test1 Matchings: Line {p[0].line} in file {p[0].file}.")
+
+@test2@
+expression e;
+position p;
+constanc c;
+identifier i;
+statement s;
+@@
+
+// this can match all the else if and else
+(
+  if (...) {...}
+  else@p {...}
+)
+
+@script:python@
+p << test2.p;
+@@
+
+print(f"Test2 Matchings: Line {p[0].line} in file {p[0].file}.")
