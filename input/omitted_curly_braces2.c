@@ -92,6 +92,18 @@ int main() {
     printf("1");
   }
 
+  if (a > 6) 
+    printf("1");
+  else if (a > 5) 
+    printf("1");
+  else if (a > 4)
+    printf ("1");
+  else if (a > 1)
+    printf ("1");
+  else 
+    printf("1");
+  
+  
   return 0;
 }
 

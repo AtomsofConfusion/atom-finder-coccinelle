@@ -20,11 +20,17 @@ p << r1.p;
 print(f"R1: Line {p[0].line} in file {p[0].file}")
 
 @r2 disable braces0, neg_if@
-statement S, S1;
+statement S, S1, S2;
 position p;
 @@
 (
 if (...) S else {...}
+|
+if (...) S else {
+  ...
+  if (...) S1 else S2
+  ...
+}
 |
 if (...) S else S1@p
 )
