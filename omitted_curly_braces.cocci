@@ -60,6 +60,10 @@ for(t i = x;...;...) S@p
 for(...;...;...) {...}
 |
 for(...;...;...) S@p
+|
+do {...} while (...);
+|
+do S@p while (...);
 )
 
 // for and while are separate things, no need for separate rules

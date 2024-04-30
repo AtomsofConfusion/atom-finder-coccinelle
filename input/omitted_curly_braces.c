@@ -101,7 +101,7 @@ int main() {
             printf("nested else if with curly braces");
         } else if (x > 15) {
             printf("nested else if with curly braces");
-        } else{
+        } else {
             printf("nested else without curly braces\n");
         }
 
@@ -117,7 +117,7 @@ int main() {
             printf("nested else if with curly braces");
         } else if (x > 5) {
             printf("nested else if with curly braces");
-        } else{
+        } else {
             printf("nested else without curly braces\n");
         }
 
@@ -133,7 +133,7 @@ int main() {
             printf("nested else if with curly braces");
         } else if (x > 0) {
             printf("nested else if with curly braces");
-        } else{
+        } else {
             printf("nested else without curly braces\n");
         }
 
@@ -150,7 +150,7 @@ int main() {
             printf("nested else if with curly braces");
         } else if (x > -5) {
             printf("nested else if with curly braces");
-        } else{
+        } else {
             printf("nested else without curly braces\n");
         }
 
@@ -190,9 +190,9 @@ int main() {
 
     else if (x > 5)
 
-        if (x > 4) {
+        if (x > 4)
             printf("nested if with curly braces\n");
-        } else if (x > 3)
+        else if (x > 3)
             printf("nested else if without curly braces\n");
         else if (x > 2)
             printf("nested else if without curly braces\n");
@@ -200,10 +200,10 @@ int main() {
             printf("nested else if with curly braces");
         } else if (x > 0) {
             printf("nested else if with curly braces");
-        } else{
+        } else {
             printf("nested else without curly braces\n");
         }
-        
+
     else 
 
         if (x > -1) {
@@ -216,7 +216,7 @@ int main() {
             printf("nested else if with curly braces");
         } else if (x > -5) {
             printf("nested else if with curly braces");
-        } else{
+        } else {
             printf("nested else without curly braces\n");
         }
 
