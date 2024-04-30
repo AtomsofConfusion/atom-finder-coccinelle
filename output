@@ -1,0 +1,2281 @@
+
+@r1 disable braces0, neg_if@ // this is disabling some isomorphisms
+statement S, S1;
+position p;
+@@
+
+// first match the case that is not an atom, do not note the position
+// then if that is not match, it will match the atom that is beneath it
+
+(
+if (...) {...} else S
+|
+if (...) S@p else S1
+)
+
+// write script right bellow the rule, 
+@script:python@
+p << r1.p;
+@@
+print(f"R1: Line {p[0].line} in file {p[0].file}")
+
+@r2 disable braces0, neg_if@
+statement S, S1, S2;
+position p;
+@@
+(
+if (...) S else {...}
+|
+if (...) S else {
+  ...
+  if (...) S1 else S2
+  ...
+}
+|
+if (...) S else S1@p
+)
+// here we have something where both rule 1 and 2 can match the same thing -> separate rules
+
+@script:python@
+p << r2.p;
+@@
+print(f"R2: Line {p[0].line} in file {p[0].file}")
+
+@r3 disable braces0@
+statement S;
+position p;
+type t;
+identifier i;
+expression x;
+@@
+(
+while(...) {...}
+|
+while(...) S@p
+|
+for(t i = x;...;...) {...}
+|
+for(t i = x;...;...) S@p
+|
+for(...;...;...) {...}
+|
+for(...;...;...) S@p
+)
+
+// for and while are separate things, no need for separate rules
+
+@script:python@
+p << r3.p;
+@@
+print(f"R3: Line {p[0].line} in file {p[0].file}")
+-----------------------------------------------------------------------
+script  = 
+-----------------------------------------------------------------------
+binding in = []
+-----------------------------------------------------------------------
+let's go
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+r1 = 
+-----------------------------------------------------------------------
+binding in = []
+binding relevant in = []
+          labeling: pred = if (...) 
+did not find:
+if (...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = S1
+did not find:
+S1
+          labeling: pred = if (...) 
+did not find:
+if (...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = {
+did not find:
+{
+          labeling: pred = }
+did not find:
+}
+          labeling: pred = if (...) 
+did not find:
+if (...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = {
+did not find:
+{
+          labeling: pred = }
+did not find:
+}
+          labeling: pred = if (...) 
+did not find:
+if (...) 
+          labeling: pred = if (...) 
+          labeling: pred = S
+          labeling: pred = S1
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = FalseBranch
+          labeling: result = {66[];53[];42[];31[];23[]}
+          labeling: pred = TrueBranch
+          labeling: result = {73[];65[];57[];52[];41[];30[];22[];16[];10[]}
+          labeling: pred = {
+          labeling: result = {107[];92[];77[];68[];45[];33[];6[]}
+          labeling: pred = else 
+          labeling: result = {67[];54[];43[];32[];24[]}
+          labeling: pred = Label(_lab)
+          labeling: result = {0[_lab --> labelval()];1[_lab --> labelval(1)];
+                              3[_lab --> labelval()];4[_lab --> labelval()];
+                              6[_lab --> labelval(1)];
+                              7[_lab --> labelval(1,2,3)];
+                              8[_lab --> labelval(1,2,4)];
+                              9[_lab --> labelval(1,2,5)];
+                              10[_lab --> labelval(1,2,5)];
+                              11[_lab --> labelval(1,2,5)];
+                              12[_lab --> labelval(1,2,5)];
+                              13[_lab --> labelval(1,2,5)];
+                              14[_lab --> labelval(1,2,5,6)];
+                              15[_lab --> labelval(1,2,7)];
+                              16[_lab --> labelval(1,2,7)];
+                              17[_lab --> labelval(1,2,7)];
+                              18[_lab --> labelval(1,2,7)];
+                              19[_lab --> labelval(1,2,7)];
+                              20[_lab --> labelval(1,2,7,8)];
+                              21[_lab --> labelval(1,2,9)];
+                              22[_lab --> labelval(1,2,9)];
+                              23[_lab --> labelval(1,2,9)];
+                              24[_lab --> labelval(1,2,9)];
+                              25[_lab --> labelval(1,2,9,10)];
+                              26[_lab --> labelval(1,2,9,11)];
+                              27[_lab --> labelval(1,2,9)];
+                              28[_lab --> labelval(1,2,9)];
+                              29[_lab --> labelval(1,2,12)];
+                              30[_lab --> labelval(1,2,12)];
+                              31[_lab --> labelval(1,2,12)];
+                              32[_lab --> labelval(1,2,12)];
+                              33[_lab --> labelval(1,2,12,13)];
+                              34[_lab --> labelval(1,2,12,13,14)];
+                              35[_lab --> labelval(1,2,12,13)];
+                              36[_lab --> labelval(1,2,12,13)];
+                              37[_lab --> labelval(1,2,12,15)];
+                              38[_lab --> labelval(1,2,12)];
+                              39[_lab --> labelval(1,2,12)];
+                              40[_lab --> labelval(1,2,16)];
+                              41[_lab --> labelval(1,2,16)];
+                              42[_lab --> labelval(1,2,16)];
+                              43[_lab --> labelval(1,2,16)];
+                              44[_lab --> labelval(1,2,16,17)];
+                              45[_lab --> labelval(1,2,16,18)];
+                              46[_lab --> labelval(1,2,16,18,19)];
+                              47[_lab --> labelval(1,2,16,18)];
+                              48[_lab --> labelval(1,2,16,18)];
+                              49[_lab --> labelval(1,2,16)];
+                              50[_lab --> labelval(1,2,16)];
+                              51[_lab --> labelval(1,2,20)];
+                              52[_lab --> labelval(1,2,20)];
+                              53[_lab --> labelval(1,2,20)];
+                              54[_lab --> labelval(1,2,20)];
+                              55[_lab --> labelval(1,2,20,21)];
+                              56[_lab --> labelval(1,2,20,22)];
+                              57[_lab --> labelval(1,2,20,22)];
+                              58[_lab --> labelval(1,2,20,22)];
+                              59[_lab --> labelval(1,2,20,22)];
+                              60[_lab --> labelval(1,2,20,22)];
+                              61[_lab --> labelval(1,2,20,22,23)];
+                              62[_lab --> labelval(1,2,20)];
+                              63[_lab --> labelval(1,2,20)];
+                              64[_lab --> labelval(1,2,24)];
+                              65[_lab --> labelval(1,2,24)];
+                              66[_lab --> labelval(1,2,24)];
+                              67[_lab --> labelval(1,2,24)];
+                              68[_lab --> labelval(1,2,24,25)];
+                              69[_lab --> labelval(1,2,24,25,26)];
+                              70[_lab --> labelval(1,2,24,25)];
+                              71[_lab --> labelval(1,2,24,25)];
+                              72[_lab --> labelval(1,2,24,27)];
+                              73[_lab --> labelval(1,2,24,27)];
+                              74[_lab --> labelval(1,2,24,27)];
+                              75[_lab --> labelval(1,2,24,27)];
+                              76[_lab --> labelval(1,2,24,27)];
+                              77[_lab --> labelval(1,2,24,27,28)];
+                              78[_lab --> labelval(1,2,24,27,28,29)];
+                              79[_lab --> labelval(1,2,24,27,28)];
+                              80[_lab --> labelval(1,2,24,27,28)];
+                              81[_lab --> labelval(1,2,24)];
+                              82[_lab --> labelval(1,2,24)];
+                              83[_lab --> labelval(1,2,30)];
+                              84[_lab --> labelval(1,2,30)];
+                              85[_lab --> labelval(1,2,30)];
+                              86[_lab --> labelval(1,2,30)];
+                              87[_lab --> labelval(1,2,30,31)];
+                              88[_lab --> labelval(1,2,32)];
+                              89[_lab --> labelval(1,2,32)];
+                              90[_lab --> labelval(1,2,32)];
+                              91[_lab --> labelval(1,2,32)];
+                              92[_lab --> labelval(1,2,32,33)];
+                              93[_lab --> labelval(1,2,32,33,34)];
+                              94[_lab --> labelval(1,2,32,33)];
+                              95[_lab --> labelval(1,2,32,33)];
+                              96[_lab --> labelval(1,2,35)];
+                              97[_lab --> labelval(1,2,35)];
+                              98[_lab --> labelval(1,2,35)];
+                              99[_lab --> labelval(1,2,35)];
+                              100[_lab --> labelval(1,2,35,36)];
+                              101[_lab --> labelval(1,2,37)];
+                              102[_lab --> labelval(1,2,37)];
+                              103[_lab --> labelval(1,2,37)];
+                              104[_lab --> labelval(1,2,37)];
+                              105[_lab --> labelval(1,2,37)];
+                              106[_lab --> labelval(1,2,37)];
+                              107[_lab --> labelval(1,2,37,38)];
+                              108[_lab --> labelval(1,2,37,38,39)];
+                              109[_lab --> labelval(1,2,37,38)];
+                              110[_lab --> labelval(1,2,37,38)];
+                              111[_lab --> labelval(1,2,40)];
+                              112[_lab --> labelval(1,2,40)];
+                              113[_lab --> labelval(1,2,40)];
+                              114[_lab --> labelval(1,2,40)];
+                              115[_lab --> labelval(1,2,40)];
+                              116[_lab --> labelval(1,2,40)];
+                              117[_lab --> labelval(1,2,40,41)];
+                              118[_lab --> labelval(1,2,42)];
+                              119[_lab --> labelval(1)]}
+          labeling: pred = S
+          labeling: result = {118[S --> return 0;];
+                              117[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[S --> printf("'for' iteration: %d\n", i);];
+                              96[S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[S --> printf("else if with curly braces\n");];
+                              77[S --> {printf("else if with curly braces\n");}];
+                              72[S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[S --> printf("if with curly braces\n");];
+                              68[S --> {printf("if with curly braces\n");}];
+                              64[S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[S --> printf("else if without curly braces\n");];
+                              56[S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[S --> printf("if without curly braces\n");];
+                              51[S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[S --> printf("'else' with braces after if without braces\n");];
+                              45[S --> {printf("'else' with braces after if without braces\n");}];
+                              44[S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[S --> printf("'else' without braces after if with braces\n");];
+                              34[S --> printf("'if' with braces before else without braces\n");];
+                              33[S --> {printf("'if' with braces before else without braces\n");}];
+                              29[S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[S --> printf("'else' without braces after if without braces\n");];
+                              25[S --> printf("'if' without braces before an else\n");];
+                              21[S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[S --> printf("if without braces\n");];
+                              15[S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[S --> printf("'if' without braces\n");];
+                              9[S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = After
+          labeling: result = {115[];110[];105[];95[];82[];80[];76[];71
+                              [];63[];60[];50[];48[];39[];36[];28[];19
+                              [];13[]}
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = FallThrough
+          labeling: result = {113[];103[];74[];58[];17[];11[]}
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = S@p 
+          labeling: result = {118[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(58,4),(58,13))];
+                                  S --> return 0;];
+                              117[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(55,8),(55,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(54,4),(56,19))];
+                                  S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(51,8),(51,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,7),(52,5))];
+                                  S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,4),(52,21))];
+                                  S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(48,8),(48,43))];
+                                  S --> printf("'for' iteration: %d\n", i);];
+                              96[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(47,4),(48,43))];
+                                 S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(44,8),(44,52))];
+                                 S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,19),(45,5))];
+                                 S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,4),(45,5))];
+                                 S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(41,8),(41,55))];
+                                 S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(40,4),(41,55))];
+                                 S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(37,8),(37,46))];
+                                 S --> printf("else if with curly braces\n");];
+                              77[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,22),(38,5))];
+                                 S --> {printf("else if with curly braces\n");}];
+                              72[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,11),(38,5))];
+                                 S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(35,8),(35,41))];
+                                 S --> printf("if with curly braces\n");];
+                              68[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,15),(36,5))];
+                                 S --> {printf("if with curly braces\n");}];
+                              64[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,4),(38,5))];
+                                 S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(32,8),(32,49))];
+                                 S --> printf("else if without curly braces\n");];
+                              56[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(31,9),(32,49))];
+                                 S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(30,8),(30,44))];
+                                 S --> printf("if without curly braces\n");];
+                              51[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(29,4),(32,49))];
+                                 S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(26,8),(26,63))];
+                                 S --> printf("'else' with braces after if without braces\n");];
+                              45[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(25,9),(27,5))];
+                                 S --> {printf("'else' with braces after if without braces\n");}];
+                              44[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(24,8),(24,62))];
+                                 S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(23,4),(27,5))];
+                                 S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(21,8),(21,63))];
+                                 S --> printf("'else' without braces after if with braces\n");];
+                              34[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(19,8),(19,64))];
+                                 S --> printf("'if' with braces before else without braces\n");];
+                              33[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,15),(20,5))];
+                                 S --> {printf("'if' with braces before else without braces\n");}];
+                              29[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,4),(21,63))];
+                                 S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(16,8),(16,66))];
+                                 S --> printf("'else' without braces after if without braces\n");];
+                              25[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(14,8),(14,55))];
+                                 S --> printf("'if' without braces before an else\n");];
+                              21[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(13,4),(16,66))];
+                                 S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(11,8),(11,38))];
+                                 S --> printf("if without braces\n");];
+                              15[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(10,4),(11,38))];
+                                 S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(8,8),(8,40))];
+                                 S --> printf("'if' without braces\n");];
+                              9[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(7,4),(8,40))];
+                                S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(3,11),(59,1))];
+                                S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = else 
+          labeling: result = {67[];54[];43[];32[];24[]}
+          labeling: pred = S1
+          labeling: result = {118[S1 --> return 0;];
+                              117[S1 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[S1 --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[S1 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[S1 --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[S1 --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[S1 --> printf("'for' iteration: %d\n", i);];
+                              96[S1 --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[S1 --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[S1 --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[S1 --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[S1 --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[S1 --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[S1 --> printf("else if with curly braces\n");];
+                              77[S1 --> {printf("else if with curly braces\n");}];
+                              72[S1 --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[S1 --> printf("if with curly braces\n");];
+                              68[S1 --> {printf("if with curly braces\n");}];
+                              64[S1 --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[S1 --> printf("else if without curly braces\n");];
+                              56[S1 --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[S1 --> printf("if without curly braces\n");];
+                              51[S1 --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[S1 --> printf("'else' with braces after if without braces\n");];
+                              45[S1 --> {printf("'else' with braces after if without braces\n");}];
+                              44[S1 --> printf("'if' wuthout braces with an else after it\n");];
+                              40[S1 --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[S1 --> printf("'else' without braces after if with braces\n");];
+                              34[S1 --> printf("'if' with braces before else without braces\n");];
+                              33[S1 --> {printf("'if' with braces before else without braces\n");}];
+                              29[S1 --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[S1 --> printf("'else' without braces after if without braces\n");];
+                              25[S1 --> printf("'if' without braces before an else\n");];
+                              21[S1 --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[S1 --> printf("if without braces\n");];
+                              15[S1 --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[S1 --> printf("'if' without braces\n");];
+                              9[S1 --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[S1 --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+     binding out = []
+     binding out = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(8,8),(8,40))]]
+     binding out = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(11,8),(11,38))]]
+     binding out = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(14,8),(14,55))]]
+     binding out = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(24,8),(24,62))]]
+     binding out = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(30,8),(30,44))]]
+     binding out = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(32,8),(32,49))]]
+RESULT =
+-----------------------------------------------------------------------
+script rule starting on line 17 = 
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+script rule starting on line 17 = 
+-----------------------------------------------------------------------
+binding in = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(8,8),(8,40))]]
+-----------------------------------------------------------------------
+script rule starting on line 17 = 
+-----------------------------------------------------------------------
+binding in = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(11,8),(11,38))]]
+-----------------------------------------------------------------------
+script rule starting on line 17 = 
+-----------------------------------------------------------------------
+binding in = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(14,8),(14,55))]]
+-----------------------------------------------------------------------
+script rule starting on line 17 = 
+-----------------------------------------------------------------------
+binding in = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(24,8),(24,62))]]
+-----------------------------------------------------------------------
+script rule starting on line 17 = 
+-----------------------------------------------------------------------
+binding in = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(30,8),(30,44))]]
+-----------------------------------------------------------------------
+script rule starting on line 17 = 
+-----------------------------------------------------------------------
+binding in = [r1.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(32,8),(32,49))]]
+-----------------------------------------------------------------------
+r2 = 
+-----------------------------------------------------------------------
+binding in = []
+binding relevant in = []
+          labeling: pred = if (...) 
+did not find:
+if (...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = S1
+did not find:
+S1
+          labeling: pred = {
+did not find:
+{
+          labeling: pred = }
+did not find:
+}
+          labeling: pred = if (...) 
+did not find:
+if (...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = if (...) 
+          labeling: pred = S
+          labeling: pred = S1
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = FalseBranch
+          labeling: result = {66[];53[];42[];31[];23[]}
+          labeling: pred = TrueBranch
+          labeling: result = {73[];65[];57[];52[];41[];30[];22[];16[];10[]}
+          labeling: pred = Label(_lab)
+          labeling: result = {0[_lab --> labelval()];1[_lab --> labelval(1)];
+                              3[_lab --> labelval()];4[_lab --> labelval()];
+                              6[_lab --> labelval(1)];
+                              7[_lab --> labelval(1,2,3)];
+                              8[_lab --> labelval(1,2,4)];
+                              9[_lab --> labelval(1,2,5)];
+                              10[_lab --> labelval(1,2,5)];
+                              11[_lab --> labelval(1,2,5)];
+                              12[_lab --> labelval(1,2,5)];
+                              13[_lab --> labelval(1,2,5)];
+                              14[_lab --> labelval(1,2,5,6)];
+                              15[_lab --> labelval(1,2,7)];
+                              16[_lab --> labelval(1,2,7)];
+                              17[_lab --> labelval(1,2,7)];
+                              18[_lab --> labelval(1,2,7)];
+                              19[_lab --> labelval(1,2,7)];
+                              20[_lab --> labelval(1,2,7,8)];
+                              21[_lab --> labelval(1,2,9)];
+                              22[_lab --> labelval(1,2,9)];
+                              23[_lab --> labelval(1,2,9)];
+                              24[_lab --> labelval(1,2,9)];
+                              25[_lab --> labelval(1,2,9,10)];
+                              26[_lab --> labelval(1,2,9,11)];
+                              27[_lab --> labelval(1,2,9)];
+                              28[_lab --> labelval(1,2,9)];
+                              29[_lab --> labelval(1,2,12)];
+                              30[_lab --> labelval(1,2,12)];
+                              31[_lab --> labelval(1,2,12)];
+                              32[_lab --> labelval(1,2,12)];
+                              33[_lab --> labelval(1,2,12,13)];
+                              34[_lab --> labelval(1,2,12,13,14)];
+                              35[_lab --> labelval(1,2,12,13)];
+                              36[_lab --> labelval(1,2,12,13)];
+                              37[_lab --> labelval(1,2,12,15)];
+                              38[_lab --> labelval(1,2,12)];
+                              39[_lab --> labelval(1,2,12)];
+                              40[_lab --> labelval(1,2,16)];
+                              41[_lab --> labelval(1,2,16)];
+                              42[_lab --> labelval(1,2,16)];
+                              43[_lab --> labelval(1,2,16)];
+                              44[_lab --> labelval(1,2,16,17)];
+                              45[_lab --> labelval(1,2,16,18)];
+                              46[_lab --> labelval(1,2,16,18,19)];
+                              47[_lab --> labelval(1,2,16,18)];
+                              48[_lab --> labelval(1,2,16,18)];
+                              49[_lab --> labelval(1,2,16)];
+                              50[_lab --> labelval(1,2,16)];
+                              51[_lab --> labelval(1,2,20)];
+                              52[_lab --> labelval(1,2,20)];
+                              53[_lab --> labelval(1,2,20)];
+                              54[_lab --> labelval(1,2,20)];
+                              55[_lab --> labelval(1,2,20,21)];
+                              56[_lab --> labelval(1,2,20,22)];
+                              57[_lab --> labelval(1,2,20,22)];
+                              58[_lab --> labelval(1,2,20,22)];
+                              59[_lab --> labelval(1,2,20,22)];
+                              60[_lab --> labelval(1,2,20,22)];
+                              61[_lab --> labelval(1,2,20,22,23)];
+                              62[_lab --> labelval(1,2,20)];
+                              63[_lab --> labelval(1,2,20)];
+                              64[_lab --> labelval(1,2,24)];
+                              65[_lab --> labelval(1,2,24)];
+                              66[_lab --> labelval(1,2,24)];
+                              67[_lab --> labelval(1,2,24)];
+                              68[_lab --> labelval(1,2,24,25)];
+                              69[_lab --> labelval(1,2,24,25,26)];
+                              70[_lab --> labelval(1,2,24,25)];
+                              71[_lab --> labelval(1,2,24,25)];
+                              72[_lab --> labelval(1,2,24,27)];
+                              73[_lab --> labelval(1,2,24,27)];
+                              74[_lab --> labelval(1,2,24,27)];
+                              75[_lab --> labelval(1,2,24,27)];
+                              76[_lab --> labelval(1,2,24,27)];
+                              77[_lab --> labelval(1,2,24,27,28)];
+                              78[_lab --> labelval(1,2,24,27,28,29)];
+                              79[_lab --> labelval(1,2,24,27,28)];
+                              80[_lab --> labelval(1,2,24,27,28)];
+                              81[_lab --> labelval(1,2,24)];
+                              82[_lab --> labelval(1,2,24)];
+                              83[_lab --> labelval(1,2,30)];
+                              84[_lab --> labelval(1,2,30)];
+                              85[_lab --> labelval(1,2,30)];
+                              86[_lab --> labelval(1,2,30)];
+                              87[_lab --> labelval(1,2,30,31)];
+                              88[_lab --> labelval(1,2,32)];
+                              89[_lab --> labelval(1,2,32)];
+                              90[_lab --> labelval(1,2,32)];
+                              91[_lab --> labelval(1,2,32)];
+                              92[_lab --> labelval(1,2,32,33)];
+                              93[_lab --> labelval(1,2,32,33,34)];
+                              94[_lab --> labelval(1,2,32,33)];
+                              95[_lab --> labelval(1,2,32,33)];
+                              96[_lab --> labelval(1,2,35)];
+                              97[_lab --> labelval(1,2,35)];
+                              98[_lab --> labelval(1,2,35)];
+                              99[_lab --> labelval(1,2,35)];
+                              100[_lab --> labelval(1,2,35,36)];
+                              101[_lab --> labelval(1,2,37)];
+                              102[_lab --> labelval(1,2,37)];
+                              103[_lab --> labelval(1,2,37)];
+                              104[_lab --> labelval(1,2,37)];
+                              105[_lab --> labelval(1,2,37)];
+                              106[_lab --> labelval(1,2,37)];
+                              107[_lab --> labelval(1,2,37,38)];
+                              108[_lab --> labelval(1,2,37,38,39)];
+                              109[_lab --> labelval(1,2,37,38)];
+                              110[_lab --> labelval(1,2,37,38)];
+                              111[_lab --> labelval(1,2,40)];
+                              112[_lab --> labelval(1,2,40)];
+                              113[_lab --> labelval(1,2,40)];
+                              114[_lab --> labelval(1,2,40)];
+                              115[_lab --> labelval(1,2,40)];
+                              116[_lab --> labelval(1,2,40)];
+                              117[_lab --> labelval(1,2,40,41)];
+                              118[_lab --> labelval(1,2,42)];
+                              119[_lab --> labelval(1)]}
+          labeling: pred = S
+          labeling: result = {118[S --> return 0;];
+                              117[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[S --> printf("'for' iteration: %d\n", i);];
+                              96[S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[S --> printf("else if with curly braces\n");];
+                              77[S --> {printf("else if with curly braces\n");}];
+                              72[S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[S --> printf("if with curly braces\n");];
+                              68[S --> {printf("if with curly braces\n");}];
+                              64[S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[S --> printf("else if without curly braces\n");];
+                              56[S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[S --> printf("if without curly braces\n");];
+                              51[S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[S --> printf("'else' with braces after if without braces\n");];
+                              45[S --> {printf("'else' with braces after if without braces\n");}];
+                              44[S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[S --> printf("'else' without braces after if with braces\n");];
+                              34[S --> printf("'if' with braces before else without braces\n");];
+                              33[S --> {printf("'if' with braces before else without braces\n");}];
+                              29[S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[S --> printf("'else' without braces after if without braces\n");];
+                              25[S --> printf("'if' without braces before an else\n");];
+                              21[S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[S --> printf("if without braces\n");];
+                              15[S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[S --> printf("'if' without braces\n");];
+                              9[S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = else 
+          labeling: result = {67[];54[];43[];32[];24[]}
+          labeling: pred = {
+          labeling: result = {107[];92[];77[];68[];45[];33[];6[]}
+          labeling: pred = After
+          labeling: result = {115[];110[];105[];95[];82[];80[];76[];71
+                              [];63[];60[];50[];48[];39[];36[];28[];19
+                              [];13[]}
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = S
+          labeling: result = {118[S --> return 0;];
+                              117[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[S --> printf("'for' iteration: %d\n", i);];
+                              96[S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[S --> printf("else if with curly braces\n");];
+                              77[S --> {printf("else if with curly braces\n");}];
+                              72[S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[S --> printf("if with curly braces\n");];
+                              68[S --> {printf("if with curly braces\n");}];
+                              64[S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[S --> printf("else if without curly braces\n");];
+                              56[S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[S --> printf("if without curly braces\n");];
+                              51[S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[S --> printf("'else' with braces after if without braces\n");];
+                              45[S --> {printf("'else' with braces after if without braces\n");}];
+                              44[S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[S --> printf("'else' without braces after if with braces\n");];
+                              34[S --> printf("'if' with braces before else without braces\n");];
+                              33[S --> {printf("'if' with braces before else without braces\n");}];
+                              29[S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[S --> printf("'else' without braces after if without braces\n");];
+                              25[S --> printf("'if' without braces before an else\n");];
+                              21[S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[S --> printf("if without braces\n");];
+                              15[S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[S --> printf("'if' without braces\n");];
+                              9[S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = else 
+          labeling: result = {67[];54[];43[];32[];24[]}
+          labeling: pred = {
+          labeling: result = {107[];92[];77[];68[];45[];33[];6[]}
+          labeling: pred = Paren(p1)
+          labeling: result = {119[p1 --> pv(1)];109[p1 --> pv(7)];
+                              107[p1 --> pv(7)];94[p1 --> pv(6)];
+                              92[p1 --> pv(6)];79[p1 --> pv(5)];
+                              77[p1 --> pv(5)];70[p1 --> pv(4)];
+                              68[p1 --> pv(4)];47[p1 --> pv(3)];
+                              45[p1 --> pv(3)];35[p1 --> pv(2)];
+                              33[p1 --> pv(2)];6[p1 --> pv(1)]}
+          labeling: pred = Label(l4)
+          labeling: result = {0[l4 --> labelval()];1[l4 --> labelval(1)];
+                              3[l4 --> labelval()];4[l4 --> labelval()];
+                              6[l4 --> labelval(1)];
+                              7[l4 --> labelval(1,2,3)];
+                              8[l4 --> labelval(1,2,4)];
+                              9[l4 --> labelval(1,2,5)];
+                              10[l4 --> labelval(1,2,5)];
+                              11[l4 --> labelval(1,2,5)];
+                              12[l4 --> labelval(1,2,5)];
+                              13[l4 --> labelval(1,2,5)];
+                              14[l4 --> labelval(1,2,5,6)];
+                              15[l4 --> labelval(1,2,7)];
+                              16[l4 --> labelval(1,2,7)];
+                              17[l4 --> labelval(1,2,7)];
+                              18[l4 --> labelval(1,2,7)];
+                              19[l4 --> labelval(1,2,7)];
+                              20[l4 --> labelval(1,2,7,8)];
+                              21[l4 --> labelval(1,2,9)];
+                              22[l4 --> labelval(1,2,9)];
+                              23[l4 --> labelval(1,2,9)];
+                              24[l4 --> labelval(1,2,9)];
+                              25[l4 --> labelval(1,2,9,10)];
+                              26[l4 --> labelval(1,2,9,11)];
+                              27[l4 --> labelval(1,2,9)];
+                              28[l4 --> labelval(1,2,9)];
+                              29[l4 --> labelval(1,2,12)];
+                              30[l4 --> labelval(1,2,12)];
+                              31[l4 --> labelval(1,2,12)];
+                              32[l4 --> labelval(1,2,12)];
+                              33[l4 --> labelval(1,2,12,13)];
+                              34[l4 --> labelval(1,2,12,13,14)];
+                              35[l4 --> labelval(1,2,12,13)];
+                              36[l4 --> labelval(1,2,12,13)];
+                              37[l4 --> labelval(1,2,12,15)];
+                              38[l4 --> labelval(1,2,12)];
+                              39[l4 --> labelval(1,2,12)];
+                              40[l4 --> labelval(1,2,16)];
+                              41[l4 --> labelval(1,2,16)];
+                              42[l4 --> labelval(1,2,16)];
+                              43[l4 --> labelval(1,2,16)];
+                              44[l4 --> labelval(1,2,16,17)];
+                              45[l4 --> labelval(1,2,16,18)];
+                              46[l4 --> labelval(1,2,16,18,19)];
+                              47[l4 --> labelval(1,2,16,18)];
+                              48[l4 --> labelval(1,2,16,18)];
+                              49[l4 --> labelval(1,2,16)];
+                              50[l4 --> labelval(1,2,16)];
+                              51[l4 --> labelval(1,2,20)];
+                              52[l4 --> labelval(1,2,20)];
+                              53[l4 --> labelval(1,2,20)];
+                              54[l4 --> labelval(1,2,20)];
+                              55[l4 --> labelval(1,2,20,21)];
+                              56[l4 --> labelval(1,2,20,22)];
+                              57[l4 --> labelval(1,2,20,22)];
+                              58[l4 --> labelval(1,2,20,22)];
+                              59[l4 --> labelval(1,2,20,22)];
+                              60[l4 --> labelval(1,2,20,22)];
+                              61[l4 --> labelval(1,2,20,22,23)];
+                              62[l4 --> labelval(1,2,20)];
+                              63[l4 --> labelval(1,2,20)];
+                              64[l4 --> labelval(1,2,24)];
+                              65[l4 --> labelval(1,2,24)];
+                              66[l4 --> labelval(1,2,24)];
+                              67[l4 --> labelval(1,2,24)];
+                              68[l4 --> labelval(1,2,24,25)];
+                              69[l4 --> labelval(1,2,24,25,26)];
+                              70[l4 --> labelval(1,2,24,25)];
+                              71[l4 --> labelval(1,2,24,25)];
+                              72[l4 --> labelval(1,2,24,27)];
+                              73[l4 --> labelval(1,2,24,27)];
+                              74[l4 --> labelval(1,2,24,27)];
+                              75[l4 --> labelval(1,2,24,27)];
+                              76[l4 --> labelval(1,2,24,27)];
+                              77[l4 --> labelval(1,2,24,27,28)];
+                              78[l4 --> labelval(1,2,24,27,28,29)];
+                              79[l4 --> labelval(1,2,24,27,28)];
+                              80[l4 --> labelval(1,2,24,27,28)];
+                              81[l4 --> labelval(1,2,24)];
+                              82[l4 --> labelval(1,2,24)];
+                              83[l4 --> labelval(1,2,30)];
+                              84[l4 --> labelval(1,2,30)];
+                              85[l4 --> labelval(1,2,30)];
+                              86[l4 --> labelval(1,2,30)];
+                              87[l4 --> labelval(1,2,30,31)];
+                              88[l4 --> labelval(1,2,32)];
+                              89[l4 --> labelval(1,2,32)];
+                              90[l4 --> labelval(1,2,32)];
+                              91[l4 --> labelval(1,2,32)];
+                              92[l4 --> labelval(1,2,32,33)];
+                              93[l4 --> labelval(1,2,32,33,34)];
+                              94[l4 --> labelval(1,2,32,33)];
+                              95[l4 --> labelval(1,2,32,33)];
+                              96[l4 --> labelval(1,2,35)];
+                              97[l4 --> labelval(1,2,35)];
+                              98[l4 --> labelval(1,2,35)];
+                              99[l4 --> labelval(1,2,35)];
+                              100[l4 --> labelval(1,2,35,36)];
+                              101[l4 --> labelval(1,2,37)];
+                              102[l4 --> labelval(1,2,37)];
+                              103[l4 --> labelval(1,2,37)];
+                              104[l4 --> labelval(1,2,37)];
+                              105[l4 --> labelval(1,2,37)];
+                              106[l4 --> labelval(1,2,37)];
+                              107[l4 --> labelval(1,2,37,38)];
+                              108[l4 --> labelval(1,2,37,38,39)];
+                              109[l4 --> labelval(1,2,37,38)];
+                              110[l4 --> labelval(1,2,37,38)];
+                              111[l4 --> labelval(1,2,40)];
+                              112[l4 --> labelval(1,2,40)];
+                              113[l4 --> labelval(1,2,40)];
+                              114[l4 --> labelval(1,2,40)];
+                              115[l4 --> labelval(1,2,40)];
+                              116[l4 --> labelval(1,2,40)];
+                              117[l4 --> labelval(1,2,40,41)];
+                              118[l4 --> labelval(1,2,42)];
+                              119[l4 --> labelval(1)]}
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = S1
+          labeling: result = {118[S1 --> return 0;];
+                              117[S1 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[S1 --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[S1 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[S1 --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[S1 --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[S1 --> printf("'for' iteration: %d\n", i);];
+                              96[S1 --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[S1 --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[S1 --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[S1 --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[S1 --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[S1 --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[S1 --> printf("else if with curly braces\n");];
+                              77[S1 --> {printf("else if with curly braces\n");}];
+                              72[S1 --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[S1 --> printf("if with curly braces\n");];
+                              68[S1 --> {printf("if with curly braces\n");}];
+                              64[S1 --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[S1 --> printf("else if without curly braces\n");];
+                              56[S1 --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[S1 --> printf("if without curly braces\n");];
+                              51[S1 --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[S1 --> printf("'else' with braces after if without braces\n");];
+                              45[S1 --> {printf("'else' with braces after if without braces\n");}];
+                              44[S1 --> printf("'if' wuthout braces with an else after it\n");];
+                              40[S1 --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[S1 --> printf("'else' without braces after if with braces\n");];
+                              34[S1 --> printf("'if' with braces before else without braces\n");];
+                              33[S1 --> {printf("'if' with braces before else without braces\n");}];
+                              29[S1 --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[S1 --> printf("'else' without braces after if without braces\n");];
+                              25[S1 --> printf("'if' without braces before an else\n");];
+                              21[S1 --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[S1 --> printf("if without braces\n");];
+                              15[S1 --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[S1 --> printf("'if' without braces\n");];
+                              9[S1 --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[S1 --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = else 
+          labeling: result = {67[];54[];43[];32[];24[]}
+          labeling: pred = S2
+          labeling: result = {118[S2 --> return 0;];
+                              117[S2 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[S2 --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[S2 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[S2 --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[S2 --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[S2 --> printf("'for' iteration: %d\n", i);];
+                              96[S2 --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[S2 --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[S2 --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[S2 --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[S2 --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[S2 --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[S2 --> printf("else if with curly braces\n");];
+                              77[S2 --> {printf("else if with curly braces\n");}];
+                              72[S2 --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[S2 --> printf("if with curly braces\n");];
+                              68[S2 --> {printf("if with curly braces\n");}];
+                              64[S2 --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[S2 --> printf("else if without curly braces\n");];
+                              56[S2 --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[S2 --> printf("if without curly braces\n");];
+                              51[S2 --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[S2 --> printf("'else' with braces after if without braces\n");];
+                              45[S2 --> {printf("'else' with braces after if without braces\n");}];
+                              44[S2 --> printf("'if' wuthout braces with an else after it\n");];
+                              40[S2 --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[S2 --> printf("'else' without braces after if with braces\n");];
+                              34[S2 --> printf("'if' with braces before else without braces\n");];
+                              33[S2 --> {printf("'if' with braces before else without braces\n");}];
+                              29[S2 --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[S2 --> printf("'else' without braces after if without braces\n");];
+                              25[S2 --> printf("'if' without braces before an else\n");];
+                              21[S2 --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[S2 --> printf("if without braces\n");];
+                              15[S2 --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[S2 --> printf("'if' without braces\n");];
+                              9[S2 --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[S2 --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = }
+          labeling: result = {119[];109[];94[];79[];70[];47[];35[]}
+          labeling: pred = PrefixLabel(l4)
+          labeling: result = {0[l4 --> prefixlabelval()];
+                              1[l4 --> prefixlabelval(1)];
+                              3[l4 --> prefixlabelval()];
+                              4[l4 --> prefixlabelval()];
+                              6[l4 --> prefixlabelval(1)];
+                              7[l4 --> prefixlabelval(1,2,3)];
+                              8[l4 --> prefixlabelval(1,2,4)];
+                              9[l4 --> prefixlabelval(1,2,5)];
+                              10[l4 --> prefixlabelval(1,2,5)];
+                              11[l4 --> prefixlabelval(1,2,5)];
+                              12[l4 --> prefixlabelval(1,2,5)];
+                              13[l4 --> prefixlabelval(1,2,5)];
+                              14[l4 --> prefixlabelval(1,2,5,6)];
+                              15[l4 --> prefixlabelval(1,2,7)];
+                              16[l4 --> prefixlabelval(1,2,7)];
+                              17[l4 --> prefixlabelval(1,2,7)];
+                              18[l4 --> prefixlabelval(1,2,7)];
+                              19[l4 --> prefixlabelval(1,2,7)];
+                              20[l4 --> prefixlabelval(1,2,7,8)];
+                              21[l4 --> prefixlabelval(1,2,9)];
+                              22[l4 --> prefixlabelval(1,2,9)];
+                              23[l4 --> prefixlabelval(1,2,9)];
+                              24[l4 --> prefixlabelval(1,2,9)];
+                              25[l4 --> prefixlabelval(1,2,9,10)];
+                              26[l4 --> prefixlabelval(1,2,9,11)];
+                              27[l4 --> prefixlabelval(1,2,9)];
+                              28[l4 --> prefixlabelval(1,2,9)];
+                              29[l4 --> prefixlabelval(1,2,12)];
+                              30[l4 --> prefixlabelval(1,2,12)];
+                              31[l4 --> prefixlabelval(1,2,12)];
+                              32[l4 --> prefixlabelval(1,2,12)];
+                              33[l4 --> prefixlabelval(1,2,12,13)];
+                              34[l4 --> prefixlabelval(1,2,12,13,14)];
+                              35[l4 --> prefixlabelval(1,2,12,13)];
+                              36[l4 --> prefixlabelval(1,2,12,13)];
+                              37[l4 --> prefixlabelval(1,2,12,15)];
+                              38[l4 --> prefixlabelval(1,2,12)];
+                              39[l4 --> prefixlabelval(1,2,12)];
+                              40[l4 --> prefixlabelval(1,2,16)];
+                              41[l4 --> prefixlabelval(1,2,16)];
+                              42[l4 --> prefixlabelval(1,2,16)];
+                              43[l4 --> prefixlabelval(1,2,16)];
+                              44[l4 --> prefixlabelval(1,2,16,17)];
+                              45[l4 --> prefixlabelval(1,2,16,18)];
+                              46[l4 --> prefixlabelval(1,2,16,18,19)];
+                              47[l4 --> prefixlabelval(1,2,16,18)];
+                              48[l4 --> prefixlabelval(1,2,16,18)];
+                              49[l4 --> prefixlabelval(1,2,16)];
+                              50[l4 --> prefixlabelval(1,2,16)];
+                              51[l4 --> prefixlabelval(1,2,20)];
+                              52[l4 --> prefixlabelval(1,2,20)];
+                              53[l4 --> prefixlabelval(1,2,20)];
+                              54[l4 --> prefixlabelval(1,2,20)];
+                              55[l4 --> prefixlabelval(1,2,20,21)];
+                              56[l4 --> prefixlabelval(1,2,20,22)];
+                              57[l4 --> prefixlabelval(1,2,20,22)];
+                              58[l4 --> prefixlabelval(1,2,20,22)];
+                              59[l4 --> prefixlabelval(1,2,20,22)];
+                              60[l4 --> prefixlabelval(1,2,20,22)];
+                              61[l4 --> prefixlabelval(1,2,20,22,23)];
+                              62[l4 --> prefixlabelval(1,2,20)];
+                              63[l4 --> prefixlabelval(1,2,20)];
+                              64[l4 --> prefixlabelval(1,2,24)];
+                              65[l4 --> prefixlabelval(1,2,24)];
+                              66[l4 --> prefixlabelval(1,2,24)];
+                              67[l4 --> prefixlabelval(1,2,24)];
+                              68[l4 --> prefixlabelval(1,2,24,25)];
+                              69[l4 --> prefixlabelval(1,2,24,25,26)];
+                              70[l4 --> prefixlabelval(1,2,24,25)];
+                              71[l4 --> prefixlabelval(1,2,24,25)];
+                              72[l4 --> prefixlabelval(1,2,24,27)];
+                              73[l4 --> prefixlabelval(1,2,24,27)];
+                              74[l4 --> prefixlabelval(1,2,24,27)];
+                              75[l4 --> prefixlabelval(1,2,24,27)];
+                              76[l4 --> prefixlabelval(1,2,24,27)];
+                              77[l4 --> prefixlabelval(1,2,24,27,28)];
+                              78[l4 --> prefixlabelval(1,2,24,27,28,29)];
+                              79[l4 --> prefixlabelval(1,2,24,27,28)];
+                              80[l4 --> prefixlabelval(1,2,24,27,28)];
+                              81[l4 --> prefixlabelval(1,2,24)];
+                              82[l4 --> prefixlabelval(1,2,24)];
+                              83[l4 --> prefixlabelval(1,2,30)];
+                              84[l4 --> prefixlabelval(1,2,30)];
+                              85[l4 --> prefixlabelval(1,2,30)];
+                              86[l4 --> prefixlabelval(1,2,30)];
+                              87[l4 --> prefixlabelval(1,2,30,31)];
+                              88[l4 --> prefixlabelval(1,2,32)];
+                              89[l4 --> prefixlabelval(1,2,32)];
+                              90[l4 --> prefixlabelval(1,2,32)];
+                              91[l4 --> prefixlabelval(1,2,32)];
+                              92[l4 --> prefixlabelval(1,2,32,33)];
+                              93[l4 --> prefixlabelval(1,2,32,33,34)];
+                              94[l4 --> prefixlabelval(1,2,32,33)];
+                              95[l4 --> prefixlabelval(1,2,32,33)];
+                              96[l4 --> prefixlabelval(1,2,35)];
+                              97[l4 --> prefixlabelval(1,2,35)];
+                              98[l4 --> prefixlabelval(1,2,35)];
+                              99[l4 --> prefixlabelval(1,2,35)];
+                              100[l4 --> prefixlabelval(1,2,35,36)];
+                              101[l4 --> prefixlabelval(1,2,37)];
+                              102[l4 --> prefixlabelval(1,2,37)];
+                              103[l4 --> prefixlabelval(1,2,37)];
+                              104[l4 --> prefixlabelval(1,2,37)];
+                              105[l4 --> prefixlabelval(1,2,37)];
+                              106[l4 --> prefixlabelval(1,2,37)];
+                              107[l4 --> prefixlabelval(1,2,37,38)];
+                              108[l4 --> prefixlabelval(1,2,37,38,39)];
+                              109[l4 --> prefixlabelval(1,2,37,38)];
+                              110[l4 --> prefixlabelval(1,2,37,38)];
+                              111[l4 --> prefixlabelval(1,2,40)];
+                              112[l4 --> prefixlabelval(1,2,40)];
+                              113[l4 --> prefixlabelval(1,2,40)];
+                              114[l4 --> prefixlabelval(1,2,40)];
+                              115[l4 --> prefixlabelval(1,2,40)];
+                              116[l4 --> prefixlabelval(1,2,40)];
+                              117[l4 --> prefixlabelval(1,2,40,41)];
+                              118[l4 --> prefixlabelval(1,2,42)];
+                              119[l4 --> prefixlabelval(1)]}
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = FallThrough
+          labeling: result = {113[];103[];74[];58[];17[];11[]}
+          labeling: pred = EscTrueBranch
+          labeling: result = {}
+          labeling: pred = if (...) 
+          labeling: result = {72[];64[];56[];51[];40[];29[];21[];15[];9[]}
+          labeling: pred = S
+          labeling: result = {118[S --> return 0;];
+                              117[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[S --> printf("'for' iteration: %d\n", i);];
+                              96[S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[S --> printf("else if with curly braces\n");];
+                              77[S --> {printf("else if with curly braces\n");}];
+                              72[S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[S --> printf("if with curly braces\n");];
+                              68[S --> {printf("if with curly braces\n");}];
+                              64[S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[S --> printf("else if without curly braces\n");];
+                              56[S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[S --> printf("if without curly braces\n");];
+                              51[S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[S --> printf("'else' with braces after if without braces\n");];
+                              45[S --> {printf("'else' with braces after if without braces\n");}];
+                              44[S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[S --> printf("'else' without braces after if with braces\n");];
+                              34[S --> printf("'if' with braces before else without braces\n");];
+                              33[S --> {printf("'if' with braces before else without braces\n");}];
+                              29[S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[S --> printf("'else' without braces after if without braces\n");];
+                              25[S --> printf("'if' without braces before an else\n");];
+                              21[S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[S --> printf("if without braces\n");];
+                              15[S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[S --> printf("'if' without braces\n");];
+                              9[S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = else 
+          labeling: result = {67[];54[];43[];32[];24[]}
+          labeling: pred = S1@p 
+          labeling: result = {118[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(58,4),(58,13))];
+                                  S1 --> return 0;];
+                              117[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(55,8),(55,48))];
+                                  S1 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(54,4),(56,19))];
+                                  S1 --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(51,8),(51,48))];
+                                  S1 --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,7),(52,5))];
+                                  S1 --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,4),(52,21))];
+                                  S1 --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(48,8),(48,43))];
+                                  S1 --> printf("'for' iteration: %d\n", i);];
+                              96[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(47,4),(48,43))];
+                                 S1 --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(44,8),(44,52))];
+                                 S1 --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,19),(45,5))];
+                                 S1 --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,4),(45,5))];
+                                 S1 --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(41,8),(41,55))];
+                                 S1 --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(40,4),(41,55))];
+                                 S1 --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(37,8),(37,46))];
+                                 S1 --> printf("else if with curly braces\n");];
+                              77[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,22),(38,5))];
+                                 S1 --> {printf("else if with curly braces\n");}];
+                              72[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,11),(38,5))];
+                                 S1 --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(35,8),(35,41))];
+                                 S1 --> printf("if with curly braces\n");];
+                              68[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,15),(36,5))];
+                                 S1 --> {printf("if with curly braces\n");}];
+                              64[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,4),(38,5))];
+                                 S1 --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(32,8),(32,49))];
+                                 S1 --> printf("else if without curly braces\n");];
+                              56[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(31,9),(32,49))];
+                                 S1 --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(30,8),(30,44))];
+                                 S1 --> printf("if without curly braces\n");];
+                              51[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(29,4),(32,49))];
+                                 S1 --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(26,8),(26,63))];
+                                 S1 --> printf("'else' with braces after if without braces\n");];
+                              45[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(25,9),(27,5))];
+                                 S1 --> {printf("'else' with braces after if without braces\n");}];
+                              44[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(24,8),(24,62))];
+                                 S1 --> printf("'if' wuthout braces with an else after it\n");];
+                              40[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(23,4),(27,5))];
+                                 S1 --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(21,8),(21,63))];
+                                 S1 --> printf("'else' without braces after if with braces\n");];
+                              34[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(19,8),(19,64))];
+                                 S1 --> printf("'if' with braces before else without braces\n");];
+                              33[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,15),(20,5))];
+                                 S1 --> {printf("'if' with braces before else without braces\n");}];
+                              29[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,4),(21,63))];
+                                 S1 --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(16,8),(16,66))];
+                                 S1 --> printf("'else' without braces after if without braces\n");];
+                              25[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(14,8),(14,55))];
+                                 S1 --> printf("'if' without braces before an else\n");];
+                              21[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(13,4),(16,66))];
+                                 S1 --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(11,8),(11,38))];
+                                 S1 --> printf("if without braces\n");];
+                              15[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(10,4),(11,38))];
+                                 S1 --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(8,8),(8,40))];
+                                 S1 --> printf("'if' without braces\n");];
+                              9[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(7,4),(8,40))];
+                                S1 --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(3,11),(59,1))];
+                                S1 --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+     binding out = []
+     binding out = [r2.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(16,8),(16,66))]]
+     binding out = [r2.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(21,8),(21,63))]]
+RESULT =
+-----------------------------------------------------------------------
+script rule starting on line 39 = 
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+script rule starting on line 39 = 
+-----------------------------------------------------------------------
+binding in = [r2.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(16,8),(16,66))]]
+-----------------------------------------------------------------------
+script rule starting on line 39 = 
+-----------------------------------------------------------------------
+binding in = [r2.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(21,8),(21,63))]]
+-----------------------------------------------------------------------
+r3 = 
+-----------------------------------------------------------------------
+binding in = []
+binding relevant in = []
+          labeling: pred = for(...;...;...) 
+did not find:
+for(...;...;...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = {
+did not find:
+{
+          labeling: pred = }
+did not find:
+}
+          labeling: pred = for(...;...;...) 
+did not find:
+for(...;...;...) 
+          labeling: pred = for(t  i = x;...;...) 
+did not find:
+for(t  i = x;...;...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = {
+did not find:
+{
+          labeling: pred = }
+did not find:
+}
+          labeling: pred = for(t  i = x;...;...) 
+did not find:
+for(t  i = x;...;...) 
+          labeling: pred = while (...) 
+did not find:
+while (...) 
+          labeling: pred = S
+did not find:
+S
+          labeling: pred = {
+did not find:
+{
+          labeling: pred = }
+did not find:
+}
+          labeling: pred = while (...) 
+did not find:
+while (...) 
+          labeling: pred = for(...;...;...) 
+          labeling: pred = S
+          labeling: pred = while (...) 
+          labeling: result = {88[];83[]}
+          labeling: pred = InLoop
+          labeling: result = {116[];106[];97[];89[];84[]}
+          labeling: pred = {
+          labeling: result = {107[];92[];77[];68[];45[];33[];6[]}
+          labeling: pred = LoopFallThrough
+          labeling: result = {98[];90[];85[]}
+          labeling: pred = while (...) 
+          labeling: result = {88[];83[]}
+          labeling: pred = Label(_lab)
+          labeling: result = {0[_lab --> labelval()];1[_lab --> labelval(1)];
+                              3[_lab --> labelval()];4[_lab --> labelval()];
+                              6[_lab --> labelval(1)];
+                              7[_lab --> labelval(1,2,3)];
+                              8[_lab --> labelval(1,2,4)];
+                              9[_lab --> labelval(1,2,5)];
+                              10[_lab --> labelval(1,2,5)];
+                              11[_lab --> labelval(1,2,5)];
+                              12[_lab --> labelval(1,2,5)];
+                              13[_lab --> labelval(1,2,5)];
+                              14[_lab --> labelval(1,2,5,6)];
+                              15[_lab --> labelval(1,2,7)];
+                              16[_lab --> labelval(1,2,7)];
+                              17[_lab --> labelval(1,2,7)];
+                              18[_lab --> labelval(1,2,7)];
+                              19[_lab --> labelval(1,2,7)];
+                              20[_lab --> labelval(1,2,7,8)];
+                              21[_lab --> labelval(1,2,9)];
+                              22[_lab --> labelval(1,2,9)];
+                              23[_lab --> labelval(1,2,9)];
+                              24[_lab --> labelval(1,2,9)];
+                              25[_lab --> labelval(1,2,9,10)];
+                              26[_lab --> labelval(1,2,9,11)];
+                              27[_lab --> labelval(1,2,9)];
+                              28[_lab --> labelval(1,2,9)];
+                              29[_lab --> labelval(1,2,12)];
+                              30[_lab --> labelval(1,2,12)];
+                              31[_lab --> labelval(1,2,12)];
+                              32[_lab --> labelval(1,2,12)];
+                              33[_lab --> labelval(1,2,12,13)];
+                              34[_lab --> labelval(1,2,12,13,14)];
+                              35[_lab --> labelval(1,2,12,13)];
+                              36[_lab --> labelval(1,2,12,13)];
+                              37[_lab --> labelval(1,2,12,15)];
+                              38[_lab --> labelval(1,2,12)];
+                              39[_lab --> labelval(1,2,12)];
+                              40[_lab --> labelval(1,2,16)];
+                              41[_lab --> labelval(1,2,16)];
+                              42[_lab --> labelval(1,2,16)];
+                              43[_lab --> labelval(1,2,16)];
+                              44[_lab --> labelval(1,2,16,17)];
+                              45[_lab --> labelval(1,2,16,18)];
+                              46[_lab --> labelval(1,2,16,18,19)];
+                              47[_lab --> labelval(1,2,16,18)];
+                              48[_lab --> labelval(1,2,16,18)];
+                              49[_lab --> labelval(1,2,16)];
+                              50[_lab --> labelval(1,2,16)];
+                              51[_lab --> labelval(1,2,20)];
+                              52[_lab --> labelval(1,2,20)];
+                              53[_lab --> labelval(1,2,20)];
+                              54[_lab --> labelval(1,2,20)];
+                              55[_lab --> labelval(1,2,20,21)];
+                              56[_lab --> labelval(1,2,20,22)];
+                              57[_lab --> labelval(1,2,20,22)];
+                              58[_lab --> labelval(1,2,20,22)];
+                              59[_lab --> labelval(1,2,20,22)];
+                              60[_lab --> labelval(1,2,20,22)];
+                              61[_lab --> labelval(1,2,20,22,23)];
+                              62[_lab --> labelval(1,2,20)];
+                              63[_lab --> labelval(1,2,20)];
+                              64[_lab --> labelval(1,2,24)];
+                              65[_lab --> labelval(1,2,24)];
+                              66[_lab --> labelval(1,2,24)];
+                              67[_lab --> labelval(1,2,24)];
+                              68[_lab --> labelval(1,2,24,25)];
+                              69[_lab --> labelval(1,2,24,25,26)];
+                              70[_lab --> labelval(1,2,24,25)];
+                              71[_lab --> labelval(1,2,24,25)];
+                              72[_lab --> labelval(1,2,24,27)];
+                              73[_lab --> labelval(1,2,24,27)];
+                              74[_lab --> labelval(1,2,24,27)];
+                              75[_lab --> labelval(1,2,24,27)];
+                              76[_lab --> labelval(1,2,24,27)];
+                              77[_lab --> labelval(1,2,24,27,28)];
+                              78[_lab --> labelval(1,2,24,27,28,29)];
+                              79[_lab --> labelval(1,2,24,27,28)];
+                              80[_lab --> labelval(1,2,24,27,28)];
+                              81[_lab --> labelval(1,2,24)];
+                              82[_lab --> labelval(1,2,24)];
+                              83[_lab --> labelval(1,2,30)];
+                              84[_lab --> labelval(1,2,30)];
+                              85[_lab --> labelval(1,2,30)];
+                              86[_lab --> labelval(1,2,30)];
+                              87[_lab --> labelval(1,2,30,31)];
+                              88[_lab --> labelval(1,2,32)];
+                              89[_lab --> labelval(1,2,32)];
+                              90[_lab --> labelval(1,2,32)];
+                              91[_lab --> labelval(1,2,32)];
+                              92[_lab --> labelval(1,2,32,33)];
+                              93[_lab --> labelval(1,2,32,33,34)];
+                              94[_lab --> labelval(1,2,32,33)];
+                              95[_lab --> labelval(1,2,32,33)];
+                              96[_lab --> labelval(1,2,35)];
+                              97[_lab --> labelval(1,2,35)];
+                              98[_lab --> labelval(1,2,35)];
+                              99[_lab --> labelval(1,2,35)];
+                              100[_lab --> labelval(1,2,35,36)];
+                              101[_lab --> labelval(1,2,37)];
+                              102[_lab --> labelval(1,2,37)];
+                              103[_lab --> labelval(1,2,37)];
+                              104[_lab --> labelval(1,2,37)];
+                              105[_lab --> labelval(1,2,37)];
+                              106[_lab --> labelval(1,2,37)];
+                              107[_lab --> labelval(1,2,37,38)];
+                              108[_lab --> labelval(1,2,37,38,39)];
+                              109[_lab --> labelval(1,2,37,38)];
+                              110[_lab --> labelval(1,2,37,38)];
+                              111[_lab --> labelval(1,2,40)];
+                              112[_lab --> labelval(1,2,40)];
+                              113[_lab --> labelval(1,2,40)];
+                              114[_lab --> labelval(1,2,40)];
+                              115[_lab --> labelval(1,2,40)];
+                              116[_lab --> labelval(1,2,40)];
+                              117[_lab --> labelval(1,2,40,41)];
+                              118[_lab --> labelval(1,2,42)];
+                              119[_lab --> labelval(1)]}
+          labeling: pred = S@p 
+          labeling: result = {118[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(58,4),(58,13))];
+                                  S --> return 0;];
+                              117[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(55,8),(55,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(54,4),(56,19))];
+                                  S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(51,8),(51,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,7),(52,5))];
+                                  S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,4),(52,21))];
+                                  S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(48,8),(48,43))];
+                                  S --> printf("'for' iteration: %d\n", i);];
+                              96[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(47,4),(48,43))];
+                                 S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(44,8),(44,52))];
+                                 S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,19),(45,5))];
+                                 S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,4),(45,5))];
+                                 S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(41,8),(41,55))];
+                                 S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(40,4),(41,55))];
+                                 S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(37,8),(37,46))];
+                                 S --> printf("else if with curly braces\n");];
+                              77[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,22),(38,5))];
+                                 S --> {printf("else if with curly braces\n");}];
+                              72[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,11),(38,5))];
+                                 S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(35,8),(35,41))];
+                                 S --> printf("if with curly braces\n");];
+                              68[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,15),(36,5))];
+                                 S --> {printf("if with curly braces\n");}];
+                              64[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,4),(38,5))];
+                                 S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(32,8),(32,49))];
+                                 S --> printf("else if without curly braces\n");];
+                              56[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(31,9),(32,49))];
+                                 S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(30,8),(30,44))];
+                                 S --> printf("if without curly braces\n");];
+                              51[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(29,4),(32,49))];
+                                 S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(26,8),(26,63))];
+                                 S --> printf("'else' with braces after if without braces\n");];
+                              45[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(25,9),(27,5))];
+                                 S --> {printf("'else' with braces after if without braces\n");}];
+                              44[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(24,8),(24,62))];
+                                 S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(23,4),(27,5))];
+                                 S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(21,8),(21,63))];
+                                 S --> printf("'else' without braces after if with braces\n");];
+                              34[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(19,8),(19,64))];
+                                 S --> printf("'if' with braces before else without braces\n");];
+                              33[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,15),(20,5))];
+                                 S --> {printf("'if' with braces before else without braces\n");}];
+                              29[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,4),(21,63))];
+                                 S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(16,8),(16,66))];
+                                 S --> printf("'else' without braces after if without braces\n");];
+                              25[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(14,8),(14,55))];
+                                 S --> printf("'if' without braces before an else\n");];
+                              21[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(13,4),(16,66))];
+                                 S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(11,8),(11,38))];
+                                 S --> printf("if without braces\n");];
+                              15[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(10,4),(11,38))];
+                                 S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(8,8),(8,40))];
+                                 S --> printf("'if' without braces\n");];
+                              9[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(7,4),(8,40))];
+                                S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(3,11),(59,1))];
+                                S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = for(t  i = x;...;...) 
+          labeling: result = {96[x --> 0;t --> int;i --> id i]}
+          labeling: pred = {
+          labeling: result = {107[];92[];77[];68[];45[];33[];6[]}
+          labeling: pred = for(t  i = x;...;...) 
+          labeling: result = {96[x --> 0;t --> int;i --> id i]}
+          labeling: pred = S@p 
+          labeling: result = {118[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(58,4),(58,13))];
+                                  S --> return 0;];
+                              117[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(55,8),(55,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(54,4),(56,19))];
+                                  S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(51,8),(51,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,7),(52,5))];
+                                  S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,4),(52,21))];
+                                  S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(48,8),(48,43))];
+                                  S --> printf("'for' iteration: %d\n", i);];
+                              96[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(47,4),(48,43))];
+                                 S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(44,8),(44,52))];
+                                 S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,19),(45,5))];
+                                 S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,4),(45,5))];
+                                 S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(41,8),(41,55))];
+                                 S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(40,4),(41,55))];
+                                 S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(37,8),(37,46))];
+                                 S --> printf("else if with curly braces\n");];
+                              77[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,22),(38,5))];
+                                 S --> {printf("else if with curly braces\n");}];
+                              72[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,11),(38,5))];
+                                 S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(35,8),(35,41))];
+                                 S --> printf("if with curly braces\n");];
+                              68[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,15),(36,5))];
+                                 S --> {printf("if with curly braces\n");}];
+                              64[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,4),(38,5))];
+                                 S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(32,8),(32,49))];
+                                 S --> printf("else if without curly braces\n");];
+                              56[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(31,9),(32,49))];
+                                 S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(30,8),(30,44))];
+                                 S --> printf("if without curly braces\n");];
+                              51[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(29,4),(32,49))];
+                                 S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(26,8),(26,63))];
+                                 S --> printf("'else' with braces after if without braces\n");];
+                              45[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(25,9),(27,5))];
+                                 S --> {printf("'else' with braces after if without braces\n");}];
+                              44[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(24,8),(24,62))];
+                                 S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(23,4),(27,5))];
+                                 S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(21,8),(21,63))];
+                                 S --> printf("'else' without braces after if with braces\n");];
+                              34[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(19,8),(19,64))];
+                                 S --> printf("'if' with braces before else without braces\n");];
+                              33[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,15),(20,5))];
+                                 S --> {printf("'if' with braces before else without braces\n");}];
+                              29[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,4),(21,63))];
+                                 S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(16,8),(16,66))];
+                                 S --> printf("'else' without braces after if without braces\n");];
+                              25[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(14,8),(14,55))];
+                                 S --> printf("'if' without braces before an else\n");];
+                              21[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(13,4),(16,66))];
+                                 S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(11,8),(11,38))];
+                                 S --> printf("if without braces\n");];
+                              15[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(10,4),(11,38))];
+                                 S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(8,8),(8,40))];
+                                 S --> printf("'if' without braces\n");];
+                              9[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(7,4),(8,40))];
+                                S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(3,11),(59,1))];
+                                S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+          labeling: pred = for(...;...;...) 
+          labeling: result = {96[]}
+          labeling: pred = {
+          labeling: result = {107[];92[];77[];68[];45[];33[];6[]}
+          labeling: pred = for(...;...;...) 
+          labeling: result = {96[]}
+          labeling: pred = S@p 
+          labeling: result = {118[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(58,4),(58,13))];
+                                  S --> return 0;];
+                              117[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(55,8),(55,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              111[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(54,4),(56,19))];
+                                  S --> doprintf("do while iteration: %d\n",
+                                  x++);while(x < 20);];
+                              108[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(51,8),(51,48))];
+                                  S --> printf("do while iteration: %d\n",
+                                  x++);];
+                              107[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,7),(52,5))];
+                                  S --> {printf("do while iteration: %d\n",
+                                  x++);}];
+                              101[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(50,4),(52,21))];
+                                  S --> do
+                                  {printf("do while iteration: %d\n",
+                                  x++);}while(x < 15);];
+                              100[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(48,8),(48,43))];
+                                  S --> printf("'for' iteration: %d\n", i);];
+                              96[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(47,4),(48,43))];
+                                 S --> for (int i = 0; i < 5;
+                                 i++)printf("'for' iteration: %d\n", i);];
+                              93[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(44,8),(44,52))];
+                                 S --> printf("'while' with braces, x: %d\n",
+                                 x++);];
+                              92[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,19),(45,5))];
+                                 S --> {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              88[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(43,4),(45,5))];
+                                 S --> while (x < 10)
+                                 {printf("'while' with braces, x: %d\n",
+                                 x++);}];
+                              87[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(41,8),(41,55))];
+                                 S --> printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              83[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(40,4),(41,55))];
+                                 S --> while (x <
+                                 5)printf("'while' without braces, x: %d\n",
+                                 x++);];
+                              78[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(37,8),(37,46))];
+                                 S --> printf("else if with curly braces\n");];
+                              77[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,22),(38,5))];
+                                 S --> {printf("else if with curly braces\n");}];
+                              72[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(36,11),(38,5))];
+                                 S --> if (x < y)
+                                 {printf("else if with curly braces\n");}];
+                              69[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(35,8),(35,41))];
+                                 S --> printf("if with curly braces\n");];
+                              68[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,15),(36,5))];
+                                 S --> {printf("if with curly braces\n");}];
+                              64[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(34,4),(38,5))];
+                                 S --> if (x > y)
+                                 {printf("if with curly braces\n");}elseif (x
+                                 < y)
+                                 {printf("else if with curly braces\n");}];
+                              61[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(32,8),(32,49))];
+                                 S --> printf("else if without curly braces\n");];
+                              56[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(31,9),(32,49))];
+                                 S --> if (x <
+                                 y)printf("else if without curly braces\n");];
+                              55[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(30,8),(30,44))];
+                                 S --> printf("if without curly braces\n");];
+                              51[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(29,4),(32,49))];
+                                 S --> if (x >
+                                 y)printf("if without curly braces\n");elseif
+                                 (x <
+                                 y)printf("else if without curly braces\n");];
+                              46[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(26,8),(26,63))];
+                                 S --> printf("'else' with braces after if without braces\n");];
+                              45[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(25,9),(27,5))];
+                                 S --> {printf("'else' with braces after if without braces\n");}];
+                              44[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(24,8),(24,62))];
+                                 S --> printf("'if' wuthout braces with an else after it\n");];
+                              40[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(23,4),(27,5))];
+                                 S --> if (x >
+                                 y)printf("'if' wuthout braces with an else after it\n");else
+                                 {printf("'else' with braces after if without braces\n");}];
+                              37[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(21,8),(21,63))];
+                                 S --> printf("'else' without braces after if with braces\n");];
+                              34[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(19,8),(19,64))];
+                                 S --> printf("'if' with braces before else without braces\n");];
+                              33[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,15),(20,5))];
+                                 S --> {printf("'if' with braces before else without braces\n");}];
+                              29[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(18,4),(21,63))];
+                                 S --> if (x > y)
+                                 {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");];
+                              26[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(16,8),(16,66))];
+                                 S --> printf("'else' without braces after if without braces\n");];
+                              25[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(14,8),(14,55))];
+                                 S --> printf("'if' without braces before an else\n");];
+                              21[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(13,4),(16,66))];
+                                 S --> if (x <
+                                 y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");];
+                              20[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(11,8),(11,38))];
+                                 S --> printf("if without braces\n");];
+                              15[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(10,4),(11,38))];
+                                 S --> if (x >
+                                 y)printf("if without braces\n");];
+                              14[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(8,8),(8,40))];
+                                 S --> printf("'if' without braces\n");];
+                              9[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(7,4),(8,40))];
+                                S --> if (x < y -
+                                1)printf("'if' without braces\n");];
+                              6[p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(3,11),(59,1))];
+                                S --> {int x = 0;int y = 5;if (x < y -
+                                1)printf("'if' without braces\n");if (x >
+                                y)printf("if without braces\n");if (x <
+                                y)printf("'if' without braces before an else\n");elseprintf("'else' without braces after if without braces\n");if
+                                (x > y)
+                                {printf("'if' with braces before else without braces\n");}elseprintf("'else' without braces after if with braces\n");if
+                                (x >
+                                y)printf("'if' wuthout braces with an else after it\n");else
+                                {printf("'else' with braces after if without braces\n");}if
+                                (x >
+                                y)printf("if without curly braces\n");elseif
+                                (x <
+                                y)printf("else if without curly braces\n");if
+                                (x > y)
+                                {printf("if with curly braces\n");}elseif (x
+                                < y)
+                                {printf("else if with curly braces\n");}while
+                                (x <
+                                5)printf("'while' without braces, x: %d\n",
+                                x++);while (x < 10)
+                                {printf("'while' with braces, x: %d\n",
+                                x++);}for (int i = 0; i < 5;
+                                i++)printf("'for' iteration: %d\n", i);do
+                                {printf("do while iteration: %d\n",
+                                x++);}while(x <
+                                15);doprintf("do while iteration: %d\n",
+                                x++);while(x < 20);return 0;}]}
+     binding out = []
+     binding out = [r3.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(41,8),(41,55))]]
+     binding out = [r3.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(48,8),(48,43))]]
+RESULT =
+-----------------------------------------------------------------------
+script rule starting on line 67 = 
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+script rule starting on line 67 = 
+-----------------------------------------------------------------------
+binding in = [r3.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(41,8),(41,55))]]
+-----------------------------------------------------------------------
+script rule starting on line 67 = 
+-----------------------------------------------------------------------
+binding in = [r3.p --> poss[(input/omitted_curly_braces.c,main,((3,0),(59,1)),(48,8),(48,43))]]
+-----------------------------------------------------------------------
+Finished
+-----------------------------------------------------------------------
+R1: Line 8 in file input/omitted_curly_braces.c
+R1: Line 11 in file input/omitted_curly_braces.c
+R1: Line 14 in file input/omitted_curly_braces.c
+R1: Line 24 in file input/omitted_curly_braces.c
+R1: Line 30 in file input/omitted_curly_braces.c
+R1: Line 32 in file input/omitted_curly_braces.c
+R2: Line 16 in file input/omitted_curly_braces.c
+R2: Line 21 in file input/omitted_curly_braces.c
+R3: Line 41 in file input/omitted_curly_braces.c
+R3: Line 48 in file input/omitted_curly_braces.c
