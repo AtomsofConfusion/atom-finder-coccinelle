@@ -20,11 +20,17 @@ p << r1.p;
 print(f"R1: Line {p[0].line} in file {p[0].file}")
 
 @r2 disable braces0, neg_if@
-statement S, S1;
+statement S, S1, S2;
 position p;
 @@
 (
 if (...) S else {...}
+|
+if (...) S else {
+  ...
+  if (...) S1 else S2
+  ...
+}
 |
 if (...) S else S1@p
 )
@@ -54,6 +60,10 @@ for(t i = x;...;...) S@p
 for(...;...;...) {...}
 |
 for(...;...;...) S@p
+|
+do {...} while (...);
+|
+do S@p while (...);
 )
 
 // for and while are separate things, no need for separate rules
