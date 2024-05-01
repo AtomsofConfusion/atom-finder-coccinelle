@@ -1,4 +1,4 @@
-@assignment_as_value@
+@assignment_as_value1@
 expression e1, e2, e3;
 position p;
 @@
@@ -10,8 +10,8 @@ e1=e2=e3@p
 
 
 @script:python@
-p << assignment_as_value.p;
-e3 << assignment_as_value.e3;
+p << assignment_as_value1.p;
+e3 << assignment_as_value1.e3;
 @@
 
 # this will deduplicate the matches
@@ -23,4 +23,19 @@ e3 << assignment_as_value.e3;
 if ("=" not in e3):
     print(f"Line {p[0].line} in file {p[0].file}")
 
+@assignment_as_value2@
+expression e;
+identifier i;
+type t;
+position p;
+@@
 
+for (t i = e@p;...;...) {...}
+
+@script:python@
+p << assignment_as_value2.p;
+e << assignment_as_value2.e;
+@@
+
+if ("=" in e):
+    print(f"Line {p[0].line} in file {p[0].file}")
