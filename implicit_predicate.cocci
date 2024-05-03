@@ -1,32 +1,70 @@
-@r@
-expression e, e1, e2, e3, e4;
-constant c1, c2;
-identifier v1, v2;
+@rule1@
+expression e;
+statement s1, s2;
 position p;
-statement s;
+binary operator b;
+@@
+
+if (e@p) s1 else s2
+
+@script:python@
+p << rule1.p;
+e << rule1.e;
+@@
+
+if "==" not in e and "!=" not in e and ">=" not in e and "<=" not in e and ">" not in e and "<" not in e and "||" not in e and "&&" not in e:
+    print(f"Rule1: Line {p[0].line} in file {p[0].file}")
+
+@rule2@
+expression e;
+position p;
 @@
 
 (
-  if (e1 || e2) {...}
+while (e@p) {...}
 |
-  if (e1 && e2) {...} // add constraints on matching
-| 
-  if (e@p) {...}
+do {...} while (e@p);
 |
-  if (e1) {...}
-  else if (e2@p) {
-    s
-    ... when != e2 == ... //this part has no effect
-        when != e2 != ...
-        when != e2 || ...
-        when != e2 && ...
-  }
+for (...;e@p;...) {...}
+|
+return e@p;
 )
 
 @script:python@
-p << r.p;
-e << r.e;
+p << rule2.p;
+e << rule2.e;
 @@
 
-if "==" not in e and "!=" not in e and ">=" not in e and "<=" not in e and ">" not in e and "<" not in e: // add constraints on Python "printf"
-    print(f"Line {p[0].line} in file {p[0].file}")
+if "==" not in e and "!=" not in e and ">=" not in e and "<=" not in e and ">" not in e and "<" not in e and "||" not in e and "&&" not in e:
+    print(f"Rule2: Line {p[0].line} in file {p[0].file}")
+
+@rule3@
+expression e, ec, el, er;
+position p;
+@@
+
+ec@p ? el : er //cannot have semicolon here
+
+@script:python@
+p << rule3.p;
+ec << rule3.ec;
+@@
+
+if "==" not in ec and "!=" not in ec and ">=" not in ec and "<=" not in ec and ">" not in ec and "<" not in ec and "||" not in ec and "&&" not in ec:
+    print(f"Rule3: Line {p[0].line} in file {p[0].file}")
+
+@rule4@
+identifier i, ib;
+expression e;
+position p;
+@@
+
+bool i = e@p;
+
+@script:python@
+p << rule4.p;
+e << rule4.e;
+@@
+
+if "==" not in e and "!=" not in e and ">=" not in e and "<=" not in e and ">" not in e and "<" not in e and "||" not in e and "&&" not in e:
+    print(f"Rule4: Line {p[0].line} in file {p[0].file}")
