@@ -26,8 +26,6 @@ while (e@p) {...}
 do {...} while (e@p);
 |
 for (...;e@p;...) {...}
-|
-return e@p;
 )
 
 @script:python@
@@ -52,19 +50,3 @@ ec << rule3.ec;
 
 if "==" not in ec and "!=" not in ec and ">=" not in ec and "<=" not in ec and ">" not in ec and "<" not in ec and "||" not in ec and "&&" not in ec:
     print(f"Rule3: Line {p[0].line} in file {p[0].file}")
-
-@rule4@
-identifier i, ib;
-expression e;
-position p;
-@@
-
-bool i = e@p;
-
-@script:python@
-p << rule4.p;
-e << rule4.e;
-@@
-
-if "==" not in e and "!=" not in e and ">=" not in e and "<=" not in e and ">" not in e and "<" not in e and "||" not in e and "&&" not in e:
-    print(f"Rule4: Line {p[0].line} in file {p[0].file}")
