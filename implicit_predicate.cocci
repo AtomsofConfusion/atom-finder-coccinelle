@@ -1,7 +1,41 @@
+@rule0@
+expression e1, e2;
+expression E;
+position p;
+binary operator bop;
+@@
+
+(
+    e1 >@E@p e2
+|
+    e1 <@E@p e2
+|
+    e1 >=@E@p e2
+|
+    e1 <=@E@p e2
+|
+    e1 ==@E@p e2
+|
+    e1 !=@E@p e2
+|
+    e1 ||@E@p e2
+|
+    e1 &&@E@p e2
+)
+
+
+@script:python@
+p << rule0.p;
+e << rule0.E;
+@@
+print(e)
+print(p)
+print(f"Rule0: Line {p[0].line} in file {p[0].file}")
+
 @rule1@
 expression e;
 statement s1, s2;
-position p;
+position p != rule0.p;
 binary operator b;
 @@
 
@@ -12,12 +46,11 @@ p << rule1.p;
 e << rule1.e;
 @@
 
-if "==" not in e and "!=" not in e and ">=" not in e and "<=" not in e and ">" not in e and "<" not in e and "||" not in e and "&&" not in e:
-    print(f"Rule1: Line {p[0].line} in file {p[0].file}")
+print(f"Rule1: Line {p[0].line} in file {p[0].file}")
 
 @rule2@
 expression e;
-position p;
+position p != rule0.p;
 @@
 
 (
@@ -33,12 +66,11 @@ p << rule2.p;
 e << rule2.e;
 @@
 
-if "==" not in e and "!=" not in e and ">=" not in e and "<=" not in e and ">" not in e and "<" not in e and "||" not in e and "&&" not in e:
-    print(f"Rule2: Line {p[0].line} in file {p[0].file}")
+print(f"Rule2: Line {p[0].line} in file {p[0].file}")
 
 @rule3@
 expression e, ec, el, er;
-position p;
+position p != rule0.p;
 @@
 
 ec@p ? el : er //cannot have semicolon here
@@ -48,5 +80,4 @@ p << rule3.p;
 ec << rule3.ec;
 @@
 
-if "==" not in ec and "!=" not in ec and ">=" not in ec and "<=" not in ec and ">" not in ec and "<" not in ec and "||" not in ec and "&&" not in ec:
-    print(f"Rule3: Line {p[0].line} in file {p[0].file}")
+print(f"Rule3: Line {p[0].line} in file {p[0].file}")

@@ -30,6 +30,12 @@ int main() {
     printf ("else if without implicit predicate\n");
   }
 
+  if (add(1, 2)) {
+    printf("if with implicit predicate\n");
+  } else if (add(a, b)) {
+    printf("else if with implicit predicate\n");
+  }
+
   int count = 10;
 
   while (count) {
