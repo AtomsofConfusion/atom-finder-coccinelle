@@ -102,7 +102,21 @@ int main() {
     count++;
   } while (add(count, count ? -1 : 0));
 
+  while (add(count, count != 0 ? 1 : 10) != 0) {
+    printf("while without implicit predicate\n");
+    count--;
+  }
+
+  do {
+    printf("do while without implicit predicate\n");
+    count++;
+  } while (add(count, count != 0 ? -1 : 0) != 0);
+
   for (int i = 0; add(i, i & 3 ? 1 : -i); i++) {
+    printf("for with implicit predicate\n");
+  }
+
+  for (int i = 1; add(i, i & 3 != 0 ? 1 : -i) == 0; i++) {
     printf("for with implicit predicate\n");
   }
   
