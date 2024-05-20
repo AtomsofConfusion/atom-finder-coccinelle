@@ -1,9 +1,15 @@
 #include <stdio.h>
 
+struct s {
+  int s_i;
+};
+
 int main() {
 
   int a = 1;
   int b = 2;
+
+  struct s c = {3};
 
   char ip1 = a % b ? '0' : '1';
   char ip2;
@@ -76,4 +82,12 @@ int main() {
   int res2 = add(a % b == 0 ? 1 : 2, 3);
 
   return 0;
+}
+
+int fun1 (struct s *c) {
+  int funi = c -> s_i ? 1 : 2;
+  if (c -> s_i) {
+    return 1;
+  }
+  return 2;
 }
