@@ -81,6 +81,27 @@ int main() {
   int res1 = add(a % b ? 1 : 2, 3);
   int res2 = add(a % b == 0 ? 1 : 2, 3);
 
+  //nested cases
+  if (add(a % b ? 1 : 2, 3)) {
+    printf("if with implicit predicate\n");
+  }
+
+  count = 0;
+  
+  while (add(count, count ? 1 : 10)) {
+    printf("while with implicit predicate\n");
+    count--;
+  }
+
+  do {
+    printf("do while with implicit predicate\n");
+    count++;
+  } while (add(count, count ? -1 : 0));
+
+  for (int i = 0; add(i, i & 3 ? 1 : -i); i++) {
+    printf("for with implicit predicate\n");
+  }
+  
   return 0;
 }
 
