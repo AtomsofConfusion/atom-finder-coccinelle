@@ -83,7 +83,11 @@ int main() {
 
   //nested cases
   if (add(a % b ? 1 : 2, 3)) {
-    printf("if with implicit predicate\n");
+    printf("if and ternary operator with implicit predicate\n");
+  } else if (add(a % b ? 1 : 2, 3) == 1) {
+    printf("ternary operator with implicit predicate\n");
+  } else if (add(a % b == 0 ? 1 : 2, 3) == 1) {
+    printf("else if and ternary operator without implicit predicate\n");
   }
 
   count = 0;
