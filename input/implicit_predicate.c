@@ -86,7 +86,7 @@ int main() {
     printf("if and ternary operator with implicit predicate\n");
   } else if (add(a % b ? 1 : 2, 3) == 1) {
     printf("ternary operator with implicit predicate\n");
-  } else if (add(a % b == 0 ? 1 : 2, 3) == 1) {
+  } else if (add(a % b != 0 ? 1 : 2, 3) == 1) {
     printf("else if and ternary operator without implicit predicate\n");
   }
 
@@ -110,13 +110,13 @@ int main() {
   do {
     printf("do while without implicit predicate\n");
     count++;
-  } while (add(count, count != 0 ? -1 : 0) != 0);
+  } while (add(count, count == 0 ? -1 : 0) != 0);
 
   for (int i = 0; add(i, i & 3 ? 1 : -i); i++) {
     printf("for with implicit predicate\n");
   }
 
-  for (int i = 1; add(i, i & 3 != 0 ? 1 : -i) == 0; i++) {
+  for (int i = 1; add(i, i & 3 != 0 ? 1 : -i) > 0; i++) {
     printf("for with implicit predicate\n");
   }
   

@@ -2,7 +2,6 @@
 expression e1, e2;
 expression E;
 position p;
-binary operator bop;
 @@
 
 (
@@ -29,14 +28,12 @@ p << rule0.p;
 e << rule0.E;
 @@
 print(e)
-print(p)
 print(f"Rule0: Line {p[0].line} in file {p[0].file}")
 
 @rule1@
 expression e;
 statement s1, s2;
 position p != rule0.p;
-binary operator b;
 @@
 
 if (e@p) s1 else s2
@@ -69,7 +66,7 @@ e << rule2.e;
 print(f"Rule2: Line {p[0].line} in file {p[0].file}")
 
 @rule3@
-expression e, ec, el, er;
+expression ec, el, er;
 position p != rule0.p;
 @@
 
@@ -80,4 +77,5 @@ p << rule3.p;
 ec << rule3.ec;
 @@
 
-print(f"Rule3: Line {p[0].line} in file {p[0].file}")
+if "==" not in ec and "!=" not in ec and ">" not in ec and ">=" not in ec and "<" not in ec and "<=" not in ec and "||" not in ec and "&&" not in ec:
+    print(f"Rule3: Line {p[0].line} in file {p[0].file}")
