@@ -14,6 +14,7 @@ int main() {
   char ip1 = a % b ? '0' : '1';
   char ip2;
   ip2 = b % a ? '0' : '1';
+  int ip3 = add(a > 0, a) ? 5 : 0;
   char nip1 = a % b == 0 ? '0' : '1';
   char nip2;
   nip2 = a == b ? '0' : '1';
@@ -81,7 +82,6 @@ int main() {
   int res1 = add(a % b ? 1 : 2, 3);
   int res2 = add(a % b == 0 ? 1 : 2, 3);
 
-  //nested cases
   if (add(a % b ? 1 : 2, 3)) {
     printf("if and ternary operator with implicit predicate\n");
   } else if (add(a % b ? 1 : 2, 3) == 1) {
@@ -112,11 +112,11 @@ int main() {
     count++;
   } while (add(count, count == 0 ? -1 : 0) != 0);
 
-  for (int i = 0; add(i, i & 3 ? 1 : -i); i++) {
+  for (int i = 0; add(i, (i & 3) ? 1 : -i); i++) {
     printf("for with implicit predicate\n");
   }
 
-  for (int i = 1; add(i, i & 3 != 0 ? 1 : -i) > 0; i++) {
+  for (int i = 1; add(i, (i & 3) != 0 ? 1 : -i) > 0; i++) {
     printf("for with implicit predicate\n");
   }
   
