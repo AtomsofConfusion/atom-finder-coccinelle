@@ -1,15 +1,36 @@
 #include <stdio.h>
 
 int main() {
-    int V1 = 5;
-    int V2, V3;
+    int v1 = 0;
+    int v2 = 1;
+    int v3 = 2;
+    int v4, v5, v6;
+    v4 = v1 + 3, v5 = v4 + v3, v6 = v2 - v5;
+    v4 += v3;
+    v4++, v5--, v6 + v1;
+    v4 += v5 + v6, v5 -= v3;
 
-    V3 = (V1++, V1);  // Increments V1, then assigns the incremented value of V1 to V3
-    printf("V1 after increment: %d, V3: %d\n", V1, V3);
+    int c1 = (v1--, v1);
+    int c2 = (v1++, v2++, v1 + v2);
+    int c3 = (v1--, v2, v3 % v2, (v1 - v2) * v3);
+    int c4 = (~(int)0, ~(int)0);
 
-    V2 = 3;
-    V3 = (V2++, V2 += 2, V2);  // Increments V2, adds 2 to V2, then assigns the final value of V2 to V3
-    printf("V2 after operations: %d, V3: %d\n", V2, V3);
+    for (int i = 0; i < 10; i++) {
+        printf("for loop without atom");
+    }
+
+    for (int i = 0; i < 10; i++, v2++, v3 = v4 - v2) {
+        printf("for loop with atom");
+    }
+
+    while (v1 > 0) {
+        v1--;
+        printf("while loop without atom");
+    }
+
+    while (v2++, v1 = v3 - v2, v3 -= v2, v1 < 0) {
+        printf("while loop with atom");
+    }
 
     return 0;
 }

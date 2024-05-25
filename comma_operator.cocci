@@ -1,15 +1,19 @@
-@r@
-expression e, e1, e2;
+@script:python@
+@@
+mySet = set()
+
+@rule1@
+expression e1, e2;
+expression E;
 position p;
 @@
 
-// this will also detect examples where we chain more expressions
-// in that case e1 will include the all expression except for the last one
-// whih will be included in e2
-e = (e1, e2)@p
+e1 ,@E@p e2
 
 @script:python@
-p << r.p;
+p << rule1.p;
 @@
 
-print(f"Line {p[0].line} in file {p[0].file}")
+if p[0].line not in mySet:
+  print(f"Rule1: Line {p[0].line} in file {p[0].file}")
+  mySet.add(p[0].line)
