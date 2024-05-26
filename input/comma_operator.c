@@ -10,6 +10,10 @@ int main() {
     v4++, v5--, v6 + v1;
     v4 += v5 + v6, v5 -= v3;
 
+    v1++, v2--, v3+=5;
+
+    add(v1, v2); // make sure that this is not an atom
+
     int c1 = (v1--, v1);
     int c2 = (v1++, v2++, v1 + v2);
     int c3 = (v1--, v2, v3 % v2, (v1 - v2) * v3);
@@ -33,4 +37,8 @@ int main() {
     }
 
     return 0;
+}
+
+int add(int a, int b) {
+    return a + b;
 }
