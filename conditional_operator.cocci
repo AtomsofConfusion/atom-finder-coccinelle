@@ -1,14 +1,14 @@
-@conditional@
-expression e, e1, e2, e3, e4;
+@rule1@
+expression e, e1, e2;
+expression E;
 position p;
-binary operator bop;
 @@
 
-e@p = e1 bop e2 ? e3 : e4
+e ?@E@p e1 : e2
 
 
 @script:python@
-p << conditional.p;
+p << rule1.p;
 @@
 
 print(f"Line {p[0].line} in file {p[0].file}")
