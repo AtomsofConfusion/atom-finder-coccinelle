@@ -36,5 +36,10 @@ int main() {
     int res3 = !add(-1, V1) ? (V1 & V3) : V5;
     int res4 = (!V1 || V3) ? false : (V2 == V5);
 
+    add(V1 % V2 ? 1 : 2, 3);
+
+    for (int i = 1; add(i, (i & 3) != 0 ? 1 : -i) > 0; i++) {
+        printf("for with conditional operator\n");
+    }
     return 0;
 }
