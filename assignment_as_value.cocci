@@ -1,41 +1,132 @@
-@assignment_as_value1@
+@script:python@
+@@
+processed = {}
+
+def is_subset(current, previous):
+  # Check if the current range is a subset of the previous range
+  return current['start'] >= previous['start'] and current['end'] <= previous['end']
+
+@rule1@
 expression e1, e2, e3;
+assignment operator aop1, aop2;
+expression E;
 position p;
 @@
 
-
-//e3 can be an assignemt or something else
-
-e1=e2=e3@p
+(
+e1 aop1@E@p (e2 aop2 e3)
+)
 
 
 @script:python@
-p << assignment_as_value1.p;
-e3 << assignment_as_value1.e3;
+p << rule1.p;
+E << rule1.E;
 @@
 
-# this will deduplicate the matches
-# if we have v1 = v2 = v3 = v4 = 10;
-# e3 will be v3 = v4 = 10 (when e1 is v1 and e2 is v2)
-# v4 = 10 (when e1 is v2 and e2 is v3)
-# and finally, 10 (when e1 is v3, e2 is v4)
+line_number = p[0].line
+new_range = {'start': int(p[0].column), 'end': int(p[0].column_end)}
 
-if ("=" not in e3):
-    print(f"Line {p[0].line} in file {p[0].file}")
+if line_number in processed:
+  # Check if the new range is a subset of any of the existing ranges
+  subset = any(is_subset(new_range, existing) for existing in processed[line_number])
+  if not subset:
+      # Add the new range if it is not a subset of existing ranges
+      processed[line_number].append(new_range)
+      # Ensure no existing range is a subset of the new one
+      processed[line_number] = [existing for existing in processed[line_number] if not is_subset(existing, new_range)]
+      print(f"Rule1: Line {p[0].line} in file {p[0].file} - {p[0].column} - {p[0].column_end}")
+      print(f"              {E}")
+else:
+  # Initialize the list with the new range if this is the first range for this line
+  processed[line_number] = [new_range]
+  print(f"Rule1: Line {p[0].line} in file {p[0].file} - {p[0].column} - {p[0].column_end}")
+  print(f"              {E}")
 
-@assignment_as_value2@
-expression e;
+
+@rule2@
+expression e1, e2;
+position p1, p2;
+identifier i;
+assignment operator aop;
+type t;
+@@
+
+(
+t@p1 i = e1 aop e2@p2;
+|
+t@p1 i = (e1 aop e2@p2);
+)
+
+
+@script:python@
+p1 << rule2.p1;
+p2 << rule2.p2;
+e1 << rule2.e1;
+e2 << rule2.e2;
+t << rule2.t;
+i << rule2.i;
+aop << rule2.aop;
+@@
+
+print(f"Rule2: Line {p1[0].line} in file {p1[0].file} - {p1[0].column} - {p2[0].column_end}")
+print(f"                {t} {i} = {e1} {aop} {e2}")
+
+@rule3@
+expression e1, e2;
+position p1, p2;
 identifier i;
 type t;
-position p;
+statement s;
 @@
 
-for (t i = e@p;...;...) {...}
+(
+for (t@p1 i = e1 = e2@p2;...;...) s
+|
+for (t@p1 i = e1 += e2@p2;...;...) s
+|
+for (t@p1 i = e1 -= e2@p2;...;...) s
+|
+for (t@p1 i = e1 *= e2@p2;...;...) s
+|
+for (t@p1 i = e1 /= e2@p2;...;...) s
+|
+for (t@p1 i = e1 |= e2@p2;...;...) s
+|
+for (t@p1 i = e1 &= e2@p2;...;...) s
+)
 
 @script:python@
-p << assignment_as_value2.p;
-e << assignment_as_value2.e;
+p1 << rule3.p1;
+p2 << rule3.p2;
+e1 << rule3.e1;
+e2 << rule3.e2;
+t << rule3.t;
+i << rule3.i;
 @@
 
-if ("=" in e):
-    print(f"Line {p[0].line} in file {p[0].file}")
+print(f"Rule3: Line {p1[0].line} in file {p1[0].file} - {p1[0].column} - {p2[0].column_end}")
+print(f"                {t} {i} = {e1} = {e2}")
+
+@rule4@
+expression e1, e2;
+identifier i;
+type t;
+assignment operator aop;
+position p1, p2;
+@@
+
+(
+t i = (e1@p1 aop e2@p2);
+)
+
+@script:python@
+p1 << rule4.p1;
+p2 << rule4.p2;
+t << rule4.t;
+i << rule4.i;
+e1 << rule4.e1;
+
+@@
+
+print(f"Rule4: Line {p1[0].line} in file {p1[0].file} - {p1[0].column} - {p2[0].column_end}")
+//print(f"                {t} {i} = {e1} = {e2}")
