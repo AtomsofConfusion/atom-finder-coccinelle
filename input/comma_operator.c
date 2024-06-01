@@ -5,7 +5,8 @@ int main() {
     int v2 = 1;
     int v3 = 2;
     int v4, v5, v6;
-    v4 = v1 + 3, v5 = v4 + v3, v6 = v2 - v5;
+    v4 = v1 + 3, v5 = v4 + v3,
+        v6 = v2 - v5;
     v4 += v3;
     v4++, v5--, v6 + v1;
     v4 += v5 + v6, v5 -= v3;
