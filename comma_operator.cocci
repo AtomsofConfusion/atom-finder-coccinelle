@@ -16,7 +16,7 @@ E << rule1.E;
 @@
 
 line_number = p[0].line
-new_range = {'start': p[0].column, 'end': p[0].column_end}
+new_range = {'start': int(p[0].column), 'end': int(p[0].column_end)}
 
 if line_number in processed:
   # Check if the new range is a subset of any of the existing ranges
