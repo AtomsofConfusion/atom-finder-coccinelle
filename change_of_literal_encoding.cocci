@@ -34,27 +34,31 @@ e bop@E@p ~c
 )
 
 @script:python@
+c << rule1.c;
 E << rule1.E;
 p << rule1.p;
 @@
 
-line_number = p[0].line
-col_start = p[0].column
-col_end = p[0].column_end
-exp = {'line': line_number, 'col_start': col_start, 'col_end': col_end, 'expression': str(E)}
+n = int(c)
 
-should_add = True;
-to_remove = [];
-for f in filtered:
-    if is_subset(exp, f):
-        should_add = False
-        break
-    if is_subset(f, exp):
-        to_remove.append(f)
-        
-if should_add:
-    filtered = [f for f in filtered if f not in to_remove]
-    filtered.append(exp)
+if not (n > 0 and (n & (n - 1)) == 0):
+    line_number = p[0].line
+    col_start = p[0].column
+    col_end = p[0].column_end
+    exp = {'line': line_number, 'col_start': col_start, 'col_end': col_end, 'expression': str(E)}
+
+    should_add = True;
+    to_remove = [];
+    for f in filtered:
+        if is_subset(exp, f):
+            should_add = False
+            break
+        if is_subset(f, exp):
+            to_remove.append(f)
+            
+    if should_add:
+        filtered = [f for f in filtered if f not in to_remove]
+        filtered.append(exp)
 
 @script:python@
 @@
@@ -77,13 +81,17 @@ e aop@E@p c
 )
 
 @script:python@
+c << rule2.c;
 E << rule2.E;
 p << rule2.p;
 @@
 
-print("Rule2: ")
-print(f"   E:  {E}")
-print(f"       Line: {p[0].line}, Col: {p[0].column} - {p[0].column_end}")
+n = int(c)
+
+if not (n > 0 and (n & (n - 1)) == 0):
+    print("Rule2: ")
+    print(f"   E:  {E}")
+    print(f"       Line: {p[0].line}, Col: {p[0].column} - {p[0].column_end}")
 
 @rule3@
 position p;
@@ -103,6 +111,9 @@ c << rule3.c;
 p << rule3.p;
 @@
 
-print("Rule3: ")
-print(f"   E:  ~ {c}")
-print(f"       Line: {p[0].line}, Col: {p[0].column} - {p[0].column_end}")
+n = int(c)
+
+if not (n > 0 and (n & (n - 1)) == 0):
+    print("Rule3: ")
+    print(f"   E:  ~ {c}")
+    print(f"       Line: {p[0].line}, Col: {p[0].column} - {p[0].column_end}")
