@@ -1,6 +1,43 @@
 @script:python@
 @@
+from pathlib import Path
 processed = {}
+
+def print_expression_and_position(exp, position):
+    file_path = Path(position[0].file).resolve().absolute()
+    if position[0].line == position[0].line_end:
+        print(f"{file_path}, {position[0].line}: {position[0].column} - {position[0].column_end}, \"{exp}\"")
+    else:
+        position_start = f"{position[0].line}: {position[0].column}"
+        position_end = f"{position[0].line_end}: {position[-1].column_end}"
+        print(f"{file_path}, {position_start} - {position_end} \"{exp}\"")
+
+def print_if_not_contained(exp, position):
+    start_line, start_col = int(position[0].line), int(position[0].column)
+    end_line, end_col = int(position[0].line_end), int(position[0].column_end)
+    new_range = {'start_line': start_line, 'start_col': start_col, 'end_line': end_line, 'end_col': end_col}
+
+    for line in range(start_line, end_line + 1):
+        if line in processed:
+            subset = any(is_subset(new_range, existing) for existing in processed[line])
+            if not subset:
+                processed[line].append(new_range)
+                processed[line] = [existing for existing in processed[line] if not is_subset(existing, new_range)]
+                print_expression_and_position(exp, position)
+
+        else:
+          processed[line] = [new_range]
+          print_expression_and_position(exp, position)
+
+def is_subset(current, previous):
+    # Check if the current range is entirely within the previous range
+    if (current['start_line'] > previous['start_line'] or
+        (current['start_line'] == previous['start_line'] and current['start_col'] >= previous['start_col'])) and \
+       (current['end_line'] < previous['end_line'] or
+        (current['end_line'] == previous['end_line'] and current['end_col'] <= previous['end_col'])):
+        return True
+    return False
+
 
 @rule1@
 expression e1, e2;
@@ -15,24 +52,6 @@ p << rule1.p;
 E << rule1.E;
 @@
 
-line_number = p[0].line
-new_range = {'start': int(p[0].column), 'end': int(p[0].column_end)}
 
-if line_number in processed:
-  # Check if the new range is a subset of any of the existing ranges
-  subset = any(is_subset(new_range, existing) for existing in processed[line_number])
-  if not subset:
-      # Add the new range if it is not a subset of existing ranges
-      processed[line_number].append(new_range)
-      # Ensure no existing range is a subset of the new one
-      processed[line_number] = [existing for existing in processed[line_number] if not is_subset(existing, new_range)]
-      print(f"Rule1: Line {p[0].line} in file {p[0].file}")
-else:
-  # Initialize the list with the new range if this is the first range for this line
-  processed[line_number] = [new_range]
-  print(f"Rule1: Line {p[0].line} in file {p[0].file}")
+print_if_not_contained(E, p)
 
-def is_subset(current, previous):
-  # Check if the current range is a subset of the previous range
-  return current['start'] >= previous['start'] and current['end'] <= previous['end']
-  

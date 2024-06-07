@@ -33,8 +33,10 @@ int main() {
 
     int res1 = s2_p->s2_s1 ? s2_p->s2_s1 -> s1_v1 : 0;
     int res2 = V1 < 32 ? (~0U >> V1) : ~0U;
-    int res3 = !add(-1, V1) ? (V1 & V3) : V5;
-    int res4 = (!V1 || V3) ? false : (V2 == V5);
+    int res3 = !add(-1, V1) ? 
+        (V1 & V3) : V5;
+    int res4 = (!V1 || V3) ? 
+    false : (V2 == V5);
 
     add(V1 % V2 ? 1 : 2, 3);
 
