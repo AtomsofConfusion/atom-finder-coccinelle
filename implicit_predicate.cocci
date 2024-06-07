@@ -1,3 +1,20 @@
+@script:python@
+@@
+from pathlib import Path
+debug = False
+ATOM_NAME = "implicit-predicate"
+
+def print_expression_and_position(exp, position, rule_name=""):
+    file_path = Path(position[0].file).resolve().absolute()
+    if rule_name and debug:
+      print(rule_name)
+    if position[0].line == position[0].line_end:
+        print(f"{ATOM_NAME}, {file_path}, {position[0].line}: {position[0].column} - {position[0].column_end}, \"{exp}\"")
+    else:
+        position_start = f"{position[0].line}: {position[0].column}"
+        position_end = f"{position[0].line_end}: {position[-1].column_end}"
+        print(f"{ATOM_NAME}, {file_path}, {position_start} - {position_end} \"{exp}\"")
+
 @rule01@
 expression e1, e2;
 expression E;
@@ -59,7 +76,7 @@ p << rule1.p;
 e << rule1.e;
 @@
 
-print(f"Rule1: Line {p[0].line} in file {p[0].file}")
+print_expression_and_position(e, p, "Rule 1")
 
 @rule2@
 expression e;
@@ -79,7 +96,7 @@ p << rule2.p;
 e << rule2.e;
 @@
 
-print(f"Rule2: Line {p[0].line} in file {p[0].file}")
+print_expression_and_position(e, p, "Rule 2")
 
 @rule3@
 expression e, ec, el, er;
@@ -93,4 +110,4 @@ p << rule3.p;
 ec << rule3.ec;
 @@
 
-print(f"Rule3: Line {p[0].line} in file {p[0].file}")
+print_expression_and_position(ec, p, "Rule 3")
