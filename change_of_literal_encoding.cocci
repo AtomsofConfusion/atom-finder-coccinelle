@@ -38,7 +38,8 @@ def is_not_an_atom(n):
     # if < 8 (same representation as the corresponding octal number)
     # or 2 ^ n or 2 ^ n - 1
     # it is not an atom
-
+    if n < 8:
+        return True
     return (n & (n + 1)) == 0 or (n & (n - 1)) == 0
 
 def get_range(position):
@@ -145,6 +146,7 @@ E << rule1.E;
 p << rule1.p;
 @@
 
+
 print_if_not_contained(E, p)
 
 @rule2@
@@ -165,7 +167,9 @@ E << rule2.E;
 p << rule2.p;
 @@
 
-print_if_not_contained(E, p)
+n = int(c)
+if not is_not_an_atom(n):
+    print_if_not_contained(E, p)
 
 @rule3@
 position p;
