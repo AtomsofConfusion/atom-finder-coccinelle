@@ -1,6 +1,23 @@
+@script:python@
+@@
+from pathlib import Path
+debug = True
+ATOM_NAME = "omitted-curly-braces"
+
+def print_expression_and_position(exp, position, rule_name=""):
+    file_path = Path(position[0].file).resolve().absolute()
+    if rule_name and debug:
+      print(rule_name)
+    if position[0].line == position[0].line_end:
+        print(f"{ATOM_NAME}, {file_path}, {position[0].line}: {position[0].column} - {position[0].column_end}, \"{exp}\"")
+    else:
+        position_start = f"{position[0].line}: {position[0].column}"
+        position_end = f"{position[0].line_end}: {position[-1].column_end}"
+        print(f"{ATOM_NAME}, {file_path}, {position_start} - {position_end} \"{exp}\"")
+
 
 @r1 disable braces0, neg_if@ // this is disabling some isomorphisms
-statement S, S1;
+statement S, S1, S2;
 position p;
 @@
 
@@ -10,14 +27,15 @@ position p;
 (
 if (...) {...} else S
 |
-if (...) S@p else S1
+if (...)@S@p S1 else S2
 )
 
 // write script right bellow the rule, 
 @script:python@
 p << r1.p;
+S << r1.S;
 @@
-print(f"R1: Line {p[0].line} in file {p[0].file}")
+print_expression_and_position(S, p, "Rule 1")
 
 @r2 disable braces0, neg_if@
 statement S, S1, S2;
@@ -32,17 +50,18 @@ if (...) S else {
   ...
 }
 |
-if (...) S else S1@p
+if (...) S1 else @S@p S2@p
 )
 // here we have something where both rule 1 and 2 can match the same thing -> separate rules
 
 @script:python@
 p << r2.p;
+S << r2.S;
 @@
-print(f"R2: Line {p[0].line} in file {p[0].file}")
+print_expression_and_position(S, p, "Rule 2")
 
 @r3 disable braces0@
-statement S;
+statement S, S1;
 position p;
 type t;
 identifier i;
@@ -51,24 +70,25 @@ expression x;
 (
 while(...) {...}
 |
-while(...) S@p
+while(...)@S@p S1
 |
 for(t i = x;...;...) {...}
 |
-for(t i = x;...;...) S@p
+for(t i = x;...;...) @S@p S1
 |
 for(...;...;...) {...}
 |
-for(...;...;...) S@p
+for(...;...;...) @S@p S1
 |
 do {...} while (...);
 |
-do S@p while (...);
+do S1 while (...) @S@p;
 )
 
 // for and while are separate things, no need for separate rules
 
 @script:python@
 p << r3.p;
+S << r3.S;
 @@
-print(f"R3: Line {p[0].line} in file {p[0].file}")
+print_expression_and_position(S, p, "Rule 3")
