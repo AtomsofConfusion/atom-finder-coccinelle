@@ -12,6 +12,9 @@ int main() {
     int a = 5;
     int b = 4;
 
+    if (a && b) {
+        a = 6;
+    }
     (a > b) && func1() && func2();
     (a > b) || func1();
     // if we have two function calls, is that an atom?
