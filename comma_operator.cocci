@@ -52,6 +52,5 @@ p << rule1.p;
 E << rule1.E;
 @@
 
-
 print_if_not_contained(E, p)
 

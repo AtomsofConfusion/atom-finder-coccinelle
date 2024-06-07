@@ -38,6 +38,7 @@ int main() {
     v1 = v2 += v3 - (v4 += 2);
     v1 = (v2 += v3 - (v4 += 2));
     v1 = v2 + (v3 -= v4 += 2);
+    v1 = v2 + v3 + (v4 += v5);
 
     for (int i = 0; v1 = v2 = i < 5; v3 = v4 -= 2, i++) {
         printf("%d\n", i);
