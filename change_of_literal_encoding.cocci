@@ -71,16 +71,19 @@ E << rule01.E;
 p << rule01.p;
 @@
 
-n1 = int(c1)
-n2 = int(c2)
+try:
+    n1 = int(c1)
+    n2 = int(c2)
+    if is_not_an_atom(n1) and is_not_an_atom(n2):
+        line_number, new_range = get_range(p)
+        subset = False
+        if line_number in processed:
+            subset = any(is_contained(new_range, existing) for existing in processed[line_number])
+        if not subset:
+            processed.setdefault(line_number, []).append(new_range)
+except ValueError:
+    pass
 
-if is_not_an_atom(n1) and is_not_an_atom(n2):
-    line_number, new_range = get_range(p)
-    subset = False
-    if line_number in processed:
-        subset = any(is_contained(new_range, existing) for existing in processed[line_number])
-    if not subset:
-        processed.setdefault(line_number, []).append(new_range)
 
 @rule02@
 position p;
@@ -108,14 +111,18 @@ E << rule02.E;
 p << rule02.p;
 @@
 
-n = int(c)
-if is_not_an_atom(n):
-    line_number, new_range = get_range(p)
-    subset = False
-    if line_number in processed:
-        subset = any(is_contained(new_range, existing) for existing in processed[line_number])
-    if not subset:
-        processed.setdefault(line_number, []).append(new_range)
+try:
+    n = int(c)
+    if is_not_an_atom(n):
+        line_number, new_range = get_range(p)
+        subset = False
+        if line_number in processed:
+            subset = any(is_contained(new_range, existing) for existing in processed[line_number])
+        if not subset:
+            processed.setdefault(line_number, []).append(new_range)
+except ValueError:
+    pass
+
 
 
 @rule1@
@@ -151,7 +158,13 @@ p << rule1.p;
 @@
 
 
-print_if_not_contained(E, p, "Rule 1")
+try:
+    n = int(c)
+    if not is_not_an_atom(n):
+        print_if_not_contained(E, p, "Rule 1")
+except ValueError:
+    pass
+
 
 @rule2@
 position p;
@@ -171,9 +184,14 @@ E << rule2.E;
 p << rule2.p;
 @@
 
-n = int(c)
-if not is_not_an_atom(n):
-    print_if_not_contained(E, p, "Rule 2")
+
+try:
+    n = int(c)
+    if not is_not_an_atom(n):
+        print_if_not_contained(E, p, "Rule 2")
+except ValueError:
+    pass
+
 
 @rule3@
 position p;
@@ -193,7 +211,9 @@ c << rule3.c;
 p << rule3.p;
 @@
 
-n = int(c)
-
-if not is_not_an_atom(n):
-    print_expression_and_position(f'~{c}', p, "Rule 3")
+try:
+    n = int(c)
+    if not is_not_an_atom(n):
+        print_expression_and_position(f'~{c}', p, "Rule 3")
+except ValueError:
+    pass

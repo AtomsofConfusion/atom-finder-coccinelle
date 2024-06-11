@@ -97,7 +97,7 @@ p << rule2.p;
 E << rule2.E;
 @@
 
-print_if_not_contained(d, p, "Rule 2")
+print_if_not_contained(E, p, "Rule 2")
 
 @rule3@
 expression e1, e2;
