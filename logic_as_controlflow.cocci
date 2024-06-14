@@ -47,33 +47,9 @@ assignment operator aop;
 @@
 
 (
-t fun@F@p (..., t_a* i,... ) {
+t fun@F@p (..., t_a *i,... ) {
   ...
-  i++
-  ...
-}
-|
-t fun@F@p (..., t_a* i,... ) {
-  ...
-  i--
-  ...
-}
-|
-t fun@F@p (..., t_a* i,... ) {
-  ...
-  ++i
-  ...
-}
-|
-t fun@F@p (..., t_a* i,... ) {
-  ...
-  --i
-  ...
-}
-|
-t fun@F@p (..., t_a* i,... ) {
-  ...
-  i aop e
+  *i aop e
   ...
 }
 )

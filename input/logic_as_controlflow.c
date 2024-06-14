@@ -10,7 +10,7 @@ int fun2() {
 
 int fun3 (int* a) {
   a++;
-  return a;
+  return *a;
 }
 
 int fun4 (int a) {
@@ -20,7 +20,7 @@ int fun4 (int a) {
 
 int fun5 (int* a, int b) {
   int c;
-  c = b || (a += 2);
+  c = b || (*a += 2);
   return c;
 }
 
@@ -63,7 +63,7 @@ int main() {
 
     int f = a || b-- || c-- && d++ || --e;
 
-    int e = a || (b = fun1());
+    int g = a || (b = fun1());
 
     if (a && b) {
         a = 6;
