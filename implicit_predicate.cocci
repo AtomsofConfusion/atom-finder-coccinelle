@@ -24,7 +24,7 @@ e1 bop@E@p e2
 expression e;
 statement s1, s2;
 statement S;
-position p != {rule01.p};
+position p != rule01.p;
 @@
 
 if (e@S@p) s1 else s2
@@ -38,7 +38,7 @@ print_expression_and_position(S, p, "Rule 1")
 
 @rule2@
 expression e;
-position p != {rule01.p};
+position p != rule01.p;
 statement s;
 statement S;
 @@
@@ -60,7 +60,7 @@ print_expression_and_position(S, p, "Rule 2")
 
 @rule3@
 expression e, ec, el, er;
-position p != {rule01.p};
+position p != rule01.p;
 statement S;
 @@
 
