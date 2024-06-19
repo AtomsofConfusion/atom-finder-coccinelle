@@ -14,96 +14,61 @@ def print_expression_and_position(exp, position, rule_name=""):
 @rule01@
 expression e1, e2;
 expression E;
+binary operator bop = {>, <, >=, <=, ==, !=};
 position p;
 @@
 
-e1 >@E@p e2
-
-@rule02@
-expression e1, e2;
-expression E;
-position p;
-@@
-
-e1 <@E@p e2
-
-@rule03@
-expression e1, e2;
-expression E;
-position p;
-@@
-
-e1 >=@E@p e2
-
-@rule04@
-expression e1, e2;
-expression E;
-position p;
-@@
-
-e1 <=@E@p e2
-
-@rule05@
-expression e1, e2;
-expression E;
-position p;
-@@
-
-e1 ==@E@p e2
-
-@rule06@
-expression e1, e2;
-expression E;
-position p;
-@@
-
-e1 !=@E@p e2
+e1 bop@E@p e2
 
 @rule1@
 expression e;
 statement s1, s2;
-position p != {rule01.p, rule02.p, rule03.p, rule04.p, rule05.p, rule06.p};
+statement S;
+position p != {rule01.p};
 @@
 
-if (e@p) s1 else s2
+if (e@S@p) s1 else s2
 
 @script:python@
 p << rule1.p;
-e << rule1.e;
+S << rule1.S;
 @@
 
-print_expression_and_position(e, p, "Rule 1")
+print_expression_and_position(S, p, "Rule 1")
 
 @rule2@
 expression e;
-position p != {rule01.p, rule02.p, rule03.p, rule04.p, rule05.p, rule06.p};
+position p != {rule01.p};
+statement s;
+statement S;
 @@
 
 (
-while (e@p) {...}
+while (e@S@p) s
 |
-do {...} while (e@p);
+do s while (e@S@p);
 |
-for (...;e@p;...) {...}
+for (...;e@S@p;...) s
 )
 
 @script:python@
 p << rule2.p;
-e << rule2.e;
+S << rule2.S;
 @@
 
-print_expression_and_position(e, p, "Rule 2")
+print_expression_and_position(S, p, "Rule 2")
 
 @rule3@
 expression e, ec, el, er;
-position p != {rule01.p, rule02.p, rule03.p, rule04.p, rule05.p, rule06.p};
+position p != {rule01.p};
+statement S;
 @@
 
-ec@p ? el : er 
+ec@S@p ? el : er 
 
 @script:python@
 p << rule3.p;
-ec << rule3.ec;
+S << rule3.S;
 @@
 
-print_expression_and_position(ec, p, "Rule 3")
+print_expression_and_position(S, p, "Rule 3")

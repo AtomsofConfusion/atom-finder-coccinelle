@@ -121,26 +121,18 @@ except ValueError:
 
 
 
-@rule1@
+@rule11@
 position p;
 constant c !~ "^0.*";
-constant c1, c2;
-expression e, e1, e2;
+expression e;
 binary operator bop = {^, &, |, <<, >>};
-binary operator bop1 = {^, &, |, <<, >>}, bop2 = {^, &, |, <<, >>};
 expression E;
 @@
 
 (
-c1 bop1 c bop@E@p c2;
-|
-e1 bop1@E@p ~c bop2 e2
-|
 ~c bop@E@p e
 |
 e bop@E@p ~c
-|
-e1 bop1 c bop2@E@p e2
 |
 c bop@E@p e
 |
@@ -148,9 +140,41 @@ e bop@E@p c
 )
 
 @script:python@
-c << rule1.c;
-E << rule1.E;
-p << rule1.p;
+c << rule11.c;
+E << rule11.E;
+p << rule11.p;
+@@
+
+
+try:
+    n = int(c)
+    if not is_not_an_atom(n):
+        print_if_not_contained(E, p, "Rule 1")
+except ValueError:
+    pass
+
+
+@rule12@
+position p;
+constant c !~ "^0.*";
+constant c1, c2;
+expression e1, e2;
+binary operator bop1 = {^, &, |, <<, >>}, bop2 = {^, &, |, <<, >>};
+expression E;
+@@
+
+(
+c1 bop1 c bop2@E@p c2;
+|
+e1 bop1@E@p ~c bop2 e2
+|
+e1 bop1 c bop2@E@p e2
+)
+
+@script:python@
+c << rule12.c;
+E << rule12.E;
+p << rule12.p;
 @@
 
 
