@@ -1,6 +1,7 @@
 @script:python@
 @@
 from pathlib import Path
+processed = {}
 debug = True
 ATOM_NAME = "omitted-curly-braces"
 
@@ -50,7 +51,7 @@ if (...)@S@p S1 else S2
 p << r1.p;
 S << r1.S;
 @@
-print_expression_and_position(S, p, "Rule 1")
+print_if_not_contained(S, p, "Rule 1")
 
 @r2 disable braces0, neg_if@
 statement S, S1, S2;
@@ -67,7 +68,7 @@ if (...) S1 else @S@p S2@p
 p << r2.p;
 S << r2.S;
 @@
-print_expression_and_position(S, p, "Rule 2")
+print_if_not_contained(S, p, "Rule 2")
 
 @r3 disable braces0@
 statement S, S1;
@@ -100,4 +101,4 @@ do S1 while (...) @S@p;
 p << r3.p;
 S << r3.S;
 @@
-print_expression_and_position(S, p, "Rule 3")
+print_if_not_contained(S, p, "Rule 3")
