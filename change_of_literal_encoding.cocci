@@ -70,13 +70,8 @@ p << rule01.p;
 try:
     n1 = int(c1)
     n2 = int(c2)
-    if is_not_an_atom(n1) and is_not_an_atom(n2):
-        line_number, new_range = get_range(p)
-        subset = False
-        if line_number in processed:
-            subset = any(is_contained(new_range, existing) for existing in processed[line_number])
-        if not subset:
-            processed.setdefault(line_number, []).append(new_range)
+    if not is_not_an_atom(n1) or not is_not_an_atom(n2):
+        print_if_not_contained(E, p, "Rule 01")
 except ValueError:
     pass
 
@@ -109,13 +104,8 @@ p << rule02.p;
 
 try:
     n = int(c)
-    if is_not_an_atom(n):
-        line_number, new_range = get_range(p)
-        subset = False
-        if line_number in processed:
-            subset = any(is_contained(new_range, existing) for existing in processed[line_number])
-        if not subset:
-            processed.setdefault(line_number, []).append(new_range)
+    if not is_not_an_atom(n):
+        print_if_not_contained(E, p, "Rule 02")
 except ValueError:
     pass
 
@@ -149,7 +139,7 @@ p << rule11.p;
 try:
     n = int(c)
     if not is_not_an_atom(n):
-        print_if_not_contained(E, p, "Rule 1")
+        print_if_not_contained(E, p, "Rule 11")
 except ValueError:
     pass
 
@@ -181,7 +171,7 @@ p << rule12.p;
 try:
     n = int(c)
     if not is_not_an_atom(n):
-        print_if_not_contained(E, p, "Rule 1")
+        print_if_not_contained(E, p, "Rule 12")
 except ValueError:
     pass
 

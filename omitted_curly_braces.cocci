@@ -11,6 +11,25 @@ def print_expression_and_position(exp, position, rule_name=""):
     exp = exp.replace('"', '""')
     print(f"{ATOM_NAME},{file_path},{position[0].line},{position[0].column},\"{exp}\"")
 
+def print_if_not_contained(exp, position, rule_name=""):
+    start_line, start_col = int(position[0].line), int(position[0].column)
+    end_line, end_col = int(position[0].line_end), int(position[0].column_end)
+    new_range = {'start_line': start_line, 'start_col': start_col, 'end_line': end_line, 'end_col': end_col}
+    for line in range(start_line, end_line + 1):
+        if line in processed:
+            subset = any(is_contained(new_range, existing) for existing in processed[line])
+            if not subset:
+                processed[line].append(new_range)
+                print_expression_and_position(exp, position, rule_name)
+
+        else:
+          processed[line] = [new_range]
+          print_expression_and_position(exp, position, rule_name)
+
+def is_contained(current, previous):
+    # Check if the current range already added
+    return current['start_line'] == previous['start_line'] and current['start_col'] == previous['start_col'] and \
+        current['end_line'] == previous['end_line'] and current['end_col'] == previous['end_col']
 
 @r1 disable braces0, neg_if@ // this is disabling some isomorphisms
 statement S, S1, S2;
@@ -39,12 +58,6 @@ position p;
 @@
 (
 if (...) S else {...}
-|
-if (...) S else {
-  ...
-  if (...) S1 else S2
-  ...
-}
 |
 if (...) S1 else @S@p S2@p
 )
