@@ -24,10 +24,11 @@ e1 bop@E@p e2
 expression e;
 statement s1, s2;
 statement S;
-position p != rule01.p;
+position p1 != rule01.p;
+position p;
 @@
 
-if (e@S@p) s1 else s2
+if (e@p1)@S@p s1 else s2
 
 @script:python@
 p << rule1.p;
@@ -38,17 +39,18 @@ print_expression_and_position(S, p, "Rule 1")
 
 @rule2@
 expression e;
-position p != rule01.p;
+position p1 != rule01.p;
+position p;
 statement s;
 statement S;
 @@
 
 (
-while (e@S@p) s
+while (e@p1@S@p) s
 |
-do s while (e@S@p);
+do s while (e@p1); @S@p
 |
-for (...;e@S@p;...) s
+for (...;e@p1@S@p;...) s
 )
 
 @script:python@
@@ -59,12 +61,14 @@ S << rule2.S;
 print_expression_and_position(S, p, "Rule 2")
 
 @rule3@
-expression e, ec, el, er;
-position p != rule01.p;
+expression e;
+expression ec, el, er;
+position p1 != rule01.p;
+position p;
 statement S;
 @@
 
-ec@S@p ? el : er 
+ec@p1@S@p ? el : er 
 
 @script:python@
 p << rule3.p;
