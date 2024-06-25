@@ -16,16 +16,16 @@ def print_if_not_contained(exp, position, rule_name=""):
     start_line, start_col = int(position[0].line), int(position[0].column)
     end_line, end_col = int(position[0].line_end), int(position[0].column_end)
     new_range = {'start_line': start_line, 'start_col': start_col, 'end_line': end_line, 'end_col': end_col}
-    for line in range(start_line, end_line + 1):
-        if line in processed:
-            subset = any(is_contained(new_range, existing) for existing in processed[line])
-            if not subset:
-                processed[line].append(new_range)
-                print_expression_and_position(exp, position, rule_name)
+    if start_line in processed:
+        subset = any(is_subset(new_range, existing) for existing in processed[start_line])
+        if not subset:
+            processed[start_line].append(new_range)
+            processed[start_line] = [existing for existing in processed[start_line] if not is_subset(existing, new_range)]
+            print_expression_and_position(exp, position, rule_name)
+    else:
+        processed[start_line] = [new_range]
+        print_expression_and_position(exp, position, rule_name)
 
-        else:
-          processed[line] = [new_range]
-          print_expression_and_position(exp, position, rule_name)
 
 def is_contained(current, previous):
     # Check if the current range already added
