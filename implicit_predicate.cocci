@@ -1,6 +1,7 @@
 @script:python@
 @@
 from pathlib import Path
+processed = {}
 debug = False
 ATOM_NAME = "implicit-predicate"
 
@@ -10,6 +11,29 @@ def print_expression_and_position(exp, position, rule_name=""):
         print(rule_name)
     exp = exp.replace('"', '""')
     print(f"{ATOM_NAME},{file_path},{position[0].line},{position[0].column},\"{exp}\"")
+
+def print_if_not_contained(exp, position, rule_name=""):
+    start_line, start_col = int(position[0].line), int(position[0].column)
+    end_line, end_col = int(position[0].line_end), int(position[0].column_end)
+    new_range = {'start_line': start_line, 'start_col': start_col, 'end_line': end_line, 'end_col': end_col}
+    if start_line in processed:
+        subset = any(is_subset(new_range, existing) for existing in processed[start_line])
+        if not subset:
+            processed[start_line].append(new_range)
+            processed[start_line] = [existing for existing in processed[start_line] if not is_subset(existing, new_range)]
+            print_expression_and_position(exp, position, rule_name)
+    else:
+        processed[start_line] = [new_range]
+        print_expression_and_position(exp, position, rule_name)
+
+def is_subset(current, previous):
+    # Check if the current range is entirely within the previous range
+    if (current['start_line'] > previous['start_line'] or
+        (current['start_line'] == previous['start_line'] and current['start_col'] >= previous['start_col'])) and \
+       (current['end_line'] < previous['end_line'] or
+        (current['end_line'] == previous['end_line'] and current['end_col'] <= previous['end_col'])):
+        return True
+    return False
 
 @rule01@
 expression e1, e2;
@@ -35,7 +59,7 @@ p << rule1.p;
 S << rule1.S;
 @@
 
-print_expression_and_position(S, p, "Rule 1")
+print_if_not_contained(S, p, "Rule 1")
 
 @rule2@
 expression e;
@@ -58,21 +82,21 @@ p << rule2.p;
 S << rule2.S;
 @@
 
-print_expression_and_position(S, p, "Rule 2")
+print_if_not_contained(S, p, "Rule 2")
 
 @rule3@
-expression e;
+expression E;
 expression ec, el, er;
 position p1 != rule01.p;
 position p;
 statement S;
 @@
 
-ec@p1@S@p ? el : er 
+ec@p1@E@p ? el : er 
 
 @script:python@
 p << rule3.p;
-S << rule3.S;
+E << rule3.E;
 @@
 
-print_expression_and_position(S, p, "Rule 3")
+print_if_not_contained(E, p, "Rule 3")
