@@ -26,11 +26,14 @@ def print_if_not_contained(exp, position, rule_name=""):
         processed[start_line] = [new_range]
         print_expression_and_position(exp, position, rule_name)
 
-
-def is_contained(current, previous):
-    # Check if the current range already added
-    return current['start_line'] == previous['start_line'] and current['start_col'] == previous['start_col'] and \
-        current['end_line'] == previous['end_line'] and current['end_col'] == previous['end_col']
+def is_subset(current, previous):
+    # Check if the current range is entirely within the previous range
+    if (current['start_line'] > previous['start_line'] or
+        (current['start_line'] == previous['start_line'] and current['start_col'] >= previous['start_col'])) and \
+       (current['end_line'] < previous['end_line'] or
+        (current['end_line'] == previous['end_line'] and current['end_col'] <= previous['end_col'])):
+        return True
+    return False
 
 
 
