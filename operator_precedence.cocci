@@ -17,7 +17,7 @@ def print_if_not_contained(exp, position, rule_name=""):
     end_line, end_col = int(position[0].line_end), int(position[0].column_end)
     new_range = {'start_line': start_line, 'start_col': start_col, 'end_line': end_line, 'end_col': end_col}
     if start_line in processed:
-        subset = any(is_subset(new_range, existing) for existing in processed[start_line])
+        subset = any(is_same_range(new_range, existing) for existing in processed[start_line])
         if not subset:
             processed[start_line].append(new_range)
             print_expression_and_position(exp, position, rule_name)
@@ -25,12 +25,10 @@ def print_if_not_contained(exp, position, rule_name=""):
         processed[start_line] = [new_range]
         print_expression_and_position(exp, position, rule_name)
 
-def is_subset(current, previous):
+def is_same_range(current, previous):
     # Check if the current range is entirely within the previous range
-    if (current['start_line'] > previous['start_line'] or
-        (current['start_line'] == previous['start_line'] and current['start_col'] >= previous['start_col'])) and \
-       (current['end_line'] < previous['end_line'] or
-        (current['end_line'] == previous['end_line'] and current['end_col'] <= previous['end_col'])):
+    if (current['start_line'] == previous['start_line'] and current['start_col'] == previous['start_col']) and \
+       (current['end_line'] == previous['end_line'] and current['end_col'] == previous['end_col']):
         return True
     return False
 
@@ -78,7 +76,8 @@ print_if_not_contained(E, p, "Rule2")
 
 @rule3@
 position p;
-binary operator b1 = {*, /, %, +, -, >>, <<};
+// binary operator b1 = {*, /, %, +, -, >>, <<};
+binary operator b1 = {>>, <<};
 expression e, e1, e2;
 expression E;
 @@
@@ -102,7 +101,8 @@ print_if_not_contained(E, p, "Rule3")
 
 @rule4@
 position p;
-binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=};
+// binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=};
+binary operator b1 = {>>, <<};
 expression e, e1, e2;
 expression E;
 @@
@@ -171,7 +171,8 @@ print_if_not_contained(E, p, "Rule7")
 
 @rule8@
 position p;
-binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, ==, !=, &, ^, |};
+// binary operator b1 = {*, /, %, +, -, >>, <<, <, >=, <=, ==, !=, &, ^, |};
+binary operator b1 = {*, /, %, +, -, >>, <<, &, ^, |};
 expression e, e1, e2;
 expression E;
 @@
@@ -185,9 +186,11 @@ p << rule8.p;
 
 print_if_not_contained(E, p, "Rule8")
 
+
 @rule9@
 position p;
-binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, ==, !=, &, ^, |, &&};
+// binary operator b1 = {*, /, %, +, -, >>, <<, <, >=, <=, ==, !=, &, ^, |, &&};
+binary operator b1 = {*, /, %, +, -, >>, <<, &, ^, |, &&};
 expression e, e1, e2;
 expression E;
 @@
@@ -201,9 +204,11 @@ p << rule9.p;
 
 print_if_not_contained(E, p, "Rule9")
 
+
 @rule10@
 position p;
-binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, ==, !=, &, ^, |, &&, ||};
+// binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, ==, !=, &, ^, |, &&, ||};
+binary operator b1 = {*, /, %, +, -, >>, <<, &, ^, |, &&, ||}; 
 expression e1, e2;
 expression t1, t2;
 expression E;
@@ -226,7 +231,8 @@ print_if_not_contained(E, p, "Rule10")
 
 @rule11@
 position p;
-binary operator b = {+, -, >>, <<, >, <, >=, <=, ==, !=, &, ^, |, &&, ||} ;
+// binary operator b = {+, -, >>, <<, >, <, >=, <=, ==, !=, &, ^, |, &&, ||} ;
+binary operator b = {+, -, >>, <<, &, ^, |, &&, ||} ;
 expression e1, e2, e3;
 expression E;
 @@
@@ -248,7 +254,8 @@ print_if_not_contained(E, p, "Rule11")
 
 @rule12@
 position p;
-binary operator b = {>>, <<, >, <, >=, <=, ==, !=, &, ^, |, &&, ||} ;
+// binary operator b = {>>, <<, >, <, >=, <=, ==, !=, &, ^, |, &&, ||} ;
+binary operator b = {>>, <<, &, ^, |, &&, ||} ;
 expression e1, e2, e3;
 expression E;
 @@
@@ -286,7 +293,8 @@ print_if_not_contained(E, p, "Rule13")
 
 @rule14@
 position p;
-binary operator b = {==, !=, &, ^, |, &&, ||} ;
+// binary operator b = {==, !=, &, ^, |, &&, ||} ;
+binary operator b = {&, ^, |} ;
 expression e1, e2, e3;
 expression E;
 @@
@@ -307,9 +315,11 @@ p << rule14.p;
 @@
 print_if_not_contained(E, p, "Rule14")
 
+
 @rule15@
 position p;
-binary operator b = {&, ^, |, &&, ||} ;
+// binary operator b = {&, ^, |, &&, ||} ;
+binary operator b = {&, ^, |} ;
 expression e1, e2, e3;
 expression E;
 @@
@@ -325,6 +335,7 @@ E << rule15.E;
 p << rule15.p;
 @@
 print_if_not_contained(E, p, "Rule15")
+
 
 @rule16@
 position p;
