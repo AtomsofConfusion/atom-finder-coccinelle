@@ -198,7 +198,7 @@ print(f"Rule4:")
 print(f"    line: {p[0].line}")
 print(f"    E: {E}")
 
-@rule51@
+@rule5@
 position p;
 binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, ==, !=};
 expression e, e1, e2;
@@ -210,15 +210,15 @@ expression E;
 )
 
 @script:python@
-E << rule51.E;
-p << rule51.p;
+E << rule5.E;
+p << rule5.p;
 @@
 
 print(f"Rule5:")
 print(f"    line: {p[0].line}")
 print(f"    E: {E}")
 
-@rule61@
+@rule6@
 position p;
 binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <, &};
 expression e, e1, e2;
@@ -230,15 +230,15 @@ expression E;
 )
 
 @script:python@
-E << rule61.E;
-p << rule61.p;
+E << rule6.E;
+p << rule6.p;
 @@
 
 print(f"Rule6:")
 print(f"    line: {p[0].line}")
 print(f"    E: {E}")
 
-@rule71@
+@rule7@
 position p;
 binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, &, ^};
 expression e, e1, e2;
@@ -250,15 +250,15 @@ expression E;
 )
 
 @script:python@
-E << rule71.E;
-p << rule71.p;
+E << rule7.E;
+p << rule7.p;
 @@
 
 print(f"Rule7:")
 print(f"    line: {p[0].line}")
 print(f"    E: {E}")
 
-@rule81@
+@rule8@
 position p;
 binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, &, ^, |};
 expression e, e1, e2;
@@ -270,15 +270,15 @@ expression E;
 )
 
 @script:python@
-E << rule81.E;
-p << rule81.p;
+E << rule8.E;
+p << rule8.p;
 @@
 
 print(f"Rule8:")
 print(f"    line: {p[0].line}")
 print(f"    E: {E}")
 
-@rule91@
+@rule9@
 position p;
 binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, &, ^, &&};
 expression e, e1, e2;
@@ -290,29 +290,33 @@ expression E;
 )
 
 @script:python@
-E << rule91.E;
-p << rule91.p;
+E << rule9.E;
+p << rule9.p;
 @@
 
 print(f"Rule9:")
 print(f"    line: {p[0].line}")
 print(f"    E: {E}")
 
-@rule101@
+@rule10@
 position p;
 binary operator b1 = {*, /, %, +, -, >>, <<, >, <, >=, <=, &, ^, &&};
 expression e1, e2;
-expression t1, t2, t3;
+expression t1, t2;
 expression E;
 @@
 
 (
-  e1 b1 t1 ?@E@p t2 : t3
+  e1 b1 e2 ?@E@p t1 : t2
+|
+  t1 ?@E@p e1 b1 e2 : t2
+|
+  t1 ?@E@p t2 : e1 b1 e2
 )
 
 @script:python@
-E << rule101.E;
-p << rule101.p;
+E << rule10.E;
+p << rule10.p;
 @@
 
 print(f"Rule10:")
