@@ -412,4 +412,174 @@ p << rule20.p;
 @@
 print_if_not_contained(E, p, "Rule20")
 
+@rule21@
+position p;
+expression e1, e2, e3;
+binary operator b1 = {+, -, *, /, &, &&, ||};
+expression E;
+@@
 
+(
+  +e1 b1@E@p e2
+|
+  -e1 b1@E@p e2
+)
+
+@script:python@
+E << rule21.E;
+p << rule21.p;
+@@
+
+print_if_not_contained(E, p, "Rule21")
+
+@rule22@
+position p;
+expression e1, e2, e3;
+binary operator b1 = {+, -, *, /, %, &&, ||, >, >=, <, <=, ==};
+expression E;
+@@
+
+(
+  !e1 b1@E@p e2
+|
+  !e1 ?@E@p e2 : e3
+)
+@script:python@
+E << rule22.E;
+p << rule22.p;
+@@
+
+print_if_not_contained(E, p, "Rule22")
+
+@rule23@
+position p;
+expression e1, e2, e3;
+binary operator b1 = {+, -, *, /, %, &&, ||, >, >=, <, <=, ==};
+expression E;
+@@
+
+(
+  !e1 b1@E@p e2
+)
+@script:python@
+E << rule23.E;
+p << rule23.p;
+@@
+
+print_if_not_contained(E, p, "Rule23")
+
+@rule24@
+position p;
+expression e1, e2;
+expression E;
+@@
+
+(
+  *@E@p e1++
+|
+  *@E@p e1--
+|
+  *@E@p++e1
+|
+  *@E@p--e1
+|
+  *e1 +@E@p e2
+|
+  &@E@p e1++
+|
+  &@E@p e1--
+|
+  &@E@p++e1
+|
+  &@E@p--e1
+|
+  &e1 +@E@p e2
+)
+@script:python@
+E << rule24.E;
+p << rule24.p;
+@@
+
+print_if_not_contained(E, p, "Rule24")
+
+@rule25@
+position p;
+expression e1, e2, e3, e4;
+binary operator b1 = {-, /, %, &&, ||, >, >=, <, <=, ==};
+expression E;
+@@
+
+(
+  !e1 ?@E@p e2 : e3
+|
+  +e1 ?@E@p e2 : e3
+|
+  -e1 ?@E@p e2 : e3
+|
+  e1 b1 e2 ?@E@p e3 : e4
+)
+@script:python@
+E << rule25.E;
+p << rule25.p;
+@@
+
+print_if_not_contained(E, p, "Rule25")
+
+@rule26@
+position p;
+expression e1, e2, e3, e4;
+binary operator b1 = {+, -, *, /, %, &&, ||, >, >=, <, <=, ==};
+identifier i1, i2;
+expression E;
+@@
+
+(
+  ~e1 b1@E@p e2
+|
+  ~@E@p e1++
+|
+  ~@E@p e1--
+|
+  ~@E@p++e1
+|
+  ~@E@p--e1
+|
+  ~@E@p i1.i2
+|
+  ~@E@p i1->i2 
+|
+  ~e1 ?@E@p e2 : e3
+)
+
+@script:python@
+E << rule26.E;
+p << rule26.p;
+@@
+
+print_if_not_contained(E, p, "Rule26")
+
+@rule27@
+position p;
+expression e1, e2, e3, e4;
+binary operator b1 = {&, |, ^, <<, >>};
+expression E;
+@@
+
+(
+  +e1 b1@E@p e2
+|
+  -e1 b1@E@p e2
+|
+  !e1 b1@E@p e2
+|
+  ~e1 b1@E@p e2
+|
+  e1 b1 e2 ?@E@p e3 : e4
+)
+
+@script:python@
+E << rule27.E;
+p << rule27.p;
+@@
+
+print_if_not_contained(E, p, "Rule27")
