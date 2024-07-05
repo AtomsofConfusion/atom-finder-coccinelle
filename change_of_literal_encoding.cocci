@@ -16,21 +16,24 @@ def print_if_not_contained(exp, position, rule_name=""):
     start_line, start_col = int(position[0].line), int(position[0].column)
     end_line, end_col = int(position[0].line_end), int(position[0].column_end)
     new_range = {'start_line': start_line, 'start_col': start_col, 'end_line': end_line, 'end_col': end_col}
-    for line in range(start_line, end_line + 1):
-        if line in processed:
-            subset = any(is_contained(new_range, existing) for existing in processed[line])
-            if not subset:
-                processed[line].append(new_range)
-                print_expression_and_position(exp, position, rule_name)
+    if start_line in processed:
+        subset = any(is_subset(new_range, existing) for existing in processed[start_line])
+        if not subset:
+            processed[start_line].append(new_range)
+            processed[start_line] = [existing for existing in processed[start_line] if not is_subset(existing, new_range)]
+            print_expression_and_position(exp, position, rule_name)
+    else:
+        processed[start_line] = [new_range]
+        print_expression_and_position(exp, position, rule_name)
 
-        else:
-          processed[line] = [new_range]
-          print_expression_and_position(exp, position, rule_name)
-
-def is_contained(current, previous):
-    # Check if the current range already added
-    return current['start_line'] == previous['start_line'] and current['start_col'] == previous['start_col'] and \
-        current['end_line'] == previous['end_line'] and current['end_col'] == previous['end_col']
+def is_subset(current, previous):
+    # Check if the current range is entirely within the previous range
+    if (current['start_line'] > previous['start_line'] or
+        (current['start_line'] == previous['start_line'] and current['start_col'] >= previous['start_col'])) and \
+       (current['end_line'] < previous['end_line'] or
+        (current['end_line'] == previous['end_line'] and current['end_col'] <= previous['end_col'])):
+        return True
+    return False
 
 
 
@@ -70,13 +73,8 @@ p << rule01.p;
 try:
     n1 = int(c1)
     n2 = int(c2)
-    if is_not_an_atom(n1) and is_not_an_atom(n2):
-        line_number, new_range = get_range(p)
-        subset = False
-        if line_number in processed:
-            subset = any(is_contained(new_range, existing) for existing in processed[line_number])
-        if not subset:
-            processed.setdefault(line_number, []).append(new_range)
+    if not is_not_an_atom(n1) or not is_not_an_atom(n2):
+        print_if_not_contained(E, p, "Rule 01")
 except ValueError:
     pass
 
@@ -109,13 +107,8 @@ p << rule02.p;
 
 try:
     n = int(c)
-    if is_not_an_atom(n):
-        line_number, new_range = get_range(p)
-        subset = False
-        if line_number in processed:
-            subset = any(is_contained(new_range, existing) for existing in processed[line_number])
-        if not subset:
-            processed.setdefault(line_number, []).append(new_range)
+    if not is_not_an_atom(n):
+        print_if_not_contained(E, p, "Rule 02")
 except ValueError:
     pass
 
@@ -149,7 +142,7 @@ p << rule11.p;
 try:
     n = int(c)
     if not is_not_an_atom(n):
-        print_if_not_contained(E, p, "Rule 1")
+        print_if_not_contained(E, p, "Rule 11")
 except ValueError:
     pass
 
@@ -181,7 +174,7 @@ p << rule12.p;
 try:
     n = int(c)
     if not is_not_an_atom(n):
-        print_if_not_contained(E, p, "Rule 1")
+        print_if_not_contained(E, p, "Rule 12")
 except ValueError:
     pass
 
