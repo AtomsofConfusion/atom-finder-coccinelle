@@ -25,5 +25,35 @@ int main () {
 
   a * b + c;
 
+  a + 2 || 3 * b + 5 && c && 7;
+
+  a & b || c;
+
+  a | c && b;
+
+  a ^ c || b;
+
+  a % b && c;
+
+  a && b % c;
+
+  a && b * c;
+
+  a * c && b;
+
+  a - b && c;
+
+  a + b && c;
+
+  a << b && c;
+
+  a ^ b && c;
+
+  a ^ b | c;
+
+  a | b ^ c;
+
+  a && b || c;
+
   return 0;
 }
