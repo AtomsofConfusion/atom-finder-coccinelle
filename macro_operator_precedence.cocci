@@ -1,3 +1,38 @@
+@script:python@
+@@
+from pathlib import Path
+processed = {}
+debug = False
+ATOM_NAME = "operator-precedence"
+
+def print_expression_and_position(exp, position, rule_name=""):
+    file_path = Path(position[0].file).resolve().absolute()
+    if rule_name and debug:
+        print(rule_name)
+    exp = exp.replace('"', '""')
+    print(f"{ATOM_NAME},{file_path},{position[0].line},{position[0].column},\"{exp}\"")
+
+def print_if_not_contained(exp, position, rule_name=""):
+    start_line, start_col = int(position[0].line), int(position[0].column)
+    end_line, end_col = int(position[0].line_end), int(position[0].column_end)
+    new_range = {'start_line': start_line, 'start_col': start_col, 'end_line': end_line, 'end_col': end_col}
+    if start_line in processed:
+        subset = any(is_same_range(new_range, existing) for existing in processed[start_line])
+        if not subset:
+            processed[start_line].append(new_range)
+            print_expression_and_position(exp, position, rule_name)
+    else:
+        processed[start_line] = [new_range]
+        print_expression_and_position(exp, position, rule_name)
+
+def is_same_range(current, previous):
+    # Check if the current range is entirely within the previous range
+    if (current['start_line'] == previous['start_line'] and current['start_col'] == previous['start_col']) and \
+       (current['end_line'] == previous['end_line'] and current['end_col'] == previous['end_col']):
+        return True
+    return False
+
+
 @m_rule1@
 expression e1, e2;
 identifier m;
@@ -104,9 +139,7 @@ E << rule1.E;
 p << rule1.p;
 @@
 
-print(f"Rule1:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule1")
 
 @rule2@
 position p;
@@ -127,10 +160,7 @@ E << rule2.E;
 p << rule2.p;
 @@
 
-print(f"Rule2:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
-
+print_if_not_contained(E, p, "Rule2")
 @rule3@
 position p;
 expression e;
@@ -150,9 +180,7 @@ E << rule3.E;
 p << rule3.p;
 @@
 
-print(f"Rule3:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule3")
 
 @rule4@
 position p;
@@ -173,9 +201,7 @@ E << rule4.E;
 p << rule4.p;
 @@
 
-print(f"Rule4:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule4")
 
 @rule5@
 position p;
@@ -196,9 +222,7 @@ E << rule5.E;
 p << rule5.p;
 @@
 
-print(f"Rule5:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule5")
 
 @rule6@
 position p;
@@ -219,9 +243,7 @@ E << rule6.E;
 p << rule6.p;
 @@
 
-print(f"Rule6:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule6")
 
 @rule7@
 position p;
@@ -242,9 +264,7 @@ E << rule7.E;
 p << rule7.p;
 @@
 
-print(f"Rule7:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule7")
 
 @rule8@
 position p;
@@ -265,9 +285,7 @@ E << rule8.E;
 p << rule8.p;
 @@
 
-print(f"Rule8:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule8")
 
 @rule9@
 position p;
@@ -288,9 +306,7 @@ E << rule9.E;
 p << rule9.p;
 @@
 
-print(f"Rule9:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule9")
 
 @rule10@
 position p;
@@ -310,9 +326,7 @@ E << rule10.E;
 p << rule10.p;
 @@
 
-print(f"Rule10:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule10")
 
 @rule11@
 position p;
@@ -330,10 +344,7 @@ E << rule11.E;
 p << rule11.p;
 @@
 
-print(f"Rule11:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
-
+print_if_not_contained(E, p, "Rule11")
 @rule12@
 position p;
 expression e;
@@ -352,10 +363,7 @@ E << rule12.E;
 p << rule12.p;
 @@
 
-print(f"Rule12:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
-
+print_if_not_contained(E, p, "Rule12")
 @rule13@
 position p;
 expression e;
@@ -379,9 +387,7 @@ E << rule13.E;
 p << rule13.p;
 @@
 
-print(f"Rule13:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule13")
 
 @rule14@
 position p;
@@ -398,9 +404,7 @@ E << rule14.E;
 p << rule14.p;
 @@
 
-print(f"Rule14:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule14")
 
 @rule15@
 position p;
@@ -428,6 +432,4 @@ E << rule15.E;
 p << rule15.p;
 @@
 
-print(f"Rule14:")
-print(f"    line: {p[0].line}")
-print(f"    E: {E}")
+print_if_not_contained(E, p, "Rule15")
