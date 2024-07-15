@@ -85,21 +85,6 @@ identifier m;
 
 #define m e1 ? e2 : e3
 
-@m_rule12@
-expression e;
-identifier m;
-@@
-
-(
-  #define m++
-|
-  #define ++m
-|
-  #define m--
-|
-  #define --m
-)
-
 @rule1@
 position p;
 expression e;
@@ -353,18 +338,13 @@ print(f"    E: {E}")
 position p;
 expression e;
 expression E;
-identifier m1 = {m_rule12.m};
-identifier m2 = {m_rule2.m};
+identifier m = {m_rule2.m};
 @@
 
 (
-  *@E@p m1
+  *@E@p m
 |
-  &@E@p m1
-|
-  *@E@p m2
-|
-  &@E@p m2
+  &@E@p m
 )
 
 @script:python@
@@ -406,7 +386,7 @@ print(f"    E: {E}")
 @rule14@
 position p;
 expression E;
-identifier m = {m_rule1.m, m_rule2.m, m_rule4.m, m_rule5.m, m_rule9.m, m_rule10.m, m_rule11};
+identifier m = {m_rule1.m, m_rule2.m, m_rule4.m, m_rule5.m, m_rule9.m, m_rule10.m, m_rule11.m};
 @@
 
 (
@@ -427,7 +407,8 @@ position p;
 expression e;
 expression E;
 identifier m1 = {m_rule3.m, m_rule6.m, m_rule7.m, m_rule8.m};
-identifier m1 = {m_rule11.m};
+identifier m2 = {m_rule11.m};
+binary operator b = {&, |, ^, <<, >>};
 @@
 
 (
@@ -444,7 +425,7 @@ identifier m1 = {m_rule11.m};
 
 @script:python@
 E << rule15.E;
-p << rule415p;
+p << rule15.p;
 @@
 
 print(f"Rule14:")
