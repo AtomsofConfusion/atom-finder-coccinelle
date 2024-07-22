@@ -340,6 +340,7 @@ print_if_not_contained(E, p, "Rule15")
 @rule16@
 position p;
 //binary operator b = {^, |, &&, ||} ;
+//binary operator b = {^, |, &&, ||} ;
 expression e1, e2, e3;
 expression E;
 @@
@@ -362,6 +363,7 @@ print_if_not_contained(E, p, "Rule16")
 
 @rule17@
 position p;
+//binary operator b = {|, &&, ||} ;
 //binary operator b = {|, &&, ||} ;
 expression e1, e2, e3;
 expression E;
