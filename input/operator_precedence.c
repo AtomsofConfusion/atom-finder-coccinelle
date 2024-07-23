@@ -46,8 +46,19 @@ int main () {
     int result39 = a & b ^ c;
     int result40 = a < b & c;
     int result41 = a & b > c;
-
-    a && b + c;
+    int result42 = a || b & c;
+    int result43 = a || b ^ c;
+    int result44 = a || b + c;
+    int result45 = a || b - c;
+    int result46 = a || b << c;
+    int result47 = a && b | c;
+    int result48 = a && b + c;
+    int result49 = a && b - c;
+    int result50 = a && b << c;
+    int result51 = a || b && c;
+    int result52 = a && b + c;
+    int result53 = a && b >> c;
+    int result53 = a || b >> c;
 
     return 0;
 }
