@@ -35,6 +35,7 @@ def is_subset(current, previous):
         return True
     return False
 
+
 @rule01@
 expression e1, e2;
 expression E;
@@ -54,12 +55,15 @@ position p;
 
 if (e@p1)@S@p s1 else s2
 
+
 @script:python@
 p << rule1.p;
 S << rule1.S;
 @@
 
 print_if_not_contained(S, p, "Rule 1")
+
+
 
 @rule2@
 expression e;
@@ -69,7 +73,7 @@ statement s;
 statement S;
 @@
 
-(
+
 while (e@p1@S@p) s
 |
 do s while (e@p1); @S@p
@@ -83,6 +87,7 @@ S << rule2.S;
 @@
 
 print_if_not_contained(S, p, "Rule 2")
+
 
 @rule3@
 expression E;
@@ -100,3 +105,4 @@ E << rule3.E;
 @@
 
 print_if_not_contained(E, p, "Rule 3")
+
