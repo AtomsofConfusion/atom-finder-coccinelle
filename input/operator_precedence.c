@@ -47,5 +47,7 @@ int main () {
     int result40 = a < b & c;
     int result41 = a & b > c;
 
+    a && b + c;
+
     return 0;
 }

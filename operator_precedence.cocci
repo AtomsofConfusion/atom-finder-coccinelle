@@ -408,6 +408,18 @@ expression E;
 
 (
   e1 ||@E@p e2 && e3
+|
+  e1 ||@E@p e2 + e3
+|
+  e1 ||@E@p e2 - e3
+|
+  e1 ||@E@p e2 << e3
+|
+  e1 &&@E@p e2 + e3
+|
+  e1 &&@E@p e2 - e3
+|
+  e1 &&@E@p e2 << e3
 )
 
 @script:python@
