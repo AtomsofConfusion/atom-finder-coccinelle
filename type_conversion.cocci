@@ -50,13 +50,12 @@ if t1 != t2:
   print(f"  line: {p[0].line}")
   print(f"  d: {d}")
 
-@rule3@
+@rule3a@
 position p;
 type t1, t2;
 identifier i1, i2;
-binary operator b;
+binary operator b != {<<, >>};
 expression e1, e2, E;
-declaration d;
 @@
 
 (
@@ -67,10 +66,37 @@ declaration d;
 )
 
 @script:python@
-p << rule3.p;
-E << rule3.E;
-t1 << rule3.t1;
-t2 << rule3.t2;
+p << rule3a.p;
+E << rule3a.E;
+t1 << rule3a.t1;
+t2 << rule3a.t2;
+@@
+
+if t1 != t2:
+  print(f"Rule3:")
+  print(f"  line: {p[0].line}")
+  print(f"  E: {E}")
+
+@rule3b@
+position p;
+type t1, t2;
+identifier i1, i2;
+assignment operator a != {<<=, >>=};
+expression e1, e2, E;
+@@
+
+(
+  t1 i1 = e1;
+  t2 i2 = e2;
+  ...
+  i1 a@E@p i2
+)
+
+@script:python@
+p << rule3b.p;
+E << rule3b.E;
+t1 << rule3b.t1;
+t2 << rule3b.t2;
 @@
 
 if t1 != t2:
@@ -112,8 +138,7 @@ print(f"  E: {E}")
 
 @rule5@
 position p;
-type t1;
-type t2;
+type t1, t2;
 identifier fun, i1;
 expression e;
 statement S;
@@ -133,3 +158,45 @@ S << rule5.S;
 print(f"Rule5:")
 print(f"  line: {p[0].line}")
 print(f"  S: {S}")
+
+@rule6@
+position p;
+type t1, t2, t3;
+identifier fun, i1, i2;
+expression e;
+statement S;
+@@
+
+t1 fun(t2 i1, t3 i2) {
+  i1 = i2;
+  ...
+}
+
+@script:python@
+p << rule6.p;
+S << rule6.S;
+@@
+
+if t2 != t3
+  print(f"Rule6:")
+  print(f"  line: {p[0].line}")
+  print(f"  S: {S}")
+
+@rule7@
+position p;
+constant c =~ "[+-]?[0-9]*\.[0-9]*";
+identifier i;
+type t != {double};
+declaration d;
+@@
+
+t i =@d@p c;
+
+@script:python@
+p << rule7.p;
+d << rule7.d;
+@@
+
+print(f"Rule7:")
+print(f"  line: {p[0].line}")
+print(f"  d: {d}")

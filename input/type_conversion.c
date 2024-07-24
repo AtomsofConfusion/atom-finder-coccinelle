@@ -2,6 +2,7 @@
 
 void fun1(int x) {
   x = x + 1;
+  double y = 1.5;
 }
 
 int fun2() {
@@ -23,20 +24,22 @@ int main() {
   fun3(a2, a1);
 
   //Binary expression
-  int b = 1;
-  double c = 1.5;
-  int d = b + c;
+  int b1 = 1;
+  double b2 = 1.5;
+  int b3 = b1 + b2;
+  b3 += b2;
 
   //Simple declaration
-  int e = 1;
-  double f = e;
+  int e1 = 1;
+  double e2 = e1;
+  int e3 = 1.5;
 
   //Return statement
   func2();
 
   //Cast expression
-  double g = 1.5;
-  int h = (int)g;
+  double g1 = 1.5;
+  int g2 = (int)g1;
   
 
   return 0;
