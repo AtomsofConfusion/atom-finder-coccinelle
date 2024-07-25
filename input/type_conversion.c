@@ -11,8 +11,7 @@ int fun2() {
 }
 
 void fun3(int x, double y){
-  x = x + 1;
-  y = y + 0.5;
+  x = y;
 }
 
 int main() {
@@ -33,6 +32,7 @@ int main() {
   int e1 = 1;
   double e2 = e1;
   int e3 = 1.5;
+  e1 = 1.5;
 
   //Return statement
   func2();
