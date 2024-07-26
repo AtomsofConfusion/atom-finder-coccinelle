@@ -27,6 +27,9 @@ int main() {
   double b2 = 1.5;
   int b3 = b1 + b2;
   b3 += b2;
+  1 + (int) 1.5;
+  (int) 1.5 + 1;
+  1.5 * 2;
 
   //Simple declaration
   int e1 = 1;

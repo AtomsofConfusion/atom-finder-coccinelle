@@ -160,13 +160,64 @@ t i;
 expression E;
 @@
 
-i =@E@p c;
+i =@E@p c
 
 @script:python@
 p << rule7.p;
-d << rule7.E;
+E << rule7.E;
 @@
 
 print(f"Rule7:")
 print(f"  line: {p[0].line}")
-print(f"  d: {d}")
+print(f"  E: {E}")
+
+@rule8@
+position p;
+constant c =~ "[+-]?[0-9]*\.[0-9]*";
+type t != {double};
+binary operator b;
+assignment operator a;
+expression e;
+expression E;
+@@
+
+(
+  e b@E@p (t) c
+|
+  (t) c b@E@p e
+|
+  e a@E@p (t) c
+)
+
+@script:python@
+p << rule8.p;
+E << rule8.E;
+@@
+
+print(f"Rule8:")
+print(f"  line: {p[0].line}")
+print(f"  E: {E}")
+
+@rule9@
+position p;
+constant c1 =~ "[+-]?[0-9]*\.[0-9]*";
+constant c2 !~ "[+-]?[0-9]*\.[0-9]*";
+type t != {double};
+binary operator b;
+expression E;
+@@
+
+(
+  c1 b@E@p c2
+|
+  c2 b@E@p c1
+)
+
+@script:python@
+p << rule9.p;
+E << rule9.E;
+@@
+
+print(f"Rule9:")
+print(f"  line: {p[0].line}")
+print(f"  E: {E}")
