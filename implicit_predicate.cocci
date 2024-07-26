@@ -73,7 +73,7 @@ statement s;
 statement S;
 @@
 
-
+(
 while (e@p1@S@p) s
 |
 do s while (e@p1); @S@p
