@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import subprocess, argparse, os.path
-from sys import executable
+from sys import executable, stderr
 from glob import glob
 
 parser = argparse.ArgumentParser(
@@ -46,4 +46,4 @@ for patch in patches:
         if len(p) > 0:
             print(p)
     except subprocess.CalledProcessError as e:
-        print(f"STDERR in {patch}: {e.stderr.strip()}")
+        print(f"STDERR in {patch}: {e.stderr.strip()}", file=stderr)
