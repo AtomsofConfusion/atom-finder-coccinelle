@@ -41,4 +41,4 @@ for patch in patches:
         if len(p) > 0:
             print(p)
     except subprocess.CalledProcessError as e:
-        print(e.stderr.strip())
+        print(f"STDERR in {patch}: {e.stderr.strip()}")
