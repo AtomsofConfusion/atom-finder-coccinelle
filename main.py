@@ -17,6 +17,15 @@ args = parser.parse_args()
 
 patches = args.patch if len(args.patch) > 0 else glob("*.cocci")
 
+# handle opts
+clear = -1
+for opt in args.opts:
+    if opt == "--python":
+        print("WARNING: --python option is omitted, as the program will set it for you.")
+        clear = args.opts.index(opt)
+        break
+if clear > -1:
+    args.opts = args.opts[0:clear] + args.opts[clear + 2:]
 
 # run
 for patch in patches:
