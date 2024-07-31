@@ -11,7 +11,8 @@ parser.add_argument("-p", "--patch", default=[], help="""
     List of coccinelle patches to run, separated by spaces. If not specified, all *.cocci files
     in the current directory will be run.
     """, nargs='*')
-parser.add_argument("-o", "--opts", default=[], help="Options to pass to `spatch`", nargs='*')
+parser.add_argument("-o", "--opts", default=[], help="Options to pass to `spatch`",
+    nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
 patches = args.patch if len(args.patch) > 0 else glob("*.cocci")
@@ -21,7 +22,7 @@ patches = args.patch if len(args.patch) > 0 else glob("*.cocci")
 for patch in patches:
     try:
         run = subprocess.run(
-            ["spatch", "--sp-file", patch, args.file, "--python", sys.executable],
+            ["spatch", "--sp-file", patch, args.file, "--python", executable] + args.opts,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True
         )
         p = run.stdout.strip()
