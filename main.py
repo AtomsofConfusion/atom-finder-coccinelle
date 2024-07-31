@@ -16,14 +16,16 @@ args = parser.parse_args()
 
 patches = args.patch if len(args.patch) > 0 else glob("*.cocci")
 
+
+# run
 for patch in patches:
     try:
         run = subprocess.run(
             ["spatch", "--sp-file", patch, args.file, "--python", sys.executable],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, universal_newlines=True
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True
         )
-        p = run.stdout.strip();
+        p = run.stdout.strip()
         if len(p) > 0:
-            print(run.stdout.strip())
+            print(p)
     except subprocess.CalledProcessError as e:
         print(e.stderr.strip())
