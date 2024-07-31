@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import subprocess, argparse
+import subprocess, argparse, os.path
 from sys import executable
 from glob import glob
 
@@ -29,6 +29,9 @@ if clear > -1:
 
 # run
 for patch in patches:
+    if not os.path.isfile(patch):
+        print(f"ERROR: patch {patch} does not exist. Skipping.")
+        continue
     try:
         run = subprocess.run(
             ["spatch", "--sp-file", patch, args.file, "--python", executable] + args.opts,
