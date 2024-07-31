@@ -17,6 +17,11 @@ args = parser.parse_args()
 
 patches = args.patch if len(args.patch) > 0 else glob("*.cocci")
 
+# handle file
+if not os.path.isfile(args.file):
+    print(f"ERROR: {args.file} does not exist. Quitting.")
+    exit(1)
+
 # handle opts
 clear = -1
 for opt in args.opts:
