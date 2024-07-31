@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import argparse, glob, subprocess, sys
+import subprocess, argparse
+from sys import executable
+from glob import glob
 
 parser = argparse.ArgumentParser(
     description="Apply coccinelle patches onto C files"
@@ -12,7 +14,7 @@ parser.add_argument("-p", "--patch", default=[], help="""
 parser.add_argument("-o", "--opts", default=[], help="Options to pass to `spatch`", nargs='*')
 args = parser.parse_args()
 
-patches = args.patch if len(args.patch) > 0 else glob.glob("*.cocci")
+patches = args.patch if len(args.patch) > 0 else glob("*.cocci")
 
 for patch in patches:
     try:
