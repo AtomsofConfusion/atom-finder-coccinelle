@@ -16,7 +16,14 @@ def cli():
         nargs=argparse.REMAINDER)
     args = parser.parse_args()
 
-    patches = args.patch if len(args.patch) > 0 else glob("*.cocci")
+    # handle patches
+    patches = args.patch
+    if len(patches) == 0:
+        print("WARNING: No patches supplied via the -p option. Attempting to find patches here...", file=stderr)
+        patches = glob("*.cocci")
+    if len(patches) == 0:
+        print("ERROR: No patches found in the current directory.", file=stderr)
+        exit(1)
 
     # handle file
     if not os.path.isfile(args.file):
