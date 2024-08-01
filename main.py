@@ -27,14 +27,14 @@ def cli():
 
     # handle file
     if not os.path.isfile(args.file):
-        print(f"ERROR: {args.file} does not exist. Quitting.")
+        print(f"ERROR: {args.file} does not exist. Quitting.", file=stderr)
         exit(1)
 
     # handle opts
     clear = -1
     for opt in args.opts:
         if opt == "--python":
-            print("WARNING: --python option is omitted, as the program will set it for you.")
+            print("WARNING: --python option is omitted, as the program will set it for you.", file=stderr)
             clear = args.opts.index(opt)
             break
     if clear > -1:
@@ -43,7 +43,7 @@ def cli():
     # run
     for patch in patches:
         if not os.path.isfile(patch):
-            print(f"ERROR: patch {patch} does not exist. Skipping.")
+            print(f"WARNING: patch {patch} does not exist. Skipping.")
             continue
         try:
             run = subprocess.run(
