@@ -2,6 +2,7 @@
 import subprocess, argparse, os.path
 from sys import executable, stderr
 from glob import glob
+from shutil import which
 
 def cli():
     parser = argparse.ArgumentParser(
@@ -15,6 +16,10 @@ def cli():
     parser.add_argument("-o", "--opts", default=[], help="Options to pass to `spatch`",
         nargs=argparse.REMAINDER)
     args = parser.parse_args()
+
+    # check if coccinelle is installed
+    if not which('spatch'):
+        print("ERROR: coccinelle should be installed before running this tool. Quitting.", file=stderr)
 
     # handle patches
     patches = args.patch
