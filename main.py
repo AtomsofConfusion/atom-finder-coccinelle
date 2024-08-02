@@ -27,7 +27,7 @@ def cli():
         print("WARNING: No patches supplied via the -p option. Attempting to find patches here...", file=stderr)
         patches = glob("*.cocci")
     if len(patches) == 0:
-        print("ERROR: No patches found in the current directory.", file=stderr)
+        print("ERROR: No patches found in the current directory. Quitting.", file=stderr)
         exit(1)
 
     # handle file
@@ -48,7 +48,7 @@ def cli():
     # run
     for patch in patches:
         if not os.path.isfile(patch):
-            print(f"WARNING: patch {patch} does not exist. Skipping.")
+            print(f"WARNING: patch {patch} does not exist. Skipping.", file=stderr)
             continue
         try:
             run = subprocess.run(
