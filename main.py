@@ -20,6 +20,8 @@ def cli():
     # check if coccinelle is installed
     if not which('spatch'):
         print("ERROR: coccinelle should be installed before running this tool. Quitting.", file=stderr)
+        exit(1)
+
 
     # handle patches
     patches = args.patch
