@@ -60,3 +60,6 @@ def cli():
                 print(p)
         except subprocess.CalledProcessError as e:
             print(f"STDERR in {patch}: {e.stderr.strip()}", file=stderr)
+
+if __name__ == "__main__":
+    cli()
