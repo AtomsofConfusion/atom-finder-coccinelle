@@ -461,8 +461,6 @@ expression E;
 
 (
   !e1 b1@E@p e2
-|
-  !e1 ?@E@p e2 : e3
 )
 @script:python@
 E << rule21.E;
@@ -470,23 +468,6 @@ p << rule21.p;
 @@
 
 print_if_not_contained(E, p, "rule21")
-
-@rule22@
-position p;
-expression e1, e2, e3;
-binary operator b1 = {+, -, *, /, %, &&, ||, >, >=, <, <=, ==};
-expression E;
-@@
-
-(
-  !e1 b1@E@p e2
-)
-@script:python@
-E << rule22.E;
-p << rule22.p;
-@@
-
-print_if_not_contained(E, p, "rule22")
 
 @rule23@
 position p;
@@ -520,7 +501,7 @@ E << rule23.E;
 p << rule23.p;
 @@
 
-print_if_not_contained(E, p, "rule23")
+print_if_not_contained(E, p, "Rule23")
 
 @rule24@
 position p;
@@ -543,7 +524,7 @@ E << rule24.E;
 p << rule24.p;
 @@
 
-print_if_not_contained(E, p, "rule24")
+print_if_not_contained(E, p, "Rule24")
 
 @rule25@
 position p;
@@ -576,7 +557,7 @@ E << rule25.E;
 p << rule25.p;
 @@
 
-print_if_not_contained(E, p, "rule25")
+print_if_not_contained(E, p, "Rule25")
 
 @rule26@
 position p;
@@ -602,4 +583,4 @@ E << rule26.E;
 p << rule26.p;
 @@
 
-print_if_not_contained(E, p, "rule26")
+print_if_not_contained(E, p, "Rule26")
