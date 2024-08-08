@@ -76,42 +76,37 @@ binary operator b = {==, !=};
 @m_rule6@
 expression e1, e2;
 identifier m;
-binary operator b = {&};
 @@
 
-#define m e1 b e2
+#define m e1 & e2
 
 @m_rule7@
 expression e1, e2;
 identifier m;
-binary operator b = {^};
 @@
 
-#define m e1 b e2
+#define m e1 ^ e2
 
 @m_rule8@
 expression e1, e2;
 identifier m;
-binary operator b = {|};
 @@
 
-#define m e1 b e2
+#define m e1 | e2
 
 @m_rule9@
 expression e1, e2;
 identifier m;
-binary operator b = {&&};
 @@
 
-#define m e1 b e2
+#define m e1 && e2
 
 @m_rule10@
 expression e1, e2;
 identifier m;
-binary operator b = {||};
 @@
 
-#define m e1 b e2
+#define m e1 || e2
 
 @m_rule11@
 expression e1, e2, e3;
@@ -799,6 +794,13 @@ expression E;
   m(e1 ? e2 : e3) @E@p
 )
 
+@script:python@
+E << rule27.E;
+p << rule27.p;
+@@
+
+print_if_not_contained(E, p, "Rule27")
+
 @rule28@
 position p;
 identifier m = {m_rule24.m}, x;
@@ -814,3 +816,10 @@ expression E;
 |
   m(--x) @E@p
 )
+
+@script:python@
+E << rule28.E;
+p << rule28.p;
+@@
+
+print_if_not_contained(E, p, "Rule28")

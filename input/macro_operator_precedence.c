@@ -1,10 +1,11 @@
 #include <stdio.h>
 
-#define M1 64-1
+#define M1 64 - 1
 #define M2 1 ^ 3
 #define M3 3 || 4
 #define MF1(x) (2 * x)
 #define MF2(x) (x + x)
+#define MF3(x) (x & 2)
 #define MT1 1 ? 2 : 3
 #define ABS(x) ((x) < 0 ? -x : (x))
 
@@ -22,6 +23,9 @@ int main() {
     int r9 = 1 - MT1;
     int r10 = -M1;
     int r11 = ABS(1 - 2);
+    int r12 = MF3(1 | 2);
+    int r13 = MF2(1 & 2);
+    int r14 = MF1(i - 1 ? r1 : r2);
     printf("The result is: %d\n", r1);
     printf("The result is: %d\n", r2);
     printf("The result is: %d\n", r3);
