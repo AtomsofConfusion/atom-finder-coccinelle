@@ -120,6 +120,153 @@ identifier m;
 
 #define m e1 ? e2 : e3
 
+@m_rule12@
+identifier m, x;
+@@
+
+(
+  #define m(x) (<+... (-x) ...+>)
+|
+  #define m(x) (<+... (+x) ...+>)
+|
+  #define m(x) (<+... (!x) ...+>)
+|
+  #define m(x) (<+... (~x) ...+>)
+)
+
+@m_rule13@
+identifier m, x;
+expression e;
+binary operator b = {*, /, %};
+@@
+
+(
+  #define m(x) (<+... e b x ...+>)
+|
+  #define m(x) (<+... x b e ...+>)
+)
+
+@m_rule14@
+identifier m, x;
+expression e;
+binary operator b = {+, -};
+@@
+
+(
+  #define m(x) (<+... e b x ...+>)
+|
+  #define m(x) (<+... x b e ...+>)
+)
+
+@m_rule15@
+identifier m, x;
+expression e;
+binary operator b = {<<, >>};
+@@
+
+(
+  #define m(x) (<+... e b x ...+>)
+|
+  #define m(x) (<+... x b e ...+>)
+)
+
+@m_rule16@
+identifier m, x;
+expression e;
+binary operator b = {<, <=, >, >=};
+@@
+
+(
+  #define m(x) (<+... e b x ...+>)
+|
+  #define m(x) (<+... x b e ...+>)
+)
+
+@m_rule17@
+identifier m, x;
+expression e;
+binary operator b = {==, !=};
+@@
+
+(
+  #define m(x) (<+... e b x ...+>)
+|
+  #define m(x) (<+... x b e ...+>)
+)
+
+@m_rule18@
+identifier m, x;
+expression e;
+@@
+
+(
+  #define m(x) (<+... e & x ...+>)
+|
+  #define m(x) (<+... x & e ...+>)
+)
+
+@m_rule19@
+identifier m, x;
+expression e;
+@@
+
+(
+  #define m(x) (<+... e ^ x ...+>)
+|
+  #define m(x) (<+... x ^ e ...+>)
+)
+
+@m_rule20@
+identifier m, x;
+expression e;
+@@
+
+(
+  #define m(x) (<+... e | x ...+>)
+|
+  #define m(x) (<+... x | e ...+>)
+)
+
+@m_rule21@
+identifier m, x;
+expression e;
+@@
+
+(
+  #define m(x) (<+... e && x ...+>)
+|
+  #define m(x) (<+... x && e ...+>)
+)
+
+@m_rule22@
+identifier m, x;
+expression e;
+@@
+
+(
+  #define m(x) (<+... e || x ...+>)
+|
+  #define m(x) (<+... x || e ...+>)
+)
+
+@m_rule23@
+identifier m, x;
+expression e;
+binary operator b;
+@@
+
+(
+  #define m(x) <+... e b x ...+>
+|
+  #define m(x) <+... x b e ...+>
+)
+
+@m_rule24@
+identifier m, x;
+@@
+
+#define m(x) ...
+
 @rule1@
 position p;
 expression e;
@@ -433,3 +580,237 @@ p << rule15.p;
 @@
 
 print_if_not_contained(E, p, "Rule15")
+
+@rule16@
+position p;
+identifier m = {m_rule12.m};
+expression e1, e2;
+binary operator b;
+expression E;
+@@
+
+m(e1 b e2) @E@p
+
+@script:python@
+E << rule16.E;
+p << rule16.p;
+@@
+
+print_if_not_contained(E, p, "Rule16")
+
+@rule17@
+position p;
+identifier m = {m_rule13.m};
+binary operator b = {+, -, <<, >>, <, <=, >, >=, ==, !=, &, ^, |, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule17.E;
+p << rule17.p;
+@@
+
+print_if_not_contained(E, p, "Rule17")
+
+@rule18@
+position p;
+identifier m = {m_rule14.m};
+binary operator b = {<<, >>, <, <=, >, >=, ==, !=, &, ^, |, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule18.E;
+p << rule18.p;
+@@
+
+print_if_not_contained(E, p, "Rule18")
+
+@rule19@
+position p;
+identifier m = {m_rule15.m};
+binary operator b = {<, <=, >, >=, ==, !=, &, ^, |, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule19.E;
+p << rule19.p;
+@@
+
+print_if_not_contained(E, p, "Rule19")
+
+@rule20@
+position p;
+identifier m = {m_rule16.m};
+binary operator b = {==, !=, &, ^, |, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule20.E;
+p << rule20.p;
+@@
+
+print_if_not_contained(E, p, "Rule20")
+
+@rule21@
+position p;
+identifier m = {m_rule17.m};
+binary operator b = {&, ^, |, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule21.E;
+p << rule21.p;
+@@
+
+print_if_not_contained(E, p, "Rule21")
+
+@rule22@
+position p;
+identifier m = {m_rule18.m};
+binary operator b = {^, |, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule22.E;
+p << rule22.p;
+@@
+
+print_if_not_contained(E, p, "Rule22")
+
+@rule23@
+position p;
+identifier m = {m_rule19.m};
+binary operator b = {^, |, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule23.E;
+p << rule23.p;
+@@
+
+print_if_not_contained(E, p, "Rule23")
+
+@rule24@
+position p;
+identifier m = {m_rule20.m};
+binary operator b = {|, &&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule24.E;
+p << rule24.p;
+@@
+
+print_if_not_contained(E, p, "Rule24")
+
+@rule25@
+position p;
+identifier m = {m_rule21.m};
+binary operator b = {&&, ||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule25.E;
+p << rule25.p;
+@@
+
+print_if_not_contained(E, p, "Rule17")
+
+@rule26@
+position p;
+identifier m = {m_rule22.m};
+binary operator b = {||};
+expression e1, e2;
+expression E;
+@@
+
+(
+  m(e1 b e2) @E@p
+)
+
+@script:python@
+E << rule26.E;
+p << rule26.p;
+@@
+
+print_if_not_contained(E, p, "Rule26")
+
+@rule27@
+position p;
+identifier m = {m_rule23.m};
+expression e1, e2, e3;
+expression E;
+@@
+
+(
+  m(e1 ? e2 : e3) @E@p
+)
+
+@rule28@
+position p;
+identifier m = {m_rule24.m}, x;
+expression E;
+@@
+
+(
+  m(x++) @E@p
+|
+  m(x--) @E@p
+|
+  m(++x) @E@p
+|
+  m(--x) @E@p
+)
