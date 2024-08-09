@@ -8,9 +8,10 @@ def cli():
     parser = argparse.ArgumentParser(
         description="Apply coccinelle patches onto C files"
     )
-    parser.add_argument("-i", "--input", default=[], help="""
-        List of C files to run patches on, separated by spaces. If not specified, all *.c files
-        in the current directory will be run.
+    parser.add_argument("-i", "--input", default=["."], help="""
+        List of C files to run patches on, separated by spaces. Directories are also accepted.
+        If not specified, all *.c files in the current directory, as well as any subdirectories of it,
+        will be run.
         """, nargs='*')
     parser.add_argument("-p", "--patch", default=[], help="""
         List of coccinelle patches to run, separated by spaces. If not specified, all *.cocci files
@@ -28,11 +29,7 @@ def cli():
     # handle files
     f = args.input
     if len(f) == 0:
-        print("WARNING: No C files supplied via the -f option. Attempting to find C files here...", file=stderr)
-        f = glob("*.c")
-    if len(f) == 0:
-        print("ERROR: No C files found in the current directory. Quitting.", file=stderr)
-        exit(1)
+        f = ["."]
 
     # handle patches
     patches = args.patch
@@ -55,9 +52,6 @@ def cli():
 
     # run
     for c in f:
-        if not os.path.isfile(c):
-            print(f"WARNING: file {c} does not exist. Skipping.", file=stderr)
-            continue
         for patch in patches:
             if not os.path.isfile(patch):
                 print(f"WARNING: patch {patch} does not exist. Skipping.", file=stderr)
