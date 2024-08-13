@@ -7,7 +7,7 @@
 #define MF2(x) (x + x)
 #define MF3(x) (x & 2)
 #define MT1 1 ? 2 : 3
-#define ABS(x) ((x) < 0 ? -x : (x))
+#define ABS(x) ((x) < 0 ? (-x) : (x))
 
 int main() {
     int i = 1;

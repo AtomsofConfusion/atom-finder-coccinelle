@@ -1,14 +1,13 @@
 @rule1@
 position p;
 type t1, t2;
-identifier i1, i2;
+t1 i1;
+identifier i2;
 expression e1, e2;
 declaration d;
 @@
 
 (
-  t1 i1 = e1;
-  ...
   t2 i2 =@d@p i1;
 )
 
@@ -55,8 +54,8 @@ position p;
 type t1, t2;
 t1 i1;
 t2 i2;
-binary operator b != {<<, >>};
-assignment operator a != {<<=, >>=};
+binary operator b;
+assignment operator a;
 expression E;
 @@
 
@@ -154,55 +153,32 @@ print(f"  d: {d}")
 
 @rule7@
 position p;
-constant c =~ "[+-]?[0-9]*\.[0-9]*";
-type t != {double};
-t i;
+type t1, t2;
+constant {t1} c;
+t2 i;
+assignment operator a;
 expression E;
 @@
 
-i =@E@p c
+i a@E@p c
 
 @script:python@
 p << rule7.p;
 E << rule7.E;
+t1 << rule7.t1;
+t2 << rule7.t2;
 @@
 
-print(f"Rule7:")
-print(f"  line: {p[0].line}")
-print(f"  E: {E}")
+if t1 != t2: 
+  print(f"Rule7:")
+  print(f"  line: {p[0].line}")
+  print(f"  E: {E}")
 
 @rule8@
 position p;
-constant c =~ "[+-]?[0-9]*\.[0-9]*";
-type t != {double};
-binary operator b;
-assignment operator a;
-expression e;
-expression E;
-@@
-
-(
-  e b@E@p (t) c
-|
-  (t) c b@E@p e
-|
-  e a@E@p (t) c
-)
-
-@script:python@
-p << rule8.p;
-E << rule8.E;
-@@
-
-print(f"Rule8:")
-print(f"  line: {p[0].line}")
-print(f"  E: {E}")
-
-@rule9@
-position p;
-constant c1 =~ "[+-]?[0-9]*\.[0-9]*";
-constant c2 !~ "[+-]?[0-9]*\.[0-9]*";
-type t != {double};
+type t1, t2;
+constant {t1} c1;
+constant {t2} c2;
 binary operator b;
 expression E;
 @@
@@ -214,10 +190,44 @@ expression E;
 )
 
 @script:python@
-p << rule9.p;
-E << rule9.E;
+p << rule8.p;
+E << rule8.E;
+t1 << rule8.t1;
+t2 << rule8.t2;
 @@
 
-print(f"Rule9:")
-print(f"  line: {p[0].line}")
-print(f"  E: {E}")
+if t1 != t2:
+  print(f"Rule8:")
+  print(f"  line: {p[0].line}")
+  print(f"  E: {E}")
+
+@rule9@
+position p;
+type t1, t2;
+constant {t2} c;
+t1 i1;
+t2 i2;
+expression E;
+@@
+
+(
+  (t1 *) c
+|
+  (t2 *) i1
+|
+  (t1)@E@p c
+|
+  (t2)@E@p i1
+)
+
+@script:python@
+p << rule9.p;
+E << rule9.E;
+t1 << rule9.t1;
+t2 << rule9.t2;
+@@
+
+if t1 != t2:
+  print(f"Rule9:")
+  print(f"  line: {p[0].line}")
+  print(f"  E: {E}")

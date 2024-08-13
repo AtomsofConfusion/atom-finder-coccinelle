@@ -42,8 +42,11 @@ int main() {
 
   //Cast expression
   double g1 = 1.5;
-  int g2 = (int)g1;
-  
+  int g2 = (int) g1;
+
+  (char *) 'a';
+  (int) 'a';
+  (int *) 'a';
 
   return 0;
 }
