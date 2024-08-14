@@ -1,22 +1,28 @@
 @rule1@
 position p;
 expression E;
-expression e;
+expression e1, e2, e3;
 identifier arr;
 type ti = {int};
 ti i;
-constant c =~ "^[+-]?[1-9][0-9]*|0$";
+constant {ti} c;
 constant str =~ "\"[^\"]*\"";
 @@
 
 (
-  c[arr]@E@p
+  e1[arr[e2][e3]]@E@p
 |
-  c[str]@E@p
+  e1[e2[arr[e3]]]@E@p
 |
-  i[arr]@E@p
+  e1[e2[e3[arr]]]@E@p
 |
-  i[str]@E@p
+  e1[arr[e2]]@E@p
+|
+  e1[e2[arr]]@E@p
+|
+  e1[arr]@E@p
+|
+  e2[str]@E@p
 )
 
 @script:python@

@@ -43,6 +43,8 @@ int main() {
   //Cast expression
   double g1 = 1.5;
   int g2 = (int) g1;
+  int g3 = (unsigned int) 1;
+  unsigned int g4 = -5;
 
   (char *) 'a';
   (int) 'a';
