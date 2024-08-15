@@ -13,9 +13,10 @@ def cli():
         If not specified, all *.c files in the current directory, as well as any subdirectories of it,
         will be run.
         """, nargs='*')
-    parser.add_argument("-p", "--patch", default=[], help="""
-        List of coccinelle patches to run, separated by spaces. If not specified, all *.cocci files
-        in the current directory will be run.
+    parser.add_argument("-p", "--patch", default=["."], help="""
+        List of coccinelle patches to run, separated by spaces. Directories are also accepted.
+        If not specified, all *.cocci files in the current directory, as well as any subdirectories of it,
+        will be run.
         """, nargs='*')
     parser.add_argument("-o", "--opts", default=[], help="Options to pass to `spatch`",
         nargs=argparse.REMAINDER)
@@ -32,12 +33,22 @@ def cli():
         f = ["."]
 
     # handle patches
-    patches = args.patch
-    if len(patches) == 0:
+    patches = []
+    if len(args.patch) == 0:
         print("WARNING: No patches supplied via the -p option. Attempting to find patches here...", file=stderr)
-        patches = glob("*.cocci")
+        args.patch = ["."]
+    for patch in args.patch:
+        if os.path.isfile(patch):
+            patches.append(patch)
+        elif os.path.isdir(patch):
+            p = glob(f'{patch}/**/*.cocci', recursive=True)
+            if len(p) == 0:
+                print(f"WARNING: there is no .cocci files in {patch} or its subdirectories. Skipping.", file=stderr)
+            patches.extend(p)
+        else:
+            print(f"WARNING: {patch} is supplied to the patch argument but is not a valid path. Skipping.", file=stderr)
     if len(patches) == 0:
-        print("ERROR: No patches found in the current directory. Quitting.", file=stderr)
+        print("ERROR: no patches are found. Quitting.", file=stderr)
         exit(1)
 
     # handle opts
@@ -53,9 +64,6 @@ def cli():
     # run
     for c in f:
         for patch in patches:
-            if not os.path.isfile(patch):
-                print(f"WARNING: patch {patch} does not exist. Skipping.", file=stderr)
-                continue
             try:
                 run = subprocess.run(
                     ["spatch", "--sp-file", patch, c, "--python", executable] + args.opts,
