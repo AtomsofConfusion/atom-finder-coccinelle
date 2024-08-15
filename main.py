@@ -30,6 +30,7 @@ def cli():
     # handle files
     f = args.input
     if len(f) == 0:
+        print("WARNING: No files supplied via the -i option. Attempting to find files here...", file=stderr)
         f = ["."]
 
     # handle patches
