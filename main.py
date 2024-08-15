@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import subprocess, argparse, os.path
 from sys import executable, stderr
-from glob import glob
+from glob import iglob
 from shutil import which
 
 def cli():
@@ -33,25 +33,6 @@ def cli():
         print("WARNING: No files supplied via the -i option. Attempting to find files here...", file=stderr)
         f = ["."]
 
-    # handle patches
-    patches = []
-    if len(args.patch) == 0:
-        print("WARNING: No patches supplied via the -p option. Attempting to find patches here...", file=stderr)
-        args.patch = ["."]
-    for patch in args.patch:
-        if os.path.isfile(patch):
-            patches.append(patch)
-        elif os.path.isdir(patch):
-            p = glob(f'{patch}/**/*.cocci', recursive=True)
-            if len(p) == 0:
-                print(f"WARNING: there is no .cocci files in {patch} or its subdirectories. Skipping.", file=stderr)
-            patches.extend(p)
-        else:
-            print(f"WARNING: {patch} is supplied to the patch argument but is not a valid path. Skipping.", file=stderr)
-    if len(patches) == 0:
-        print("ERROR: no patches are found. Quitting.", file=stderr)
-        exit(1)
-
     # handle opts
     clear = -1
     for opt in args.opts:
@@ -62,19 +43,35 @@ def cli():
     if clear > -1:
         args.opts = args.opts[0:clear] + args.opts[clear + 2:]
 
-    # run
+    # handle patches
+    if len(args.patch) == 0:
+        print("WARNING: No patches supplied via the -p option. Attempting to find patches here...", file=stderr)
+        args.patch = ["."]
+    for patch in args.patch:
+        if os.path.isfile(patch):
+            run(patch, args.opts, f)
+        elif os.path.isdir(patch):
+            hasFiles = False
+            for p in iglob(f'{patch}/**/*.cocci', recursive=True):
+                hasFiles = True
+                run(p, args.opts, f)
+            if not hasFiles:
+                print(f"WARNING: there is no .cocci files in {patch} or its subdirectories. Skipping.", file=stderr)
+        else:
+            print(f"WARNING: {patch} is supplied to the patch argument but is not a valid path. Skipping.", file=stderr)
+
+def run(patch, opts, f):
     for c in f:
-        for patch in patches:
-            try:
-                run = subprocess.run(
-                    ["spatch", "--sp-file", patch, c, "--python", executable] + args.opts,
-                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True
-                )
-                p = run.stdout.strip()
-                if len(p) > 0:
-                    print(p)
-            except subprocess.CalledProcessError as e:
-                print(f"STDERR in {patch}: {e.stderr.strip()}", file=stderr)
+        try:
+            run = subprocess.run(
+                ["spatch", "--sp-file", patch, c, "--python", executable] + opts,
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True
+            )
+            p = run.stdout.strip()
+            if len(p) > 0:
+                print(p)
+        except subprocess.CalledProcessError as e:
+            print(f"STDERR in {patch}: {e.stderr.strip()}", file=stderr)
 
 if __name__ == "__main__":
     cli()
