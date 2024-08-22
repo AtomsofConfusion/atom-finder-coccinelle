@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-import subprocess, argparse, os.path
+import os.path
+from subprocess import run, PIPE, CalledProcessError
+from argparse import ArgumentParser, REMAINDER
 from sys import executable, stderr
 from glob import iglob
 from shutil import which
 
 def cli():
-    parser = argparse.ArgumentParser(
+    parser = ArgumentParser(
         description="Apply coccinelle patches onto C files"
     )
     parser.add_argument("-i", "--input", default=["."], help="""
@@ -19,7 +21,7 @@ def cli():
         will be run.
         """, nargs='*')
     parser.add_argument("-o", "--opts", default=[], help="Options to pass to `spatch`",
-        nargs=argparse.REMAINDER)
+        nargs=REMAINDER)
     args = parser.parse_args()
 
     # check if coccinelle is installed
@@ -49,28 +51,28 @@ def cli():
         args.patch = ["."]
     for patch in args.patch:
         if os.path.isfile(patch):
-            run(patch, args.opts, f)
+            apply(patch, args.opts, f)
         elif os.path.isdir(patch):
             hasFiles = False
             for p in iglob(f'{patch}/**/*.cocci', recursive=True):
                 hasFiles = True
-                run(p, args.opts, f)
+                apply(p, args.opts, f)
             if not hasFiles:
                 print(f"WARNING: there is no .cocci files in {patch} or its subdirectories. Skipping.", file=stderr)
         else:
             print(f"WARNING: {patch} is supplied to the patch argument but is not a valid path. Skipping.", file=stderr)
 
-def run(patch, opts, f):
+def apply(patch, opts, f):
     for c in f:
         try:
-            run = subprocess.run(
+            r = run(
                 ["spatch", "--sp-file", patch, c, "--python", executable] + opts,
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, universal_newlines=True
+                stdout=PIPE, stderr=PIPE, check=True, universal_newlines=True
             )
-            p = run.stdout.strip()
+            p = r.stdout.strip()
             if len(p) > 0:
                 print(p)
-        except subprocess.CalledProcessError as e:
+        except CalledProcessError as e:
             print(f"STDERR in {patch}: {e.stderr.strip()}", file=stderr)
 
 if __name__ == "__main__":
