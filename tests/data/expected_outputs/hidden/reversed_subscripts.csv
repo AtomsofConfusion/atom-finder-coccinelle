@@ -1,0 +1,7 @@
+reversed_subscripts,,13,,  E: 1 [ arr_int ]
+reversed_subscripts,,15,,  E: i [ arr_char ]
+reversed_subscripts,,17,,  E: i ++ [ str ]
+reversed_subscripts,,19,,"  E: 1 [ ""abcde"" ]"
+reversed_subscripts,,20,,  E: ( 1 + 2 - 1 ) [ arr_int ]
+reversed_subscripts,,21,,  E: ( 1 + 2 ) [ arr_char ]
+reversed_subscripts,,22,,"  E: ( x + y ) [ ""abcde"" ]"
