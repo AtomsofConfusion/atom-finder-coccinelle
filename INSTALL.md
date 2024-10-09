@@ -8,3 +8,5 @@ https://github.com/coccinelle/coccinelle/blob/master/install.txt
 
 3. To verify the build is successful, try calling it.
     > atom-finder-coccinelle
+
+4. Upon modifying the source codes, you may need to delete the {build} folder before rebuilding. Otherwise, some parts may not be updated and will causes errors.

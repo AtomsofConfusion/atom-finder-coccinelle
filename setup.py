@@ -15,7 +15,7 @@ setup(
     description='An utility to find atoms of confusion via coccinelle', 
     author='', 
     author_email='', 
-    packages=['src', 'test'],
+    packages=['src', 'tests'],
     include_package_data=True,
     install_requires=['pandas'],
     entry_points={
