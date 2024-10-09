@@ -1,0 +1,19 @@
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,14,13,a % b,
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,16,8,b % a,
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,17,12,"add ( a > 0 , a )",clojure missing
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,22,2,"if ( a % b ) { printf ( ""if with implicit predicate\n"" ) ; } else if ( b % a ) { printf ( ""else if with implicit predicate\n"" ) ; }  ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,24,9,"if ( b % a ) { printf ( ""else if with implicit predicate\n"" ) ; } ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,40,2,"if ( add ( 1 , 2 ) ) { printf ( ""if with implicit predicate\n"" ) ; } else if ( add ( a , b ) ) { printf ( ""else if with implicit predicate\n"" ) ; }  ",clojure missing
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,42,9,"if ( add ( a , b ) ) { printf ( ""else if with implicit predicate\n"" ) ; } ",clojure missing
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,48,2,"while ( count ) { printf ( ""while with implicit predicate\n"" ) ; count -- ; } ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,55,2,"do { printf ( ""do while with implicit predicate\n"" ) ; count -- ; } while ( count ) ; ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,74,2,"for (  int i = 10 ; i ; i -- ) { printf ( ""for loop with implicit predicate\n"" ) ; } ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,82,17,a % b,
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,85,2,"if ( add ( a % b ? 1 : 2 , 3 ) ) { printf ( ""if and ternary operator with implicit predicate\n"" ) ; } else if ( add ( a % b ? 1 : 2 , 3 ) == 1 ) { printf ( ""ternary operator with implicit predicate\n"" ) ; } else if ( add ( a % b != 0 ? 1 : 2 , 3 ) == 1 ) { printf ( ""else if and ternary operator without implicit predicate\n"" ) ; }   ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,87,17,a % b,
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,95,2,"while ( add ( count , count ? 1 : 10 ) ) { printf ( ""while with implicit predicate\n"" ) ; count -- ; } ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,100,2,"do { printf ( ""do while with implicit predicate\n"" ) ; count ++ ; } while ( add ( count , count ? - 1 : 0 ) ) ; ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,103,22,count,
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,115,2,"for (  int i = 0 ; add ( i , ( i & 3 ) ? 1 : - i ) ; i ++ ) { printf ( ""for with implicit predicate\n"" ) ; } ",
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,127,13,c -> s_i,
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,128,2,if ( c -> s_i ) { return 1 , } 
