@@ -2,7 +2,7 @@
 @@
 from pathlib import Path
 processed = {}
-debug = True
+debug = False
 ATOM_NAME = "omitted-curly-braces"
 
 def print_expression_and_position(exp, position, rule_name=""):

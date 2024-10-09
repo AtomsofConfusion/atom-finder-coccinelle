@@ -1,0 +1,2 @@
+placeholder for a empty folder in github, where coccinelle csv outputs will go in.
+you may delete this file after cloning the project onto your local machine

@@ -1,3 +1,16 @@
+@script:python@
+@@
+from pathlib import Path
+debug = False
+ATOM_NAME = "repurposed_variable"
+
+def print_expression_and_position(exp, position, rule_name=""):
+    file_path = Path(position[0].file).resolve().absolute()
+    if rule_name and debug:
+        print(rule_name)
+    exp = exp.replace('"', '""')
+    print(f"{ATOM_NAME},{file_path},{position[0].line},{position[0].column},\"{exp}\"")
+
 @rule1@
 position p;
 type tf, ti;
