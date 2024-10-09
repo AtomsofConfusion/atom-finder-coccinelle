@@ -1,0 +1,24 @@
+,,23,,b || (*a += 2),coccinelle missing
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,34,4,a || b ++ & c,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,36,4,a && c | -- b,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,38,4,a && c + b -- & d,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,44,4,a || b ++ & c,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,46,4,a && ++ b,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,48,4,a || b || c ++,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,50,4,a && b || c ++ < 1,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,52,4,a && ++ b & c,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,54,16,c -- && d ++,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,54,4,a || b -- || c -- && d ++,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,56,4,a || b --,
+,,58,,a || fun1(),both missing
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,60,4,a || ! ( b = fun1 ( ) ),
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,62,4,a && ( b += 2 ) || c ++,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,64,24,c -- && d ++,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,64,12,a || b -- || c -- && d ++,
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,66,12,a || ( b = fun1 ( ) ),
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,70,15,! a || -- a > b,
+,,74,,(a > b) && fun1() && fun2(),both missing
+,,76,,(a > b) || fun1(),both missing
+,,78,,b || fun3(&a),both missing
+,,80,,b || fun4(a),both missing
+assignment-as-value,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,82,4,"b && ( c + fun5 ( & a , b ) )",
