@@ -1,1 +1,0 @@
-from tests import run_tests, test_class
