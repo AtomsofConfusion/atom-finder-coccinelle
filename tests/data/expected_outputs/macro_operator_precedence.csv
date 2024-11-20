@@ -1,21 +1,21 @@
 atom,file,line,offset,code
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,15,257,2 * M1
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,16,278,2 * M2
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,17,299,M1 -  * 2
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,18,320,M2 ^  * 2
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,21,389,M3 ||  + 4
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,22,410,4 + M3
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,15,257,2*M1
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,16,278,2*M2
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,17,299,M1-*2
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,18,320,M2^*2
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,21,389,M3||+4
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,22,410,4+M3
 operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,24,454,-M1
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,15,257,2 * M1
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,16,278,2 * M2
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,19,341,MF1(i + 2)
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,22,410,4 + M3
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,15,257,2*M1
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,16,278,2*M2
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,19,341,MF1(i+2)
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,22,410,4+M3
 macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,24,454,-M1
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,25,473,ABS(1 - 2)
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,26,499,MF3(1 | 2)
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,27,525,MF2(1 & 2)
-macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,28,551,MF1(i - 1 ? r1 : r2)
-implicit-predicate,anonymously-parsed-code.c,9,22,1 ? 2 : 3
-implicit-predicate,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,23,431,1 - MT1 ?  : 
-conditional,anonymously-parsed-code.c,9,22,1 ? 2 : 3
-conditional,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,23,431,1 - MT1 ?  : 
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,25,473,ABS(1-2)
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,26,499,MF3(1|2)
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,27,525,MF2(1&2)
+macro-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,28,551,MF1(i-1?r1:r2)
+implicit-predicate,anonymously-parsed-code.c,9,22,1?2:3
+implicit-predicate,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,23,431,1-MT1?:
+conditional,anonymously-parsed-code.c,9,22,1?2:3
+conditional,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,23,431,1-MT1?:

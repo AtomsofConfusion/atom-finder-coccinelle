@@ -1,34 +1,34 @@
-,,8,,~ 1,both missing
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,10,4,1 & 19,
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,12,4,19 & 1,
-,,16,,1 & 2,both missing
-,,18,,1 | ~2,both missing
-,,20,,3 | 4,both missing
-,,22,,013 ^ 4,both missing
-,,24,,A << 4,both missing
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,26,4,a << 17,clojure is missing this
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,28,4,76 | 101,
-,,30,,1 ^ 2 + 3 - 4 >> ~5,both missing
-,,32,,1 ^ 2 + 3 ^ 4,both missing
-,,34,,1 + 2 & 3 | 4 * 5,both missing
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,36,4,13 ^ 5,
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,36,4,13 ^ 5 | ~ 1000,clojure avoided this 
+,,8,,~1,both missing
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,10,4,1&19,
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,12,4,19&1,
+,,16,,1&2,both missing
+,,18,,1|~2,both missing
+,,20,,3|4,both missing
+,,22,,013^4,both missing
+,,24,,A<<4,both missing
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,26,4,a<<17,clojure is missing this
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,28,4,76|101,
+,,30,,1^2+3-4>>~5,both missing
+,,32,,1^2+3^4,both missing
+,,34,,1+2&3|4*5,both missing
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,36,4,13^5,
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,36,4,13^5|~1000,clojure avoided this 
 literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,36,14,~1000,
-,,38,,0x1B & 076,both missing
-,,40,,0X1B | 076,both missing
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,42,17,0b1010 << 19,"clojure is missing this, but coccinelle is incomplete"
-,,44,,int a = 0xAB | 0xCD,both missing
-,,46,,int b = 0b1010 << 5,both missing
-,,48,,int c = 0B0001 >> 1,both missing
-,,50,,int d = 013 ^ 4,both missing
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,52,4,d <<= 12,clojure is missing this
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,54,12,b |= 10,
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,56,16,c |= 9,
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,58,39,14 & ~ 0B1110,
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,62,23,13 ^ 5,
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,62,23,13 ^ 5 | ~ 1000,
+,,38,,0x1B&076,both missing
+,,40,,0X1B|076,both missing
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,42,17,0b1010<<19,"clojure is missing this, but coccinelle is incomplete"
+,,44,,inta=0xAB|0xCD,both missing
+,,46,,intb=0b1010<<5,both missing
+,,48,,intc=0B0001>>1,both missing
+,,50,,intd=013^4,both missing
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,52,4,d<<=12,clojure is missing this
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,54,12,b|=10,
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,56,16,c|=9,
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,58,39,14&~0B1110,
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,62,23,13^5,
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,62,23,13^5|~1000,
 literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,62,33,~1000,
-literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,66,8,10 | a,clojure is missing this
-,,67,,a &= 0xA,both missing
-,,68,,5 ^ b,both missing
-,,69,,b ^= 0B101,both missing
+literal-encoding,../tests/data/inputs/change_of_literal_encoding.c,66,8,10|a,clojure is missing this
+,,67,,a&=0xA,both missing
+,,68,,5^b,both missing
+,,69,,b^=0B101,both missing

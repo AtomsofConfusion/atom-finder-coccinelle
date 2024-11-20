@@ -1,6 +1,6 @@
-post-increment,../tests/data/inputs/post_incdec.c,7,12,a ++
-post-increment,../tests/data/inputs/post_incdec.c,12,17,b ++
-post-increment,../tests/data/inputs/post_incdec.c,13,8,b ++
-post-increment,../tests/data/inputs/post_incdec.c,30,12,a --
-post-increment,../tests/data/inputs/post_incdec.c,35,17,b --
-post-increment,../tests/data/inputs/post_incdec.c,36,8,b --
+post-increment,../tests/data/inputs/post_incdec.c,7,12,a++
+post-increment,../tests/data/inputs/post_incdec.c,12,17,b++
+post-increment,../tests/data/inputs/post_incdec.c,13,8,b++
+post-increment,../tests/data/inputs/post_incdec.c,30,12,a--
+post-increment,../tests/data/inputs/post_incdec.c,35,17,b--
+post-increment,../tests/data/inputs/post_incdec.c,36,8,b--

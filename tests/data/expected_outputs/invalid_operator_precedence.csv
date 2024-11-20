@@ -1,8 +1,8 @@
 atom,file,line,offset,code
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,12,105,a || b + c
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,14,120,a || b - c
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,18,151,a && b | c
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,20,166,a && b + c
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,22,181,a && b - c
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,24,196,a && b << c
-operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,26,212,a || b && c
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,12,105,a||b+c
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,14,120,a||b-c
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,18,151,a&&b|c
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,20,166,a&&b+c
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,22,181,a&&b-c
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,24,196,a&&b<<c
+operator-precedence,/home/veering/Projects/atom-finder-coccinelle/tests/data/inputs/invalid_operator_precedence.c,26,212,a||b&&c
