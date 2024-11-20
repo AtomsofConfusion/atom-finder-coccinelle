@@ -1,4 +1,5 @@
 import pytest
+import pandas as pd
 from pandas import read_csv
 from pathlib import Path
 
@@ -54,21 +55,35 @@ def compare(patch, input, verbosity):
         expected = expected_path / input_to_expected_mapping[input]
         
         output = read_csv(data, header=None) # turns StringIO result into dataframe
-
+        
         expected = read_csv(expected, header=None)
 
-        output = output.sort_values(by=output.columns[2])
-        line_numbers_output = output.iloc[:,2]
-        line_numbers_expected = expected.iloc[:,2]
+        # output = output.sort_values(by=output.columns[2])
         
-        missing_in_output = line_numbers_expected[~line_numbers_expected.isin(line_numbers_output)].tolist()
-        missing_in_expected = line_numbers_output[~line_numbers_output.isin(line_numbers_expected)].tolist()
+        expected = expected.iloc[:,[2,4]]
+        output = output.iloc[:,[2,4]]
+        # print(output)
+        for i in range(len(output)):
+            output.iloc[i,1] = output.iloc[i,1].replace(' ', '')
 
-        if verbosity:
-            print(f"Line numbers in expected but not in output:\n{missing_in_output}")
-            print(f"Line numbers in output but not in expected:\n{missing_in_expected}")
+        output = output.groupby(2)[4].apply(list).reset_index()
+        expected = expected.groupby(2)[4].apply(list).reset_index()
+        combined = pd.merge(expected, output, on=2, suffixes=('_1', '_2'), how="outer")
+        # for i in range(len(combined)):
+        #     combined.iloc[i,1] = pd.Series(combined.iloc[i,1]).fillna({4_1:[]})
+        #     combined.iloc[i,2] = pd.Series(combined.iloc[i,2]).fillna({4_2:[]})
+        #     print(combined.iloc[i,1])
 
-        return missing_in_expected, missing_in_output
+        combined.to_csv("test/debug.csv", index=False)
+        # strings1 should be expected, and s2 is output
+        def is_contained(strings1, strings2):
+            set1 = set(strings1)
+            set2 = set(strings2) 
+            return (len(set1)==len(set2))&all(any(s1 in s2 for s1 in set1) for s2 in set2)
+        
+        combined['Containment'] = combined.apply(lambda row: is_contained(row['4_1'], row['4_2']), axis=1)        
+        is_equal = combined['Containment'].all()
+        return is_equal
     
     except Exception as e:
         print(f"Something else happened: {e}, for {input}")
@@ -77,74 +92,76 @@ def compare(patch, input, verbosity):
 @pytest.mark.parametrize("input", patch_to_input_mapping["assignment_as_value.cocci"])
 def test_assignment_as_value(input):
     patch = "assignment_as_value.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    # missing_in_expected, missing_in_output = compare(patch, input, 0)
+    result = compare(patch, input, 0)
+    assert(result == True)
+    # assert(not len(missing_in_output) and not len(missing_in_expected) == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["change_of_literal_encoding.cocci"])
 def test_change_of_literal_encoding(input):
     patch = "change_of_literal_encoding.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["comma_operator.cocci"])
 def test_comma_operator(input):
     patch = "comma_operator.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["conditional_operator.cocci"])
 def test_conditional_operator(input):
     patch = "conditional_operator.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
     
 @pytest.mark.parametrize("input", patch_to_input_mapping["implicit_predicate.cocci"])
 def test_implicit_predicate(input):
     patch = "implicit_predicate.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["logic_as_controlflow.cocci"])
 def test_logic_as_controlflow(input):
     patch = "logic_as_controlflow.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["omitted_curly_braces.cocci"])
 def test_omitted_curly_braces(input):
     patch = "omitted_curly_braces.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["post_incdec.cocci"])
 def test_post_incdec(input):
     patch = "post_incdec.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["pre_incdec.cocci"])
 def test_pre_incdec(input):
     patch = "pre_incdec.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["repurposed_variable.cocci"])
 def test_repurposed_variable(input):
     patch = "repurposed_variable.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["reversed_subscripts.cocci"])
 def test_reversed_subscripts(input):
     patch = "reversed_subscripts.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 @pytest.mark.parametrize("input", patch_to_input_mapping["type_conversion.cocci"])
 def test_type_conversion(input):
     patch = "type_conversion.cocci"
-    missing_in_expected, missing_in_output = compare(patch, input, 0)
-    assert(not len(missing_in_output) and not len(missing_in_expected) == True)
+    result = compare(patch, input, 0)
+    assert(result == True)
 
 ### Modify this later
 patch_to_test_mapping = {
@@ -157,9 +174,9 @@ patch_to_test_mapping = {
     "omitted_curly_braces.cocci": "test_omitted_curly_braces",
     "post_incdec.cocci": "test_post_incdec",
     "pre_incdec.cocci": "test_pre_incdec",
-    "repurposed_variable.cocci": "test_repurposed_variable",
-    "reversed_subscripts.cocci": "test_reversed_subscripts",
-    "type_conversion.cocci": "test_type_conversion",
+    # "repurposed_variable.cocci": "test_repurposed_variable",
+    # "reversed_subscripts.cocci": "test_reversed_subscripts",
+    # "type_conversion.cocci": "test_type_conversion",
 }
 
 # patch file list from keyboard selection, call corresponding test functions (same name as patch) through args, append input files in for each pytest parameter,  
