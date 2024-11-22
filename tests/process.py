@@ -4,7 +4,7 @@ import csv
 def compare_string_sets(strings1, strings2):
     set1 = set(strings1)
     set2 = set(strings2) 
-    print(all(any(s1 in s2 or s2 in s1 for s2 in set2) for s1 in set1))
+    return (len(set1)==len(set2))&all(any(s1 in s2 for s1 in set1) for s2 in set2)
 
 def remove_whitespaces_in_column(file_path, column_index=4):
     modified_rows = []
@@ -38,7 +38,7 @@ def process_csv_files_in_folder(folder_path):
 if __name__ == "__main__":
     folder_path = "tests/data/expected_outputs"
     # process_csv_files_in_folder(folder_path)
-    print("Finished processing all CSV files.")
-    strings1 = ["1213", "123124"]
-    strings2 = ["12312", "12134", "23434"]
-    compare_string_sets(strings1, strings2)
+    expected = ["23434", "123125", "121345"]
+    output = ["123125", "12134", "234345"]
+    print(compare_string_sets(expected, output))
+    # print(set(output)==set(expected))
