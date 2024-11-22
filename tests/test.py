@@ -57,28 +57,29 @@ def compare(patch, input, verbosity):
         output = read_csv(data, header=None) # turns StringIO result into dataframe
         
         expected = read_csv(expected, header=None)
-
-        # output = output.sort_values(by=output.columns[2])
         
         expected = expected.iloc[:,[2,4]]
         output = output.iloc[:,[2,4]]
-        # print(output)
+
         for i in range(len(output)):
             output.iloc[i,1] = output.iloc[i,1].replace(' ', '')
 
         output = output.groupby(2)[4].apply(list).reset_index()
         expected = expected.groupby(2)[4].apply(list).reset_index()
         combined = pd.merge(expected, output, on=2, suffixes=('_1', '_2'), how="outer")
-        # for i in range(len(combined)):
-        #     combined.iloc[i,1] = pd.Series(combined.iloc[i,1]).fillna({4_1:[]})
-        #     combined.iloc[i,2] = pd.Series(combined.iloc[i,2]).fillna({4_2:[]})
-        #     print(combined.iloc[i,1])
 
-        combined.to_csv("test/debug.csv", index=False)
+        # pd.set_option('display.max_rows', None)
+        # pd.set_option('display.max_columns', None)
+
+        combined = combined.fillna(pd.NA) # otherwise the next line won't work
+        combined = combined.map(lambda x: [] if x is pd.NA else x)
+
+        combined.to_csv("tests/debug.csv", index=False)
         # strings1 should be expected, and s2 is output
         def is_contained(strings1, strings2):
             set1 = set(strings1)
-            set2 = set(strings2) 
+            set2 = set(strings2)
+            # return set1 == set2
             return (len(set1)==len(set2))&all(any(s1 in s2 for s1 in set1) for s2 in set2)
         
         combined['Containment'] = combined.apply(lambda row: is_contained(row['4_1'], row['4_2']), axis=1)        
@@ -182,7 +183,7 @@ patch_to_test_mapping = {
 # patch file list from keyboard selection, call corresponding test functions (same name as patch) through args, append input files in for each pytest parameter,  
 def initialize_test():
     select_list = []
-    select_list = patch_to_input_mapping.keys()
+    select_list = patch_to_test_mapping.keys()
     select_list = select(select_list)
 
     args = []
