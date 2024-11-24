@@ -16,4 +16,4 @@ implicit-predicate,../tests/data/inputs/implicit_predicate.c,100,2,"do{printf(""
 implicit-predicate,../tests/data/inputs/implicit_predicate.c,103,22,count,
 implicit-predicate,../tests/data/inputs/implicit_predicate.c,115,2,"for(inti=0;add(i,(i&3)?1:-i);i++){printf(""forwithimplicitpredicate\n"");}",
 implicit-predicate,../tests/data/inputs/implicit_predicate.c,127,13,c->s_i,
-implicit-predicate,../tests/data/inputs/implicit_predicate.c,128,2,if(c->s_i){return1, } 
+implicit-predicate,../tests/data/inputs/implicit_predicate.c,128,2,if(c->s_i){return1;} 
