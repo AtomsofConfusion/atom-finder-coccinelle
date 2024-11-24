@@ -79,8 +79,8 @@ def compare(patch, input, verbosity):
         def is_contained(strings1, strings2):
             set1 = set(strings1)
             set2 = set(strings2)
-            # return set1 == set2
-            return (len(set1)==len(set2))&all(any(s1 in s2 for s1 in set1) for s2 in set2)
+            return set1 == set2
+            # return (len(set1)==len(set2))&all(any(s1 in s2 for s1 in set1) for s2 in set2)
         
         combined['Containment'] = combined.apply(lambda row: is_contained(row['4_1'], row['4_2']), axis=1)        
         is_equal = combined['Containment'].all()
