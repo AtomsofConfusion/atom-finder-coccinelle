@@ -36,6 +36,10 @@ int main() {
   double e2 = e1;
   int e3 = 1.5;
   e1 = 1.5;
+  
+  //Simple declaration 2
+  double abc = 2.0;
+  abc = 2.5;
 
   //Return statement
   func2();

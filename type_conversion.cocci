@@ -160,7 +160,7 @@ t i;
 expression E;
 @@
 
-i =@E@p c
+i =@E@p c;
 
 @script:python@
 p << rule7.p;
