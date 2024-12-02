@@ -25,5 +25,7 @@ int main() {
 
   a || b && c;
 
+  (a || b) && c; // should not include this non-confusing
+
   return 0;
 }
