@@ -55,7 +55,7 @@ int main() {
 
     a || b-- || ++c;
 
-    a || fun1();
+    a || fun1(); // no?
 
     a || !(b = fun1());
 
@@ -79,6 +79,6 @@ int main() {
 
     b || fun4(a);
 
-    b && (c + fun5(&a, b));
+    b && (c + fun5(&a, b)); // all of these
 
 }

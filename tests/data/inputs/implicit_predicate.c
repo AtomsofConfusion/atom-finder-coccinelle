@@ -117,7 +117,7 @@ int main() {
   }
 
   for (int i = 1; add(i, (i & 3) != 0 ? 1 : -i) > 0; i++) {
-    printf("for with implicit predicate\n");
+    printf("for without implicit predicate\n"); // double check, orginally considered as with implicit predicate
   }
   
   return 0;

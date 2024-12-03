@@ -1,0 +1,55 @@
+Rule1:
+  line: 36
+  d:  double e2 = e1 ;
+Rule2:
+  line: 45
+  d:  int g2 = ( int ) g1 ;
+Rule3:
+  line: 29
+  E: b3 += b2
+Rule3:
+  line: 38
+  E: e1 = 1.5
+Rule3:
+  line: 14
+  E: x = y
+Rule3:
+  line: 28
+  E: b1 + b2
+Rule3:
+  line: 32
+  E: 1.5 * 2
+Rule4:
+  line: 21
+  E: fun1 ( a2 )
+Rule5:
+  line: 10
+  S: return x ;
+Rule6:
+  line: 37
+  d:  int e3 = 1.5 ;
+Rule7:
+  line: 38
+  E: e1 = 1.5
+Rule8:
+  line: 38
+  E: e1 = 1.5
+Rule8:
+  line: 30
+  E: 1 + ( int ) 1.5
+Rule8:
+  line: 32
+  E: 1.5 * 2
+Rule8:
+  line: 31
+  E: ( int ) 1.5 + 1
+Rule9:
+  line: 30
+  E: 1 + ( int ) 1.5
+Rule9:
+  line: 32
+  E: 1.5 * 2
+Rule9:
+  line: 31
+  E: ( int ) 1.5 + 1
+

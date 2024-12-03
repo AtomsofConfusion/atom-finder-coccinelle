@@ -27,7 +27,7 @@ int main() {
     }
 
     if (x > y)
-        printf("if without curly braces");
+        printf("if without curly braces"); // note that coccinelle detects this structure as two parts, possibly due to two "if"s 
     else if (x < y)
         printf("else if without curly braces");
     
@@ -39,7 +39,7 @@ int main() {
 
     // if - else if - else
     if (x > y) {
-        printf("if with curly braces");
+        printf("if with curly braces"); 
     } else if (x == y) {
         printf("else if with curly braces");
     } else {
