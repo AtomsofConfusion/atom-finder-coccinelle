@@ -1,6 +1,7 @@
-pre-increment,../tests/data/inputs/pre_incdec.c,7,14,a,++a
-pre-increment,../tests/data/inputs/pre_incdec.c,12,19,b,
-pre-increment,../tests/data/inputs/pre_incdec.c,13,10,b,
-pre-increment,../tests/data/inputs/pre_incdec.c,30,14,a,
-pre-increment,../tests/data/inputs/pre_incdec.c,35,19,b,
-pre-increment,../tests/data/inputs/pre_incdec.c,36,10,b,
+pre-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/pre_incdec.c,7,14,a
+pre-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/pre_incdec.c,30,14,a
+pre-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/pre_incdec.c,12,19,b
+pre-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/pre_incdec.c,13,10,b
+pre-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/pre_incdec.c,35,19,b
+pre-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/pre_incdec.c,36,10,b
+

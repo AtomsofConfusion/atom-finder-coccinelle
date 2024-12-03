@@ -8,7 +8,6 @@ from sys import stderr
 from src import COCCI_DIR
 from src.log import logging
 
-
 class CocciPatch(Enum):
     ASSIGNMENT_AS_VALUE = Path(COCCI_DIR / "assignment_as_value.cocci")
     CHANGE_OF_LITERAL_ENCODING = Path(COCCI_DIR / "change_of_literal_encoding.cocci")

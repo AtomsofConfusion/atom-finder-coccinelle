@@ -1,19 +1,11 @@
 import click
-import csv
 from pathlib import Path
 from io import StringIO
 
 from src.option_select import select
 from src.run_cocci import run_cocci, COCCI_DIR, find_atoms, CocciPatch
+from src.utils import append_to_csv
 
-
-def append_to_csv(file_path, data):
-    with open(file_path, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        
-        for row in data:
-            parsed_row = next(csv.reader([row]))
-            writer.writerow(parsed_row)
 
 
 def list_patches():
