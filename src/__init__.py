@@ -1,1 +1,3 @@
-from src import main, option_select, run_cocci
+from pathlib import Path
+
+COCCI_DIR = Path(__file__).parent.parent / "cocci"
