@@ -11,11 +11,12 @@ def compare(actual_rows, expected_rows):
         for code_snippet in code_snippets:
             assert code_snippet in expected[line_and_offset]
         assert len(code_snippets) == len(expected[line_and_offset])
+
     assert len(actual) == len(expected)
 
 
 def _convert_to_dict(rows):
-    line_code_mappings = defaultdict(list)
+    line_code_mappings = defaultdict(set)
     for row in rows:
         if len(row) < 5:
             continue
@@ -25,6 +26,7 @@ def _convert_to_dict(rows):
         if code.startswith('"'):
             code = code[1:-1]
         formatted_code = re.sub(r"\s+", "", code)
-        line_code_mappings[(line, offset)].append(formatted_code)
+        if formatted_code:
+            line_code_mappings[(line, offset)].add(formatted_code)
 
     return line_code_mappings
