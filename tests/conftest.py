@@ -7,6 +7,8 @@ EXPECTED_OUTPUTS_DIR = TEST_DATA_PATH / "expected_outputs"
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--overwrite", action="store_true", default=False,
-        help="Enable overwriting of files"
+        "--overwrite",
+        action="store_true",
+        default=False,
+        help="Enable overwriting of files",
     )

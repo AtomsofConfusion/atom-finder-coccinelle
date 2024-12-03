@@ -1,6 +1,7 @@
 import curses
 from pathlib import Path
 
+
 def print_menu(stdscr, selected_indices, options):
     stdscr.clear()
     h, w = stdscr.getmaxyx()
@@ -16,6 +17,7 @@ def print_menu(stdscr, selected_indices, options):
         else:
             stdscr.addstr(y, x, row)
     stdscr.refresh()
+
 
 def print_menu(stdscr, selected_indices, options, current_row_idx):
     stdscr.clear()
@@ -37,6 +39,7 @@ def print_menu(stdscr, selected_indices, options, current_row_idx):
             stdscr.addstr(y, x, row)
     stdscr.refresh()
 
+
 def main(stdscr, options):
     curses.curs_set(0)
     stdscr.keypad(True)  # Enable keypad input
@@ -52,20 +55,24 @@ def main(stdscr, options):
             current_row_idx -= 1
         elif key == curses.KEY_DOWN and current_row_idx < len(options) - 1:
             current_row_idx += 1
-        elif key == ord(' '):  # Space bar to select/unselect
+        elif key == ord(" "):  # Space bar to select/unselect
             if current_row_idx in selected_indices:
                 selected_indices.remove(current_row_idx)
             else:
                 selected_indices.append(current_row_idx)
-        elif key == ord('\n'):  # Enter to confirm selection
-            stdscr.addstr(len(options) + 5, 0, f"You selected: {[options[i] for i in selected_indices]}")
+        elif key == ord("\n"):  # Enter to confirm selection
+            stdscr.addstr(
+                len(options) + 5,
+                0,
+                f"You selected: {[options[i] for i in selected_indices]}",
+            )
             stdscr.refresh()
             stdscr.getch()
             return [options[i] for i in selected_indices]
         print_menu(stdscr, selected_indices, options, current_row_idx)
 
+
 def select(options):
     # Ensure options are strings
     options = [str(option) for option in options]
     return curses.wrapper(lambda stdscr: main(stdscr, options))
-

@@ -24,9 +24,7 @@ def _convert_to_dict(rows):
         code = row[4]
         if code.startswith('"'):
             code = code[1:-1]
-        formatted_code = re.sub(r'\s+', '', code)
+        formatted_code = re.sub(r"\s+", "", code)
         line_code_mappings[(line, offset)].append(formatted_code)
 
     return line_code_mappings
-
-
