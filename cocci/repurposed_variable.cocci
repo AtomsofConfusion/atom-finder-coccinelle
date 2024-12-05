@@ -9,7 +9,11 @@ def print_expression_and_position(exp, position, rule_name=""):
     if rule_name and debug:
         print(rule_name)
     exp = exp.replace('"', '""')
-    print(f"{ATOM_NAME},{file_path},{position[0].line},{position[0].column},\"{exp}\"")
+    start_line, start_col = position[0].line, position[0].column
+    end_line, end_col = position[0].line_end, position[0].column_end
+
+    print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col}\"{exp}\"")
+
 
 @rule1@
 position p;
