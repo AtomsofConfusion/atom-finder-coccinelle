@@ -3,9 +3,9 @@ from pathlib import Path
 from io import StringIO
 
 from src.option_select import select
-from src.run_cocci import run_cocci, COCCI_DIR, find_atoms, CocciPatch
+from src.run_cocci import run_cocci, COCCI_DIR, find_atoms, CocciPatch, run_patches_and_generate_output
 from src.utils import append_to_csv
-
+from src.log import logging
 
 def list_patches():
     """List all available patches."""
@@ -13,8 +13,8 @@ def list_patches():
 
 
 @click.command
-@click.argument("input", type=Path)
-@click.option("-o", "--output", type=Path, default=None)
+@click.argument("input-path", type=Path)
+@click.option("-o", "--output-dir", type=Path, default=".")
 # @click.option(
 #     '--scope',
 #     type=click.Choice(['all', 'select']),
@@ -31,27 +31,17 @@ def list_patches():
 @click.option(
     "-v", "--verbosity", type=str, default=0, required=False, help="Enter 0 or 1"
 )
-def atom_finder(input, output, patch, verbosity):
+def atom_finder(input_path, output_dir, patch, verbosity):
     cocci_patch = CocciPatch.from_string(patch) if patch else None
-    atoms_per_patches = find_atoms(input_path=input, output=output, patch=cocci_patch)
 
-    if not input.is_dir():
-        raise Exception(f"input path is not valid")
+    if not input_path.exists():
+        logger.error(f"{input_path} does not exist")
+        return
 
-    if output is None:
-        output = Path("output.csv")
+    if not output_dir.is_dir():
+        output_dir.mkdir(parents=True)
 
-    if output.is_file():
-        output.unlink()
-
-    if not output.parent.is_dir():
-        output.parent.mkdir(parents=True)
-
-    # TODO support very large outputs
-    # this should be optimized
-    # consider writing to separate files
-    for _, atoms in atoms_per_patches.items():
-        append_to_csv(output, atoms.split("\n"))
+    run_patches_and_generate_output(input_path, output_dir, patch)
 
     # if(scope=='select'):
     #     patch_list = [select(patch_list)]

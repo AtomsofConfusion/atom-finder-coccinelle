@@ -1,0 +1,2 @@
+class RunCoccinelleError(Exception):
+    pass

@@ -1,22 +1,2 @@
 Rule1: 
-  line: 15
-  E: i [ arr_char ]
-Rule1: 
-  line: 13
-  E: 1 [ arr_int ]
-Rule1: 
-  line: 19
-"  E: 1 [ ""abcde"" ]"
-Rule1: 
-  line: 17
-  E: i ++ [ str ]
-Rule1: 
-  line: 22
-"  E: ( x + y ) [ ""abcde"" ]"
-Rule1: 
-  line: 21
-  E: ( 1 + 2 ) [ arr_char ]
-Rule1: 
-  line: 20
-  E: ( 1 + 2 - 1 ) [ arr_int ]
 

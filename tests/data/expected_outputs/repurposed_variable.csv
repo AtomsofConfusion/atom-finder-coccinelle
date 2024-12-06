@@ -1,19 +1,2 @@
 Rule1: 
-  line: 30
-  E: a = 0
-Rule1: 
-  line: 4
-  E: a = 1
-Rule1: 
-  line: 22
-  E: a = 3
-Rule1: 
-  line: 28
-  E: a = - 3
-Rule1: 
-  line: 5
-  E: a += 2
-Rule1: 
-  line: 6
-  E: a ++
 

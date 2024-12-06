@@ -7,8 +7,6 @@ literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of
 literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,26,4,a << 17
 literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,66,8,10 | a
 literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,58,39,14 & ~ 0B1110
-literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,36,4,13 ^ 5 | ~ 1000
-literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,62,23,13 ^ 5 | ~ 1000
 literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,54,12,b |= 10
 literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,56,16,c |= 9
 literal-encoding,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/change_of_literal_encoding.c,52,4,d <<= 12

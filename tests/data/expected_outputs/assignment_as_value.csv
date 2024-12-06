@@ -1,32 +1,41 @@
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,33,4, int v10 = ( v1 += v2 ) ;
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,34,4, int v11 = v1 += ( v2 -= v3 ) ;
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,35,4, int v12 = ( v1 += ( v2 -= v3 ) ) ;
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,21,4, int v5 = v1 = 6 ;
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,23,4, int v6 = v2 = v3 = v4 = 7 ;
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,13,4,v1 = v2 = v3 = 5
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,15,4,v1 = v2 = v3 = v4 = 10
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,20,v1 = v2 = i < 5
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,11,4,v1 = v2 = v3 + 5
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,38,4,v1 = v2 += v3 - ( v4 += 2 )
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,59,22,v1 = v3 += v4 - 1
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,41,4,v1 = v2 + v3 + ( v4 += v5 )
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,39,4,v1 = ( v2 += v3 - ( v4 += 2 ) )
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,63,11,v1 += v2 = 2
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,17,4,v1 += v2 -= v3
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,51,18,v1 += v3 = 2
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,37,4,v12 = v3 + ( v1 -= 2 )
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,37,v3 = v4 -= 2
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,40,15,v3 -= v4 += 2
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,74,13,v4 -= v6 = 2
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,28,4,"v8 |= v6 = add ( v1 , v2 )"
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,31,4,v9 = v1 += ( v2 -= 4 )
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,47,9, int i = v5 = 0 ;
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,51,9, int i = ( v1 += v3 = 2 ) ;
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,37,v3 = v4 -= 2
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,55,19,v3 += v1
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,42,v4 -= 2
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,69,17,v1 += 5
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,75,24,v1 += 5
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,73,17,v2 += 5
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,77,24,v4 = v3
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,33,4,33,"25"" int v10 = ( v1 += v2 ) ;"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,34,4,34,"31"" int v11 = v1 += ( v2 -= v3 ) ;"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,35,4,35,"33"" int v12 = ( v1 += ( v2 -= v3 ) ) ;"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,21,4,21,"20"" int v5 = v1 = 6 ;"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,23,4,23,"30"" int v6 = v2 = v3 = v4 = 7 ;"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,13,4,13,"20""v1 = v2 = v3 = 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,15,4,15,"26""v1 = v2 = v3 = v4 = 10"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,20,43,"35""v1 = v2 = i < 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,11,4,11,"20""v1 = v2 = v3 + 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,38,4,38,"29""v1 = v2 += v3 - ( v4 += 2 )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,59,22,59,"39""v1 = v3 += v4 - 1"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,41,4,41,"29""v1 = v2 + v3 + ( v4 += v5 )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,39,4,39,"31""v1 = ( v2 += v3 - ( v4 += 2 ) )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,63,11,63,"23""v1 += v2 = 2"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,17,4,17,"18""v1 += v2 -= v3"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,51,18,51,"30""v1 += v3 = 2"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,34,14,34,"30""v1 += ( v2 -= v3 )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,35,15,35,"31""v1 += ( v2 -= v3 )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,37,4,37,"24""v12 = v3 + ( v1 -= 2 )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,13,9,13,"20""v2 = v3 = 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,15,9,15,"26""v2 = v3 = v4 = 10"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,23,13,23,"29""v2 = v3 = v4 = 7"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,15,14,15,"26""v3 = v4 = 10"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,23,18,23,"29""v3 = v4 = 7"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,37,43,"49""v3 = v4 -= 2"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,40,15,40,"28""v3 -= v4 += 2"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,74,13,74,"25""v4 -= v6 = 2"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,28,4,28,"26""v8 |= v6 = add ( v1 "," v2 )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,31,4,31,"24""v9 = v1 += ( v2 -= 4 )"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,47,9,47,"24"" int i = v5 = 0 ;"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,51,9,51,"32"" int i = ( v1 += v3 = 2 ) ;"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,63,17,63,"23""v2 = 2"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,25,43,"35""v2 = i < 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,55,19,55,"27""v3 += v1"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,59,27,59,"39""v3 += v4 - 1"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,43,42,43,"49""v4 -= 2"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,69,17,69,"24""v1 += 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,75,24,75,"31""v1 += 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,73,17,73,"24""v2 += 5"""
+assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/assignment_as_value.c,77,24,77,"31""v4 = v3"""
 
