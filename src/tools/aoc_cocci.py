@@ -35,13 +35,13 @@ def atom_finder(input_path, output_dir, patch, verbosity):
     cocci_patch = CocciPatch.from_string(patch) if patch else None
 
     if not input_path.exists():
-        logger.error(f"{input_path} does not exist")
+        logging.error(f"{input_path} does not exist")
         return
 
     if not output_dir.is_dir():
         output_dir.mkdir(parents=True)
 
-    run_patches_and_generate_output(input_path, output_dir, patch)
+    run_patches_and_generate_output(input_path, output_dir, cocci_patch)
 
     # if(scope=='select'):
     #     patch_list = [select(patch_list)]

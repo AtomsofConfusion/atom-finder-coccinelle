@@ -1,23 +1,23 @@
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,42,9,44,"3""if ( add ( a "," b ) ) { printf ( """"else if with implicit predicate\n"""" ) ; } """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,40,2,44,"3""if ( add ( 1 "," 2 ) ) { printf ( """"if with implicit predicate\n"""" ) ; } else if ( add ( a "," b ) ) { printf ( """"else if with implicit predicate\n"""" ) ; }  """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,85,2,91,"3""if ( add ( a % b ? 1 : 2 "," 3 ) ) { printf ( """"if and ternary operator with implicit predicate\n"""" ) ; } else if ( add ( a % b ? 1 : 2 "," 3 ) == 1 ) { printf ( """"ternary operator with implicit predicate\n"""" ) ; } else if ( add ( a % b != 0 ? 1 : 2 "," 3 ) == 1 ) { printf ( """"else if and ternary operator without implicit predicate\n"""" ) ; }   """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,22,2,26,"3""if ( a % b ) { printf ( """"if with implicit predicate\n"""" ) ; } else if ( b % a ) { printf ( """"else if with implicit predicate\n"""" ) ; }  """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,24,9,26,"3""if ( b % a ) { printf ( """"else if with implicit predicate\n"""" ) ; } """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,128,2,130,"3""if ( c -> s_i ) { return 1 ; } """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,48,2,51,"3""while ( count ) { printf ( """"while with implicit predicate\n"""" ) ; count -- ; } """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,95,2,98,"3""while ( add ( count "," count ? 1 : 10 ) ) { printf ( """"while with implicit predicate\n"""" ) ; count -- ; } """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,55,2,58,"18""do { printf ( """"do while with implicit predicate\n"""" ) ; count -- ; } while ( count ) ; """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,100,2,103,"39""do { printf ( """"do while with implicit predicate\n"""" ) ; count ++ ; } while ( add ( count "," count ? - 1 : 0 ) ) ; """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,115,2,117,"3""for (  int i = 0 ; add ( i "," ( i & 3 ) ? 1 : - i ) ; i ++ ) { printf ( """"for with implicit predicate\n"""" ) ; } """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,74,2,76,"3""for (  int i = 10 ; i ; i -- ) { printf ( """"for loop with implicit predicate\n"""" ) ; } """
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,95,20,95,"25""count"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,103,22,103,"27""count"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,17,12,17,"25""add ( a > 0 "," a )"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,14,13,14,"18""a % b"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,82,17,82,"22""a % b"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,85,10,85,"15""a % b"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,87,17,87,"22""a % b"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,16,8,16,"13""b % a"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,127,13,127,"21""c -> s_i"""
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,115,25,115,"32""( i & 3 )"""
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,42,9,44,3,"if ( add ( a , b ) ) { printf ( ""else if with implicit predicate\n"" ) ; } "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,40,2,44,3,"if ( add ( 1 , 2 ) ) { printf ( ""if with implicit predicate\n"" ) ; } else if ( add ( a , b ) ) { printf ( ""else if with implicit predicate\n"" ) ; }  "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,85,2,91,3,"if ( add ( a % b ? 1 : 2 , 3 ) ) { printf ( ""if and ternary operator with implicit predicate\n"" ) ; } else if ( add ( a % b ? 1 : 2 , 3 ) == 1 ) { printf ( ""ternary operator with implicit predicate\n"" ) ; } else if ( add ( a % b != 0 ? 1 : 2 , 3 ) == 1 ) { printf ( ""else if and ternary operator without implicit predicate\n"" ) ; }   "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,22,2,26,3,"if ( a % b ) { printf ( ""if with implicit predicate\n"" ) ; } else if ( b % a ) { printf ( ""else if with implicit predicate\n"" ) ; }  "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,24,9,26,3,"if ( b % a ) { printf ( ""else if with implicit predicate\n"" ) ; } "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,128,2,130,3,if ( c -> s_i ) { return 1 ; } 
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,48,2,51,3,"while ( count ) { printf ( ""while with implicit predicate\n"" ) ; count -- ; } "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,95,2,98,3,"while ( add ( count , count ? 1 : 10 ) ) { printf ( ""while with implicit predicate\n"" ) ; count -- ; } "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,55,2,58,18,"do { printf ( ""do while with implicit predicate\n"" ) ; count -- ; } while ( count ) ; "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,100,2,103,39,"do { printf ( ""do while with implicit predicate\n"" ) ; count ++ ; } while ( add ( count , count ? - 1 : 0 ) ) ; "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,115,2,117,3,"for (  int i = 0 ; add ( i , ( i & 3 ) ? 1 : - i ) ; i ++ ) { printf ( ""for with implicit predicate\n"" ) ; } "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,74,2,76,3,"for (  int i = 10 ; i ; i -- ) { printf ( ""for loop with implicit predicate\n"" ) ; } "
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,95,20,95,25,count
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,103,22,103,27,count
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,17,12,17,25,"add ( a > 0 , a )"
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,14,13,14,18,a % b
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,82,17,82,22,a % b
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,85,10,85,15,a % b
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,87,17,87,22,a % b
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,16,8,16,13,b % a
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,127,13,127,21,c -> s_i
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,115,25,115,32,( i & 3 )
 

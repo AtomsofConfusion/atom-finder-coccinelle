@@ -19,7 +19,7 @@ int fun3(int* a) {
 
 int fun4(int a) {
   if (a > 0) {
-    a = 3;
+    a = 4;
   } 
   
   if (a > 0) {
@@ -32,6 +32,18 @@ int fun4(int a) {
   
   return a;
 }
+
+
+int fun5(int a, int b) {
+  a = 1;
+  --b;
+  ++a;
+  b = func1(b);
+  int c = 0;
+  c ++;
+  return a + b;
+}
+
 
 int main() {
   return 0;
