@@ -41,18 +41,38 @@ for(t i = x;...;--e@p) S
 expression e;
 position p1 != non_atoms.p;
 position p;
-expression E;
+statement S;
 @@
 
 (
- ++e@p1 @E@p
+ ++e@p1 @S@p
 |
- --e@p1 @E@p
+ --e@p1 @S@p
 )
 
 @script:python@
 p << rule1.p;
-E << rule1.E;
+S << rule1.S;
 @@
 
-print_expression_and_position(E, p, "Rule 1")
+print_expression_and_position(S, p, "Rule 1")
+
+@rule2@
+expression e;
+position p1 != non_atoms.p;
+position p;
+declaration D;
+@@
+
+(
+ ++e@p1 @D@p
+|
+ --e@p1 @D@p
+)
+
+@script:python@
+p << rule2.p;
+D << rule2.D;
+@@
+
+print_expression_and_position(D, p, "Rule 2")
