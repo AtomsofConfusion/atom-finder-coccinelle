@@ -12,7 +12,7 @@ def print_expression_and_position(exp, position, rule_name=""):
     start_line, start_col = position[0].line, position[0].column
     end_line, end_col = position[0].line_end, position[0].column_end
 
-    print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col}\"{exp}\"")
+    print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col},\"{exp}\"")
 
 
 @rule1@
@@ -50,6 +50,56 @@ p << rule1.p;
 E << rule1.E;
 @@
 
-print(f"Rule1: ")
-print(f"  line: {p[0].line}")
-print(f"  E: {E}")
+print_expression_and_position(E, p, "Rule 1")
+
+
+@rule2@
+position p;
+type tf, ti;
+identifier fun, i;
+assignment operator a;
+expression e;
+expression E;
+@@
+
+(
+  tf fun(..., ti i, ...) {
+    <+...
+    ++i@E@p
+    ...+>
+  }
+)
+
+
+@script:python@
+p << rule2.p;
+E << rule2.E;
+@@
+
+print_expression_and_position(f"++{E}", p, "Rule 2")
+
+
+@rule3@
+position p;
+type tf, ti;
+identifier fun, i;
+assignment operator a;
+expression e;
+expression E;
+@@
+
+(
+  tf fun(..., ti i, ...) {
+    <+...
+    --i@E@p
+    ...+>
+  }
+)
+
+
+@script:python@
+p << rule3.p;
+E << rule3.E;
+@@
+
+print_expression_and_position(f"--{E}", p, "Rule 3")

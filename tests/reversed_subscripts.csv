@@ -5,4 +5,3 @@ reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reverse
 reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,22,13,22,29,"( x + y ) [ ""abcde"" ]"
 reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,21,13,21,30,( 1 + 2 ) [ arr_char ]
 reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,20,11,20,31,( 1 + 2 - 1 ) [ arr_int ]
-

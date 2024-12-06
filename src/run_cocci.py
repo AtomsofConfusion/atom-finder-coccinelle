@@ -72,7 +72,7 @@ def run_cocci(cocci_patch_path, c_input_path, output_file=None, opts=None):
             check=True,
             universal_newlines=True,
         )
-        if output_file is not None:
+        if output_file is None:
             output = result.stdout
             return output
         return None
@@ -119,7 +119,7 @@ def run_patches_and_generate_output(input_path: Path, output_dir: Optional[Path]
         # run all patche
         patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch]
     else:
-        patches_to_run = [patch]
+        patches_to_run = [patch.value]
     with tempfile.TemporaryDirectory() as temp_dir:
         for patch_to_run in patches_to_run:
             temp_output_file = Path(temp_dir, f"{patch_to_run.stem}.csv")
@@ -130,5 +130,3 @@ def run_patches_and_generate_output(input_path: Path, output_dir: Optional[Path]
                 logging.error(str(e))
             output_file = output_dir / f"{patch_to_run.stem}.csv"
             postprocess_and_generate_output(temp_output_file, output_file)
-
-
