@@ -36,6 +36,33 @@ class CocciPatch(Enum):
         return enum_member
 
 
+# in some cases, subexpressions should be counted as separate atoms, in others, it seems unnecessary
+remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR)
+
+
+def _check_if_subexpression(start_line, start_col, end_line, end_col, processed):
+    new_range = {'start_line': int(start_line), 'start_col': int(start_col), 'end_line': int(end_line), 'end_col': int(end_col)}
+    if start_line in processed:
+        subset = any(_is_subset(new_range, existing) for existing in processed[start_line])
+        if not subset:
+            processed[start_line].append(new_range)
+            processed[start_line] = [existing for existing in processed[start_line] if not _is_subset(existing, new_range)]
+            return False
+        else:
+            return True
+    else:
+        processed[start_line] = [new_range]
+        return False
+
+def _is_subset(current, previous):
+    # Check if the current range is entirely within the previous range
+    if (current['start_line'] > previous['start_line'] or
+        (current['start_line'] == previous['start_line'] and current['start_col'] >= previous['start_col'])) and \
+       (current['end_line'] < previous['end_line'] or
+        (current['end_line'] == previous['end_line'] and current['end_col'] <= previous['end_col'])):
+        return True
+    return False
+
 def find_atoms(
     input_path: Path, output: Optional[Path] = None, patch: Optional[CocciPatch] = None
 ) -> Dict[CocciPatch, str]:
@@ -88,10 +115,11 @@ def read_csv_generator(file_path):
             yield row
 
 
-def postprocess_and_generate_output(file_path: Path, output_file_path: Path):
+def postprocess_and_generate_output(file_path: Path, output_file_path: Path, patch: CocciPatch):
     seen = set() 
     filtered_data = [] 
     removed_lines_count = 0
+    processed = {}
     logging.info("Posptocessing: removing duplicate lines")
     with open(output_file_path, mode='w', newline='', encoding="utf8") as outfile:
         writer = csv.writer(outfile)
@@ -102,7 +130,8 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path):
                 previous_debug_row = row
                 continue
 
-            if key not in seen:
+            _, _, start_line, start_col, end_line, end_col, _ = row
+            if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
                 if previous_debug_row is not None:
                     filtered_data.append(previous_debug_row)
                 seen.add(key)
@@ -141,4 +170,4 @@ def run_patches_and_generate_output(input_path: Path, output_dir: Optional[Path]
                 # log the error and continue
                 logging.error(str(e))
             output_file = output_dir / f"{patch_to_run.stem}.csv"
-            postprocess_and_generate_output(temp_output_file, output_file)
+            postprocess_and_generate_output(temp_output_file, output_file, patch)
