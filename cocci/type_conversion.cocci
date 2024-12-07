@@ -1,7 +1,7 @@
 @script:python@
 @@
 from pathlib import Path
-debug = False
+debug = True
 ATOM_NAME = "type_conversion"
 
 def print_expression_and_position(exp, position, rule_name=""):
