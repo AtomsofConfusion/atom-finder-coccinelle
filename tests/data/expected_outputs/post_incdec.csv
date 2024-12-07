@@ -1,7 +1,7 @@
-post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,35,4,35,25,b = 1 - 10 + b -- + 3 ;
-post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,12,4,12,25,b = 1 - 10 + b ++ + 3 ;
-post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,36,4,36,12,c = b -- ;
-post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,13,4,13,12,c = b ++ ;
-post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,7,4,7,16, int b = a ++ ;
-post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,30,4,30,16, int b = a -- ;
+post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,35,4,b = 1 - 10 + b -- + 3 ;
+post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,12,4,b = 1 - 10 + b ++ + 3 ;
+post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,36,4,c = b -- ;
+post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,13,4,c = b ++ ;
+post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,7,4, int b = a ++ ;
+post-increment,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/post_incdec.c,30,4, int b = a -- ;
 

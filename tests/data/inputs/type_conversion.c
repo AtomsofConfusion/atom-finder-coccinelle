@@ -31,11 +31,19 @@ int main() {
   (int) 1.5 + 1;
   1.5 * 2;
 
+  //not an atom
+  double c1 = 1.0;
+  double c2 = c1;
+
   //Simple declaration
   int e1 = 1;
   double e2 = e1;
   int e3 = 1.5;
   e1 = 1.5;
+  double e4 = e1 + 4;
+
+  double abc = 2.0;
+  abc = 2.5;
 
   //Return statement
   func2();

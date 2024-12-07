@@ -1,56 +1,56 @@
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,15,18,15,27,a + b * c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,8,18,8,27,1 + 2 * 3
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,13,18,13,41,1 + 2 * ( 3 - 4 * 5 ) * 6
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,17,19,17,28,a * b + c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,12,18,12,31,1 + 2 + 3 * 4
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,9,18,9,27,1 * 2 + 3
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,11,18,11,27,1 * 2 - 3
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,18,28,18,37,3 * b + 5
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,33,19,33,29,a + b << c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,34,19,34,29,a + b >> c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,35,19,35,29,a * b << c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,36,19,36,29,a * b >> c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,37,19,37,28,a & b + c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,48,19,48,28,a & b > c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,38,19,38,28,a + b & c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,47,19,47,28,a < b & c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,40,19,40,28,a + b ^ c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,46,19,46,28,a & b ^ c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,41,19,41,28,a | b + c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,44,19,44,28,a | b & c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,31,19,31,28,a | b ^ c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,42,19,42,28,a + b | c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,43,19,43,28,a & b | c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,30,19,30,28,a ^ b | c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,27,19,27,29,a + b && c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,26,19,26,29,a - b && c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,25,19,25,29,a * c && b
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,22,19,22,29,a % b && c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,28,19,28,30,a << b && c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,20,19,20,29,a | c && b
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,29,19,29,29,a ^ b && c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,18,28,18,42,3 * b + 5 && c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,18,19,18,47,a + 2 || 3 * b + 5 && c && 7
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,19,19,19,29,a & b || c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,21,19,21,29,a ^ c || b
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,32,19,32,30,a && b || c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,24,19,24,29,a && b * c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,23,19,23,29,a && b % c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,10,18,10,27,1 - 2 * 3
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,13,27,13,36,3 - 4 * 5
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,12,18,12,39,1 + 2 + 3 * 4 - 5 * 6
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,45,19,45,28,a ^ b & c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,49,19,49,29,a || b & c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,50,19,50,29,a || b ^ c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,54,19,54,29,a && b | c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,55,19,55,29,a && b + c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,59,19,59,29,a && b + c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,56,19,56,29,a && b - c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,57,19,57,30,a && b << c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,60,19,60,30,a && b >> c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,51,19,51,29,a || b + c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,52,19,52,29,a || b - c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,53,19,53,30,a || b << c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,61,19,61,30,a || b >> c
-operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,58,19,58,30,a || b && c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,15,18,a + b * c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,8,18,1 + 2 * 3
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,13,18,1 + 2 * ( 3 - 4 * 5 ) * 6
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,17,19,a * b + c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,12,18,1 + 2 + 3 * 4
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,9,18,1 * 2 + 3
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,11,18,1 * 2 - 3
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,18,28,3 * b + 5
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,33,19,a + b << c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,34,19,a + b >> c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,35,19,a * b << c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,36,19,a * b >> c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,37,19,a & b + c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,48,19,a & b > c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,38,19,a + b & c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,47,19,a < b & c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,40,19,a + b ^ c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,46,19,a & b ^ c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,41,19,a | b + c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,44,19,a | b & c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,31,19,a | b ^ c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,42,19,a + b | c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,43,19,a & b | c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,30,19,a ^ b | c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,27,19,a + b && c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,26,19,a - b && c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,25,19,a * c && b
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,22,19,a % b && c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,28,19,a << b && c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,20,19,a | c && b
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,29,19,a ^ b && c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,18,28,3 * b + 5 && c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,18,19,a + 2 || 3 * b + 5 && c && 7
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,19,19,a & b || c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,21,19,a ^ c || b
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,32,19,a && b || c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,24,19,a && b * c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,23,19,a && b % c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,10,18,1 - 2 * 3
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,13,27,3 - 4 * 5
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,12,18,1 + 2 + 3 * 4 - 5 * 6
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,45,19,a ^ b & c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,49,19,a || b & c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,50,19,a || b ^ c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,54,19,a && b | c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,55,19,a && b + c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,59,19,a && b + c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,56,19,a && b - c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,57,19,a && b << c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,60,19,a && b >> c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,51,19,a || b + c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,52,19,a || b - c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,53,19,a || b << c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,61,19,a || b >> c
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/operator_precedence.c,58,19,a || b && c
 

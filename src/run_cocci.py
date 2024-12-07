@@ -95,11 +95,20 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path):
     logging.info("Posptocessing: removing duplicate lines")
     with open(output_file_path, mode='w', newline='', encoding="utf8") as outfile:
         writer = csv.writer(outfile)
-
+        previous_debug_row = None
         for row in read_csv_generator(file_path):
             key = tuple(row[1:-1])
+            if row[0].startswith("Rule"):
+                previous_debug_row = row
+                continue
+
             if key not in seen:
+                if previous_debug_row is not None:
+                    filtered_data.append(previous_debug_row)
                 seen.add(key)
+
+                # remove end line and column from the final ouptut
+                row = row[:4] + row[6:]
                 filtered_data.append(row)
 
                 if len(filtered_data) > 10000: 
@@ -107,6 +116,9 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path):
                     filtered_data.clear()
             else:
                 removed_lines_count += 1
+
+            previous_debug_row = None
+
         if filtered_data:
             writer.writerows(filtered_data)
             filtered_data.clear()
