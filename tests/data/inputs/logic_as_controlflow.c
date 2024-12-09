@@ -9,7 +9,7 @@ int fun2() {
 }
 
 int fun3 (int* a) {
-  a++;
+  *a=5;
   return *a;
 }
 
@@ -22,6 +22,16 @@ int fun5 (int* a, int b) {
   int c;
   c = b || (*a += 2);
   return c;
+}
+
+int fun6 (int *a) {
+  (*a)++;
+  return a;
+}
+
+int fun7 (int *a) {
+  --(*a);
+  return a;
 }
 
 int main() {
@@ -55,7 +65,11 @@ int main() {
 
     a || b-- || ++c;
 
-    a || fun1(); // no?
+    a || fun3(&b);
+
+    a || fun6(&b);
+
+    a || fun7(&b);
 
     a || !(b = fun1());
 
@@ -74,8 +88,6 @@ int main() {
     (a > b) && fun1() && fun2();
 
     (a > b) || fun1();
-
-    b || fun3(&a);
 
     b || fun4(a);
 
