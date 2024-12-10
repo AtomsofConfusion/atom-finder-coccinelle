@@ -1,1 +1,4 @@
-FNZhao, Renata Vaderna, Austin Huang, Leyang Wang
+- [Fengnian Zhao](https://github.com/FNZhao)
+- [Renata Vaderna](https://github.com/renatav)
+- [Austin Huang](https://github.com/austinhuang0131)
+- [Leyang Wang](https://github.com/lw3266)
