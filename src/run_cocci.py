@@ -1,8 +1,8 @@
 import csv
+import subprocess
 import tempfile
 from enum import Enum
 from pathlib import Path
-from subprocess import run, PIPE, CalledProcessError
 from typing import Optional, Dict
 from io import StringIO
 from sys import stderr
@@ -10,6 +10,7 @@ from sys import stderr
 from src import COCCI_DIR
 from src.log import logging
 from src.exceptions import RunCoccinelleError
+from src.utils import run, check_cocci_version
 
 
 class CocciPatch(Enum):
@@ -83,29 +84,17 @@ def find_atoms(
 def run_cocci(cocci_patch_path, c_input_path, output_file=None, opts=None):
     # keep all paths for this file to avoid additional imports from pathlib
     logging.info(f"Running patch: {cocci_patch_path} against {c_input_path}")
-    if opts is None:
-        opts = []
     try:
+        opts = opts or []
         cmd = ["spatch", "--sp-file", str(cocci_patch_path), str(c_input_path)] + opts
         if output_file is not None:
             output_file.touch()
             cmd.append(">>")
             cmd.append(str(output_file))
-        result = run(
-            " ".join(cmd),
-            shell=True,
-            stderr=PIPE,
-            stdout=PIPE,
-            check=True,
-            universal_newlines=True,
-        )
-        if output_file is None:
-            output = result.stdout
-            return output
-        return None
+        run(cmd)
 
-    except CalledProcessError as e:
-        raise RunCoccinelleError(f"An error occurred while running patch {cocci_patch_path}: {e.stderr.strip()}")
+    except subprocess.CalledProcessError as e:
+        raise RunCoccinelleError(f"An error occurred while running patch {cocci_patch_path}: {e}")
 
 
 def read_csv_generator(file_path):
