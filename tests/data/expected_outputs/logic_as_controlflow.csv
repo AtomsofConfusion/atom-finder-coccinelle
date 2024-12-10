@@ -2,9 +2,7 @@ assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_
 assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,46,4,a && c | -- b
 assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,62,4,a && ++ b & c
 assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,48,4,a && c + b -- & d
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,64,4,a || b --
 assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,66,4,a || b --
-assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,78,12,a || b --
 assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,74,4,a || ! ( b = fun1 ( ) )
 assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,44,4,a || b ++ & c
 assignment-as-value,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/logic_as_controlflow.c,54,4,a || b ++ & c

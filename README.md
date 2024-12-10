@@ -1,20 +1,40 @@
-# Using the Tool
-After installation, the tool can be invoked with the following
-> aoc-coccinelle
+# Atom Finder Coccinelle
 
-Additional arguments are supported, here is an example
+This tool incorporates a series of Coccinelle semantic patches designed to detect 14 out of the 15 [Atoms of Confusion](https://atomsofconfusion.com/data.html)
+as identified and empirically validated in our prior work. These atoms are common syntactic features in C code that 
+can lead to misunderstanding and errors. It's important to note that the "Preprocessor in Statement" atom cannot be 
+detected using Coccinelle.
 
-> aoc-coccinelle 
-    -pi "/stands for patch-input/the path to folder of .cocci patches"
-    -si "/stands for source-input/the path to folder of .c source files"
-    -v 0
+## Features
+- **Coccinelle Patches**: Targets 14 different atoms of confusion.
+- **CLI Wrapper**: Simplifies the process of applying these patches to a C codebase.
 
-# The Expected Output
-The expected values should be the bare minimum of what Coccinelle should output. The testing mechanism works by first comparing whether the output and expected has the same amount of items. For instance, if the output has three items for line 16, whereas the expected only has two, the test should reach conclusion. 
+## Prerequisites
 
-Then the tool compares for each output, if it contains an input. For instance output = ['abc'], and expected = ['a'], here the test will pass as 'abc' contains 'a'. This is what I mean by expected should contain the "bare minimum". 
+Before installing this tool, you must install Coccinelle. Please be aware that Coccinelle is designed to run on Linux 
+and cannot be installed natively on Windows (but be installed on MacOS).
 
-What won't work:
- - Check and remove: iterate through all items in output, if found matching expected, remove the expected from the list. Doesn't work because order can be unpredicable. ie. output = ['v1=v2+=v3', 'v1=v2+=v3', 'v2+=v3'], expected = ['v1=v2', 'v1=v2+=v3', 'v2+=v3']. In this loop, each iteration on the items in the output will check in the expected from the beginning. At the first 'v1=v2+=v3', it will check if it contains 'v1=v2', which it does. Then we will remove 'v1=v2' from the expected list. Then the second 'v1=v2+=v3' checks with 'v1=v2+=v3. The problem occurs like this. Suppose now the expected result order is slightly different from the output, where expected = ['v1=v2', 'v2+=v3', 'v1=v2+=v3']. When the loop is at the second 'v1=v2+=v3', it will remove 'v2+v3', leaving 'v2+=v3' detected as unmatched, resulting in false negative test result.
+### Installing Coccinelle
 
- In short, my current strategy is to run python tests first, then manually compare the outputs to make sure that Coccinelle patches are correct. The design choice is to make sure that what the python test filters out are indeed the incorrect ones (for exmaple, obvious discrepency between the number of items, or that the output looks entirely different from the expected atom). Then a maually checked is conducted to logically verify each individual output of coccinelle makes sense for that atom.
+The supported version of Coccinelle is specified in `config.json` (currently version 1.3). To install Coccinelle, 
+follow the instructions from the [official installation guide](https://github.com/coccinelle/coccinelle/blob/master/install.txt).
+
+## Installation
+
+Once Coccinelle is installed, you can install this tool. To install it in an editable mode, which is useful for 
+development, run the following command from the root of the project:
+```bash
+pip install -e .
+```
+
+## Usage
+
+To run the patches, use the command `aoc-cocci`. By default, all patches will be applied, but you can also specify a 
+particular patch to run:
+
+```bash
+aoc-cocci dir-with-c-files --patch reversed_subscript --output-dir output
+```
+
+This command specifies that only the reversed subscript patch should be applied and the results should be saved to 
+the output directory.

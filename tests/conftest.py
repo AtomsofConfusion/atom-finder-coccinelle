@@ -1,6 +1,8 @@
 import shutil
 from pathlib import Path
 from pytest import fixture
+from src.exceptions import SPatchVersionError
+from src.utils import check_cocci_version
 
 TEST_DATA_PATH = Path(__file__).parent / "data"
 INPUTS_DIR = TEST_DATA_PATH / "inputs"
@@ -21,6 +23,14 @@ def pytest_addoption(parser):
         help="Specify patch to run",
     )
 
+
+@fixture(scope="session", autouse=True)
+def check_spatch_version():
+    try:
+        check_cocci_version()
+    except SPatchVersionError as e:
+        pytest.fail(str(e))
+      
 
 @fixture(scope="module")
 def output_dir():
