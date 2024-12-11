@@ -14,20 +14,33 @@ def print_expression_and_position(exp, position, rule_name=""):
 
     print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col},\"{exp}\"")
 
+
+type_conversion_confusions = {
+    "long long": ["int", "short", "char"],
+    "unsigned long long": ["long long", "long", "int", "unsigned int", "short", "unsigned short"],
+    "double": ["float", "int", "short", "char"],
+    "float": ["int", "short", "char"],
+    "unsigned int": ["int", "short", "char"],
+    "long": ["int", "short", "char"],
+    "int": ["short", "char", "unsigned int"],
+    "enum": ["int", "short", "char"],
+    "pointer": ["int", "char*"],  # Simplified for generality
+}
+
 @rule1@
 position p;
 type t1, t2;
 identifier i1, i2;
-expression e1, e2;
+expression e1;
 declaration d;
 @@
 
 (
   t1 i1 = e1;
   ...
-  t2 i2 =@d@p i1;
-)
+  t2 i2 =@d@p <+... i1 ...+>;
 
+)
 @script:python@
 p << rule1.p;
 d << rule1.d;
@@ -36,8 +49,8 @@ t2 << rule1.t2;
 @@
 
 if t1 != t2:
-  print_expression_and_position(d, p, "Rule 1")
-
+  if t2 in type_conversion_confusions.get(t1, []):
+    print_expression_and_position(d, p, "Rule 1")
 
 @rule2@
 position p;
@@ -50,7 +63,7 @@ declaration d;
 (
   t1 i1 = e1;
   ...
-  t2 i2 =@d@p (t2) i1;
+  t2 i2 =@d@p <+... (t2) i1 ...+>;
 )
 
 @script:python@
@@ -61,7 +74,9 @@ t2 << rule2.t2;
 @@
 
 if t1 != t2:
-  print_expression_and_position(d, p, "Rule 2")
+  if t2 in type_conversion_confusions.get(t1, []):
+    print_expression_and_position(d, p, "Rule 2")
+
 
 @rule3@
 position p;

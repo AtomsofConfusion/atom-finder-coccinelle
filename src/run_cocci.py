@@ -119,6 +119,9 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path, pat
                 previous_debug_row = row
                 continue
 
+            if len(row) < 7:
+                filtered_data.append(row)
+                continue
             _, _, start_line, start_col, end_line, end_col, _ = row
             if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
                 if previous_debug_row is not None:
