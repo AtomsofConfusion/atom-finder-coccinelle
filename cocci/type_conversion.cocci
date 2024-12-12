@@ -156,7 +156,7 @@ if t1 != t2:
     print_expression_and_position(E, p, "Rule 5")
 
 
-@rule5_1@
+@rule6@
 position p;
 type t1, t2;
 identifier fun, i1;
@@ -171,50 +171,37 @@ t1 fun(...) {
 }
 
 @script:python@
-p << rule5_1.p;
-S << rule5_1.S;
+p << rule6.p;
+S << rule6.S;
+t1 << rule6.t1;
+t2 << rule6.t2;
 @@
 
-print_expression_and_position(S, p, "Rule 5")
+if t1 != t2:
+  if t1 in type_conversion_confusions.get(t2, []):
+    print_expression_and_position(S, p, "Rule 6")
 
-@rule6@
+@rule7@
 position p;
 constant c =~ "[+-]?[0-9]*\.[0-9]*";
 identifier i;
-type t != {double};
+type t != {float, double, long double};
 declaration d;
 @@
 
 t i =@d@p c;
 
 @script:python@
-p << rule6.p;
-d << rule6.d;
-@@
-
-print_expression_and_position(d, p, "Rule 6")
-
-@rule7@
-position p;
-constant c =~ "[+-]?[0-9]*\.[0-9]*";
-type t != {double};
-t i;
-expression E;
-@@
-
-i =@E@p c
-
-@script:python@
 p << rule7.p;
-E << rule7.E;
+d << rule7.d;
 @@
 
-print_expression_and_position(E, p, "Rule 7")
+print_expression_and_position(d, p, "Rule 7")
 
 @rule8@
 position p;
 constant c =~ "[+-]?[0-9]*\.[0-9]*";
-type t != {double};
+type t != {float, double, long double};
 binary operator b;
 assignment operator a;
 expression e;
@@ -225,9 +212,10 @@ expression E;
   e b@E@p (t) c
 |
   (t) c b@E@p e
-|
-  e a@E@p (t) c
 )
+
+// this also detects lines without (t)
+//e a@E@p (t) c
 
 @script:python@
 p << rule8.p;
@@ -236,24 +224,3 @@ E << rule8.E;
 
 print_expression_and_position(E, p, "Rule 8")
 
-@rule9@
-position p;
-constant c1 =~ "[+-]?[0-9]*\.[0-9]*";
-constant c2 !~ "[+-]?[0-9]*\.[0-9]*";
-type t != {double};
-binary operator b;
-expression E;
-@@
-
-(
-  c1 b@E@p c2
-|
-  c2 b@E@p c1
-)
-
-@script:python@
-p << rule9.p;
-E << rule9.E;
-@@
-
-print_expression_and_position(E, p, "Rule 9")

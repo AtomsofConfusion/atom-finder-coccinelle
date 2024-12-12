@@ -82,8 +82,19 @@ void binaruOperators() {
 
     // More complex mixed type updates
     f += (float)(i1 + 20) / 2.5f;  // Increment float by the result of int division and conversion
-
 }
+
+
+void calculateMixedTypeExpressions() {
+  int i1 = 10.5;
+  int i2 = 5 + 10.5 + 5;
+  i1 = 15.4;
+  i1 = 5 + 15.3;
+  double d = 2.0;
+  d = 2.5;
+}
+
+
 
 void fun1(int x) {
   x = x + 1;
@@ -92,6 +103,11 @@ void fun1(int x) {
 
 int fun2() {
   double x = 1.5;
+  return x;
+}
+
+int fun2_1() {
+  short x = 1;
   return x;
 }
 
@@ -111,6 +127,7 @@ int main() {
   fun3(a1, a2);
   fun3(a2, a1);
   declarations();
+  calculateMixedTypeExpressions();
 
   //Binary expression
   int b1 = 1;

@@ -1,27 +1,89 @@
 Rule 1
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,40,2, double e2 = e1 ;
-Rule 2
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,53,2, int g2 = ( int ) g1 ;
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,135,2, int b3 = b1 + b2 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,160,2, int g2 = ( int ) g1 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,11,4, int i2 = ( int ) d2 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,12,4, int i2_1 = d2 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,13,4, int i2_2 = d2 + 10 - 4 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,17,4, int i6 = ( int ) f1 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,33,4, short s1 = ( short ) ll2 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,37,4, short s2 = ( short ) d3 ;
+Rule 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,25,4, unsigned int ui2 = ( unsigned int ) i4 ;
 Rule 3
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,29,2,b3 += b2
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,70,40,d + f * 25.0f
 Rule 3
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,42,2,e1 = 1.5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,69,38,d * i1
 Rule 3
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,14,2,x = y
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,50,9,d1 + 10
 Rule 3
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,28,11,b1 + b2
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,53,9,i1 + d1
 Rule 3
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,32,2,1.5 * 2
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,55,9,i1 + d1
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,73,39,ui + 0xFF
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,90,11,5 + 10.5
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,92,7,5 + 15.3
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,51,9,5 * d1
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,139,2,1.5 * 2
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,69,38,d * i1 + 50
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,90,11,5 + 10.5 + 5
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,51,9,5 * d1 - 10
+Rule 3
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,74,33,( d1 * 1.0e2 ) + 0x1A
 Rule 4
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,21,2,fun1 ( a2 )
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,136,2,b3 += b2
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,149,2,e1 = 1.5
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,91,2,i1 = 15.4
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,92,2,i1 = 5 + 15.3
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,49,4,i2 = d1
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,50,4,i2 = d1 + 10
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,55,4,i2 = i1 + d1
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,51,4,i2 = 5 * d1 - 10
+Rule 4
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,115,2,x = y
 Rule 5
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,10,2,return x ;
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,124,2,fun1 ( a2 )
+Rule 5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,127,2,"fun3 ( a1 , a2 )"
+Rule 5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,128,2,"fun3 ( a2 , a1 )"
 Rule 6
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,41,2, int e3 = 1.5 ;
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,106,2,return x ;
+Rule 7
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,148,2, int e3 = 1.5 ;
+Rule 7
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,89,2, int i1 = 10.5 ;
 Rule 8
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,46,2,abc = 2.5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,137,2,1 + ( int ) 1.5
 Rule 8
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,30,2,1 + ( int ) 1.5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,138,2,( int ) 1.5 + 1
 Rule 8
-type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,31,2,( int ) 1.5 + 1
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,84,9,( float ) ( i1 + 20 ) / 2.5f
+Rule 8
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,77,28,( double ) ( i + 300 ) * 3.5
+Rule 8
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,70,39,( d + f * 25.0f ) / 3.5
+Rule 8
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,69,37,( d * i1 + 50 ) / 2.0
 
