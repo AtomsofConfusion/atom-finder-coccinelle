@@ -77,22 +77,16 @@ if t1 != t2:
   if t2 in type_conversion_confusions.get(t1, []):
     print_expression_and_position(d, p, "Rule 2")
 
-
 @rule3@
 position p;
 type t1, t2;
 t1 i1;
 t2 i2;
 binary operator b != {<<, >>};
-assignment operator a != {<<=, >>=};
 expression E;
 @@
 
-(
-  i1 b@E@p i2
-|
-  i1 a@E@p i2
-)
+i1 b@E@p i2
 
 @script:python@
 p << rule3.p;
@@ -102,39 +96,67 @@ t2 << rule3.t2;
 @@
 
 if t1 != t2:
-  print_expression_and_position(E, p, "Rule 3")
+  if t2 in type_conversion_confusions.get(t1, []) or t1 in type_conversion_confusions.get(t2, []):
+    print_expression_and_position(E, p, "Rule 3")
 
-@f_rule4@
+
+@rule4@
+position p;
+type t1, t2;
+t1 i1;
+t2 i2;
+assignment operator a != {<<=, >>=};
+expression E;
+@@
+
+i1 a@E@p i2
+
+@script:python@
+p << rule4.p;
+E << rule4.E;
+t1 << rule4.t1;
+t2 << rule4.t2;
+@@
+
+if t1 != t2:
+  if t1 in type_conversion_confusions.get(t2, []):
+    print_expression_and_position(E, p, "Rule 4")
+
+@f_rule5@
 identifier fun, a;
 type tf, ta;
 @@
 
-tf fun(ta a) {
+tf fun(..., ta a, ...) {
   ...
 }
 
-@rule4@
+@rule5@
 position p;
-type t != f_rule4.ta;
-identifier a, fun = f_rule4.fun;
+type t != f_rule5.ta;
+identifier a, fun = f_rule5.fun;
 expression e, E;
 @@
 
 (
   t a = e;
   ...
-  fun(a)@E@p
+  fun(..., a, ...)@E@p
 )
 
 @script:python@
-p << rule4.p;
-E << rule4.E;
+p << rule5.p;
+E << rule5.E;
+t1 << f_rule5.ta;
+t2 << rule5.t;
 @@
 
-print_expression_and_position(E, p, "Rule 4")
+if t1 != t2:
+  if t1 in type_conversion_confusions.get(t2, []):
+    print_expression_and_position(E, p, "Rule 5")
 
 
-@rule5@
+@rule5_1@
 position p;
 type t1, t2;
 identifier fun, i1;
@@ -149,8 +171,8 @@ t1 fun(...) {
 }
 
 @script:python@
-p << rule5.p;
-S << rule5.S;
+p << rule5_1.p;
+S << rule5_1.S;
 @@
 
 print_expression_and_position(S, p, "Rule 5")

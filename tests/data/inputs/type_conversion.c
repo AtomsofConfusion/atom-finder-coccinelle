@@ -41,6 +41,50 @@ void declarations() {
     int i7 = s3;
 }
 
+void assignments() {
+    // Safe Conversion: int to double
+    int i1 = 10;
+    double d1 = 9.5;
+    int i2 = 5;
+    i2 = d1;
+    i2 = d1 + 10;
+    i2 = 5 * d1 - 10;
+    double d2 = 10.5;
+    d2 = i1 + d1;
+    i1 = i2 + 10;
+    i2 = i1 + d1;
+
+}
+
+void binaruOperators() {
+ // Initial variables of various types
+    int i = 20;
+    int i1 = 30;
+    double d = 2.71;
+    double d1 = 3.14;
+    unsigned int ui = 4294967200U;  // Near the upper limit for 32-bit unsigned int
+    float f = 5.5f;
+
+    // Using integer and floating-point constants in calculations
+    double calculationWithIntConst = (d * i1 + 50) / 2.0;  // Mixing double, int, and double constant
+    double calculationWithFloatConst = (d + f * 25.0f) / 3.5;  // Float constant in mixed calculation
+
+    // Using hexadecimal and scientific notation constants
+    unsigned int hexConstCalculation = ui + 0xFF;  // Adding hexadecimal constant
+    double sciConstCalculation = (d1 * 1.0e2) + 0x1A;  // Scientific notation and hexadecimal
+
+    // Complex expression with multiple types and constants
+    double multiTypeCalc = ((double)(i + 300) * 3.5 + ui) / d1;  // Mixed int, double, unsigned int with int constant
+
+    // Dynamic updates involving constants
+    i += 10;
+    d *= 1.1;
+
+    // More complex mixed type updates
+    f += (float)(i1 + 20) / 2.5f;  // Increment float by the result of int division and conversion
+
+}
+
 void fun1(int x) {
   x = x + 1;
   double y = 1.5;
@@ -59,7 +103,11 @@ int main() {
   //Function call expression 
   double a1 = 1;
   double a2 = 1.5;
+  int i1 = 1;
+  short s1 = 1;
   fun1(a2);
+  fun1(i1);
+  fun(s1);
   fun3(a1, a2);
   fun3(a2, a1);
   declarations();

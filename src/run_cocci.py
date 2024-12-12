@@ -38,7 +38,7 @@ class CocciPatch(Enum):
 
 
 # in some cases, subexpressions should be counted as separate atoms, in others, it seems unnecessary
-remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR)
+remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR, CocciPatch.TYPE_CONVERSION)
 
 
 def _check_if_subexpression(start_line, start_col, end_line, end_col, processed):
