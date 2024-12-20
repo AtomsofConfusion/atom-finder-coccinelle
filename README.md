@@ -12,7 +12,7 @@ detected using Coccinelle.
 ## Prerequisites
 
 Before installing this tool, you must install Coccinelle. Please be aware that Coccinelle is designed to run on Linux 
-and cannot be installed natively on Windows (but be installed on MacOS).
+and cannot be installed natively on Windows (but can be installed on MacOS).
 
 ### Installing Coccinelle
 
