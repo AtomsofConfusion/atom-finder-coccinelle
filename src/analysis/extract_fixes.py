@@ -1,11 +1,12 @@
 from collections import defaultdict
+import csv
 import json
 import re
 import tempfile
 import pygit2
 from pathlib import Path
 from src import ROOT_DIR
-from src.run_cocci import find_atoms, run_cocci
+from src.run_cocci import find_atoms
 
 
 def get_file_content_at_commit(repo, commit, file_path):
@@ -29,31 +30,58 @@ def get_file_content_at_commit(repo, commit, file_path):
         return "File not found in the specified commit."
 
 
-def get_removed_lines_from_diff(repo, commit, previous_commit):
+def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
     """
 
-    diff = repo.diff(previous_commit, commit)
+    parent = commit.parents[0]
+    diff = repo.diff(parent, commit, context_lines=0, interhunk_lines=0)
+    print(f"Current commit: {commit.hex}")
 
     removed_lines = defaultdict(list)
     for patch in diff:
+
         file_name = patch.delta.new_file.path
 
         for hunk in patch.hunks:
             for line in hunk.lines:
                 if line.old_lineno != -1:
                     removed_lines[file_name].append(line)
-    
+
     if removed_lines:
-        for file_name, removed in removed_lines.items():
-            content = get_file_content_at_commit(repo, previous_commit, file_name)
-            with tempfile.NamedTemporaryFile(mode='w', suffix='.c', encoding='utf-8') as tmpfile:
-                tmpfile.write(content)
-                temp_file_path = tmpfile.name  # Store the path to the temporary file
-                # now, run coccinelle patches
-                atoms = find_atoms(temp_file_path)
-                import pdb; pdb.set_trace()
+        line_numbers_per_files = {}
+        with tempfile.TemporaryDirectory() as temp_dir:
+            print(temp_dir)
+            for file_name, removed in removed_lines.items():
+                line_numbers = [line.old_lineno for line in removed]
+                line_numbers_per_files[file_name] = line_numbers
+                content = get_file_content_at_commit(repo, parent, file_name)
+                if len(content.splitlines()) > 1000:
+                    # for now, skip larger files
+                    continue
+                # Define file paths within the temporary directory
+                input = Path(temp_dir, file_name)
+                input.parent.mkdir(parents=True, exist_ok=True)
+                input.write_text(content)
+
+            output = Path(temp_dir, 'output.csv')
+
+            # now, run coccinelle patches
+            print("finding atoms")
+            find_atoms(temp_dir, output)
+            print("done")
+            with open(output, mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if len(row) == 1:
+                        continue
+                    atom, path, start_line, start_col, end_line, end_col, code = row
+
+                    file_name = path.split(f"{temp_dir}/")[1]
+                    if start_line in line_numbers_per_files[file_name]:
+                        row[1] = file_name
+                        print(row)
     
 
 def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
@@ -74,15 +102,9 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
 
     commit_fixes = []
 
-
-    current_pair = {}
     stop_iteration = False
     for commit in repo.walk(head, pygit2.GIT_SORT_TIME):
         commit_message = commit.message.strip()
-        if len(current_pair):
-            current_pair["previous"] = commit.hex
-            commit_fixes.append(current_pair)
-            current_pair = {}
 
         # make sure the last pair is added
         if stop_iteration:
@@ -90,29 +112,20 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
 
         # Check the condition using the regex
         if fixes_pattern.search(commit_message):
-            current_pair["commit"] = commit.hex
+            commit_fixes.append(commit.hex)
 
         # Stop when the specific commit is reached
         if str(commit.hex) == stop_commit:
-            stop_iteration = True
-        
+            stop_iteration = True        
 
     Path("commits.json").write_text(json.dumps(commit_fixes))
 
 
-
 def get_removed_lines(repo_path, commits):
     repo = pygit2.Repository(repo_path)
-    for commit_and_previous in commits:
-        commit_sha = commit_and_previous["commit"]
-        previous_sha = commit_and_previous["previous"]
+    for commit_sha in commits:
         commit = repo.get(commit_sha)
-        previous = repo.get(previous_sha)
-        removed_lines = get_removed_lines_from_diff(repo, commit, previous)
-        print("Removed lines:")
-        for line in removed_lines:
-            print(f"- {line}")
-        print()
+        find_removed_atoms(repo, commit)
 
 if __name__ == "__main__":
     # Example usage

@@ -1,7 +1,7 @@
 @script:python@
 @@
 from pathlib import Path
-debug = True
+debug = False
 ATOM_NAME = "type_conversion"
 
 def print_expression_and_position(exp, position, rule_name=""):
@@ -212,10 +212,12 @@ expression E;
   e b@E@p (t) c
 |
   (t) c b@E@p e
+|
+  e a@E@p (t) c
 )
 
 // this also detects lines without (t)
-//e a@E@p (t) c
+
 
 @script:python@
 p << rule8.p;

@@ -75,7 +75,7 @@ def find_atoms(
 
     all_atoms = {}
     for patch_to_run in patches_to_run:
-        atoms = run_cocci(patch_to_run, input_path)
+        atoms = run_cocci(patch_to_run, input_path, output_file=output)
         all_atoms[patch_to_run] = atoms
 
     return all_atoms
