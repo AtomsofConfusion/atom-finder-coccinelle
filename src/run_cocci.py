@@ -38,7 +38,7 @@ class CocciPatch(Enum):
 
 
 # in some cases, subexpressions should be counted as separate atoms, in others, it seems unnecessary
-remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR)
+remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR, CocciPatch.TYPE_CONVERSION)
 
 
 def _check_if_subexpression(start_line, start_col, end_line, end_col, processed):
@@ -75,7 +75,7 @@ def find_atoms(
 
     all_atoms = {}
     for patch_to_run in patches_to_run:
-        atoms = run_cocci(patch_to_run, input_path)
+        atoms = run_cocci(patch_to_run, input_path, output_file=output)
         all_atoms[patch_to_run] = atoms
 
     return all_atoms
@@ -119,6 +119,9 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path, pat
                 previous_debug_row = row
                 continue
 
+            if len(row) < 7:
+                filtered_data.append(row)
+                continue
             _, _, start_line, start_col, end_line, end_col, _ = row
             if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
                 if previous_debug_row is not None:
