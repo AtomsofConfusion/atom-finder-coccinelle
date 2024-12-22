@@ -50,23 +50,23 @@ expression e;
 position p1 != rule01.p;
 position p;
 statement s;
-statement S;
+expression E;
 @@
 
 (
-while (e@p1@S@p) s
+while (e@p1@E@p) s
 |
-do s while (e@p1); @S@p
+do s while (e@E@p1);
 |
-for (...;e@p1@S@p;...) s
+for (...;e@p1@E@p;...) s
 )
 
 @script:python@
 p << rule2.p;
-S << rule2.S;
+E << rule2.E;
 @@
 
-print_expression_and_position(S, p, "Rule 2")
+print_expression_and_position(E, p, "Rule 2")
 
 
 @rule3@
