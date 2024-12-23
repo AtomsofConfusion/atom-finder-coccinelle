@@ -31,16 +31,71 @@ type_conversion_confusions = {
 position p;
 type t1, t2;
 identifier i1, i2;
-expression e1;
+expression e, e1, e2;
 declaration d;
+binary operator bop1, bop2;
 @@
 
+//  using t2 i2 =@d@p <+... i1 ...+>; leads to the patch timing out when running against large files
 (
-  t1 i1 = e1;
+  t1 i1 = e;
   ...
-  t2 i2 =@d@p <+... i1 ...+>;
-
+  t2 i2 =@d@p i1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e1 bop1 i1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p i1 bop1 e1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e1 bop1 i1 bop2 e2;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e2 bop1 i1 bop1 e1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p <+... i1++ ...+>;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p <+... i1-- ...+>;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p <+... --i1 ...+>;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p <+... ++i1 ...+>;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e1 bop1 (t2) i1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p (t2) i1 bop1 e1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e1 bop1 (t2) i1 bop2 e2;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e2 bop1 (t2)  i1 bop1 e1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p (t2) i1;
 )
+
+
 @script:python@
 p << rule1.p;
 d << rule1.d;
@@ -52,18 +107,37 @@ if t1 != t2:
   if t2 in type_conversion_confusions.get(t1, []):
     print_expression_and_position(d, p, "Rule 1")
 
+
 @rule2@
 position p;
 type t1, t2;
 identifier i1, i2;
 expression e1, e2;
 declaration d;
+binary operator bop1, bop2;
 @@
 
+
 (
-  t1 i1 = e1;
+  t1 i1 = e;
   ...
-  t2 i2 =@d@p <+... (t2) i1 ...+>;
+  t2 i2 =@d@p e1 bop1 (t2) i1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p (t2) i1 bop1 e1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e1 bop1 (t2) i1 bop2 e2;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p e2 bop1 (t2)  i1 bop1 e1;
+|
+  t1 i1 = e;
+  ...
+  t2 i2 =@d@p (t2) i1;
 )
 
 @script:python@
@@ -76,6 +150,8 @@ t2 << rule2.t2;
 if t1 != t2:
   if t2 in type_conversion_confusions.get(t1, []):
     print_expression_and_position(d, p, "Rule 2")
+
+
 
 @rule3@
 position p;
@@ -141,8 +217,10 @@ expression e, E;
 (
   t a = e;
   ...
-  fun(..., a, ...)@E@p
+  fun(a)@E@p
+
 )
+// fun(..., a, ...)@E@p is also too slow
 
 @script:python@
 p << rule5.p;
