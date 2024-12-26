@@ -86,7 +86,7 @@ def run_cocci(cocci_patch_path, c_input_path, output_file=None, opts=None):
     logging.info(f"Running patch: {cocci_patch_path} against {c_input_path}")
     try:
         opts = opts or []
-        cmd = ["spatch", "--sp-file", str(cocci_patch_path), str(c_input_path)] + opts
+        cmd = ["spatch", "--sp-file", f'"{str(cocci_patch_path)}"', f'"{str(c_input_path)}"'] + opts
         if output_file is not None:
             output_file.touch()
             cmd.append(">>")
