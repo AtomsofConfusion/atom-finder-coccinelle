@@ -12,7 +12,7 @@ def list_patches():
     return [patch.name.lower() for patch in CocciPatch]
 
 
-@click.command
+@click.command()
 @click.argument("input-path", type=Path)
 @click.option("-o", "--output-dir", type=Path, default=".")
 # @click.option(
