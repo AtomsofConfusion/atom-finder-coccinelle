@@ -7,6 +7,56 @@ import pygit2
 from pathlib import Path
 from src import ROOT_DIR
 from src.run_cocci import find_atoms
+from clang.cindex import Index, CursorKind, Config
+
+
+Config.set_library_file('/usr/lib/llvm-14/lib/libclang-14.so.1')
+
+def parse_and_modify_functions(code, removed_line_numbers):
+    index = Index.create()
+    tu = index.parse('dummy.c', args=['-std=c11'], unsaved_files=[('dummy.c', code)])
+    
+    lines = code.splitlines()
+
+    def prepare_modifications(cursor, contained_lines):
+        for child in cursor.get_children():
+            if child.kind == CursorKind.FUNCTION_DECL:
+                any_contained = any(line in removed_line_numbers for line in contained_lines)
+                all_contained = all(line in removed_line_numbers for line in contained_lines)
+
+                # if all contained, the whole function was removed
+                if not any_contained or all_contained:
+                    # Find the compound statement that is the body of the function
+                    for c in child.get_children():
+                        if c.kind == CursorKind.COMPOUND_STMT:
+                            # Calculate the start and end offsets for the body
+                            body_start_line = c.extent.start.line
+                            body_end_line = c.extent.end.line - 2
+                            # Store the offsets and the count of newlines to preserve formatting
+                            lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
+                            break
+            prepare_modifications(child, contained_lines)
+
+    prepare_modifications(tu.cursor, set(target_line_numbers))
+
+    return "\n".join(lines)
+
+
+def append_rows_to_csv(file_path, data):
+    """
+    Appends rows to a CSV file. If the file does not exist, it will be created.
+
+    Args:
+    file_path (str): Path to the CSV file where data will be appended.
+    data (list of lists): Data to append, where each sublist represents a row.
+    """
+    # Open the file in append mode ('a') and create it if it doesn't exist ('a+')
+    with open(file_path, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        
+        # Write each row from the data list to the CSV file
+        for row in data:
+            writer.writerow(row)
 
 
 def get_file_content_at_commit(repo, commit, file_path):
@@ -38,6 +88,7 @@ def find_removed_atoms(repo, commit):
     parent = commit.parents[0]
     diff = repo.diff(parent, commit, context_lines=0, interhunk_lines=0)
     print(f"Current commit: {commit.hex}")
+    atoms = []
 
     removed_lines = defaultdict(list)
     for patch in diff:
@@ -52,36 +103,33 @@ def find_removed_atoms(repo, commit):
     if removed_lines:
         line_numbers_per_files = {}
         with tempfile.TemporaryDirectory() as temp_dir:
-            print(temp_dir)
             for file_name, removed in removed_lines.items():
                 line_numbers = [line.old_lineno for line in removed]
                 line_numbers_per_files[file_name] = line_numbers
                 content = get_file_content_at_commit(repo, parent, file_name)
-                if len(content.splitlines()) > 1000:
-                    # for now, skip larger files
-                    continue
+                print(f"File: {file_name}")
+                shorter_content = parse_and_modify_functions(content, line_numbers)
                 # Define file paths within the temporary directory
                 input = Path(temp_dir, file_name)
                 input.parent.mkdir(parents=True, exist_ok=True)
-                input.write_text(content)
+                input.write_text(shorter_content)
 
             output = Path(temp_dir, 'output.csv')
 
             # now, run coccinelle patches
-            print("finding atoms")
             find_atoms(temp_dir, output)
-            print("done")
             with open(output, mode="r", newline="") as file:
                 reader = csv.reader(file)
                 for row in reader:
                     if len(row) == 1:
                         continue
                     atom, path, start_line, start_col, end_line, end_col, code = row
-
                     file_name = path.split(f"{temp_dir}/")[1]
-                    if start_line in line_numbers_per_files[file_name]:
+                    if int(start_line) in line_numbers_per_files[file_name]:
                         row[1] = file_name
-                        print(row)
+                        output_row = [atom, file_name, commit.hex, start_line, start_col, code]
+                        atoms.append(output_row)
+    return atoms
     
 
 def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
@@ -121,17 +169,36 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
     Path("commits.json").write_text(json.dumps(commit_fixes))
 
 
-def get_removed_lines(repo_path, commits):
+def get_removed_lines(repo_path, commits, first_commit):
     repo = pygit2.Repository(repo_path)
+    output = Path("./atoms.csv")
+    count = 0
+    count_w_atoms = 0
+    found_first_commit = first_commit is None
     for commit_sha in commits:
+        if first_commit and commit_sha == first_commit:
+            found_first_commit = True
+        if not found_first_commit:
+            continue
         commit = repo.get(commit_sha)
-        find_removed_atoms(repo, commit)
+        try:
+            atoms = find_removed_atoms(repo, commit)
+            count += 1
+            if atoms:
+                append_rows_to_csv(output, atoms)
+                count_w_atoms += 1
+                print(f"Count with atoms: {count_w_atoms}")
+            print(f"Total count: {count}")
+        except Exception:
+            continue
+        
 
 if __name__ == "__main__":
     # Example usage
     repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
+    first_commit = None
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    get_removed_lines(repo_path, commits)
+    get_removed_lines(repo_path, commits, first_commit)
