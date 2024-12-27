@@ -18,11 +18,15 @@ def parse_and_modify_functions(code, removed_line_numbers):
     
     lines = code.splitlines()
 
-    def prepare_modifications(cursor, contained_lines):
+    def prepare_modifications(cursor, removed_line_numbers):
         for child in cursor.get_children():
             if child.kind == CursorKind.FUNCTION_DECL:
-                any_contained = any(line in removed_line_numbers for line in contained_lines)
-                all_contained = all(line in removed_line_numbers for line in contained_lines)
+                function_start = child.extent.start.line
+                function_end = child.extent.end.line
+                function_lines = [line for line in range(function_start, function_end + 1)]
+
+                any_contained = any(line in  removed_line_numbers for line in function_lines)
+                all_contained = all(line in  removed_line_numbers for line in function_lines)
 
                 # if all contained, the whole function was removed
                 if not any_contained or all_contained:
@@ -35,9 +39,9 @@ def parse_and_modify_functions(code, removed_line_numbers):
                             # Store the offsets and the count of newlines to preserve formatting
                             lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
                             break
-            prepare_modifications(child, contained_lines)
+            prepare_modifications(child, removed_line_numbers)
 
-    prepare_modifications(tu.cursor, set(target_line_numbers))
+    prepare_modifications(tu.cursor, set(removed_line_numbers))
 
     return "\n".join(lines)
 
@@ -107,7 +111,6 @@ def find_removed_atoms(repo, commit):
                 line_numbers = [line.old_lineno for line in removed]
                 line_numbers_per_files[file_name] = line_numbers
                 content = get_file_content_at_commit(repo, parent, file_name)
-                print(f"File: {file_name}")
                 shorter_content = parse_and_modify_functions(content, line_numbers)
                 # Define file paths within the temporary directory
                 input = Path(temp_dir, file_name)
@@ -169,11 +172,18 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
     Path("commits.json").write_text(json.dumps(commit_fixes))
 
 
-def get_removed_lines(repo_path, commits, first_commit):
+def get_removed_lines(repo_path, commits):
     repo = pygit2.Repository(repo_path)
     output = Path("./atoms.csv")
-    count = 0
-    count_w_atoms = 0
+    processed_path = Path("./last_processed.json")
+    processed = {}
+    if processed_path.is_file():
+        processed = json.loads(processed_path.read_text())
+
+    count = processed.get("count", 0)
+    count_w_atoms = processed.get("count_w_atoms", 0)
+    first_commit = processed.get("last_commit")
+
     found_first_commit = first_commit is None
     for commit_sha in commits:
         if first_commit and commit_sha == first_commit:
@@ -189,16 +199,22 @@ def get_removed_lines(repo_path, commits, first_commit):
                 count_w_atoms += 1
                 print(f"Count with atoms: {count_w_atoms}")
             print(f"Total count: {count}")
-        except Exception:
+        except Exception as e:
+            print(e)
             continue
+        processed = {
+            "count": count,
+            "count_w_atoms": count_w_atoms,
+            "last_commit": commit.hex
+        }
+        processed_path.write_text(json.dumps(processed))
         
 
 if __name__ == "__main__":
     # Example usage
     repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
-    first_commit = None
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    get_removed_lines(repo_path, commits, first_commit)
+    get_removed_lines(repo_path, commits)

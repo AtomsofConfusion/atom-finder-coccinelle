@@ -187,6 +187,10 @@ expression E;
 
 i1 a@E@p i2
 
+
+// removing this for the sake of performance
+
+/*
 @script:python@
 p << rule4.p;
 E << rule4.E;
@@ -206,6 +210,7 @@ type tf, ta;
 tf fun(..., ta a, ...) {
   ...
 }
+
 
 @rule5@
 position p;
@@ -232,7 +237,7 @@ t2 << rule5.t;
 if t1 != t2:
   if t1 in type_conversion_confusions.get(t2, []):
     print_expression_and_position(E, p, "Rule 5")
-
+*/
 
 @rule6@
 position p;
@@ -258,6 +263,8 @@ t2 << rule6.t2;
 if t1 != t2:
   if t1 in type_conversion_confusions.get(t2, []):
     print_expression_and_position(S, p, "Rule 6")
+
+
 
 @rule7@
 position p;
