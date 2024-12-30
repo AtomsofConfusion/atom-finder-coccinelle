@@ -1,8 +1,13 @@
+from asyncio import Event
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 import csv
+from functools import partial
 import json
+from multiprocessing import Process
 import re
 import tempfile
+import concurrent
 import pygit2
 from pathlib import Path
 from src import ROOT_DIR
@@ -14,7 +19,7 @@ Config.set_library_file('/usr/lib/llvm-14/lib/libclang-14.so.1')
 
 def parse_and_modify_functions(code, removed_line_numbers):
     index = Index.create()
-    tu = index.parse('dummy.c', args=['-std=c11'], unsaved_files=[('dummy.c', code)])
+    tu = index.parse('dummy.c', args=['-std=c11', '-nostdinc'], unsaved_files=[('dummy.c', code)])
     
     lines = code.splitlines()
 
@@ -84,6 +89,21 @@ def get_file_content_at_commit(repo, commit, file_path):
         return "File not found in the specified commit."
 
 
+def run_with_process_timeout(task, timeout):
+    stop_event = Event()
+    process = Process(target=task)
+    process.start()
+    process.join(timeout)
+    if process.is_alive():
+        print("Process did not complete within timeout.")
+        stop_event.set()
+        process.terminate()  # Forcefully terminate the process
+        process.join()
+        return False
+    print("Process completed within timeout.")
+    return True
+
+
 def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
@@ -120,18 +140,19 @@ def find_removed_atoms(repo, commit):
             output = Path(temp_dir, 'output.csv')
 
             # now, run coccinelle patches
-            find_atoms(temp_dir, output)
-            with open(output, mode="r", newline="") as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    if len(row) == 1:
-                        continue
-                    atom, path, start_line, start_col, end_line, end_col, code = row
-                    file_name = path.split(f"{temp_dir}/")[1]
-                    if int(start_line) in line_numbers_per_files[file_name]:
-                        row[1] = file_name
-                        output_row = [atom, file_name, commit.hex, start_line, start_col, code]
-                        atoms.append(output_row)
+            task = partial(find_atoms, temp_dir, output)
+            if run_with_process_timeout(task,  300 ):
+                with open(output, mode="r", newline="") as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if len(row) == 1:
+                            continue
+                        atom, path, start_line, start_col, end_line, end_col, code = row
+                        file_name = path.split(f"{temp_dir}/")[1]
+                        if int(start_line) in line_numbers_per_files[file_name]:
+                            row[1] = file_name
+                            output_row = [atom, file_name, commit.hex, start_line, start_col, code]
+                            atoms.append(output_row)
     return atoms
     
 
@@ -183,11 +204,14 @@ def get_removed_lines(repo_path, commits):
     count = processed.get("count", 0)
     count_w_atoms = processed.get("count_w_atoms", 0)
     first_commit = processed.get("last_commit")
+    # first_commit = None
 
     found_first_commit = first_commit is None
     for commit_sha in commits:
         if first_commit and commit_sha == first_commit:
             found_first_commit = True
+            # alreadt processed, skip
+            continue
         if not found_first_commit:
             continue
         commit = repo.get(commit_sha)
@@ -207,7 +231,7 @@ def get_removed_lines(repo_path, commits):
             "count_w_atoms": count_w_atoms,
             "last_commit": commit.hex
         }
-        processed_path.write_text(json.dumps(processed))
+        # processed_path.write_text(json.dumps(processed))
         
 
 if __name__ == "__main__":
@@ -217,4 +241,5 @@ if __name__ == "__main__":
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
+    # commits = ["c00d738e1673ab801e1577e4e3c780ccf88b1a5b"]
     get_removed_lines(repo_path, commits)

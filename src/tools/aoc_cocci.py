@@ -33,7 +33,6 @@ def list_patches():
 )
 def atom_finder(input_path, output_dir, patch, verbosity):
     cocci_patch = CocciPatch.from_string(patch) if patch else None
-
     if not input_path.exists():
         logging.error(f"{input_path} does not exist")
         return

@@ -1,9 +1,3 @@
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,42,9,"if ( add ( a , b ) ) { printf ( ""else if with implicit predicate\n"" ) ; } "
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,40,2,"if ( add ( 1 , 2 ) ) { printf ( ""if with implicit predicate\n"" ) ; } else if ( add ( a , b ) ) { printf ( ""else if with implicit predicate\n"" ) ; }  "
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,85,2,"if ( add ( a % b ? 1 : 2 , 3 ) ) { printf ( ""if and ternary operator with implicit predicate\n"" ) ; } else if ( add ( a % b ? 1 : 2 , 3 ) == 1 ) { printf ( ""ternary operator with implicit predicate\n"" ) ; } else if ( add ( a % b != 0 ? 1 : 2 , 3 ) == 1 ) { printf ( ""else if and ternary operator without implicit predicate\n"" ) ; }   "
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,22,2,"if ( a % b ) { printf ( ""if with implicit predicate\n"" ) ; } else if ( b % a ) { printf ( ""else if with implicit predicate\n"" ) ; }  "
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,24,9,"if ( b % a ) { printf ( ""else if with implicit predicate\n"" ) ; } "
-implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,128,2,if ( c -> s_i ) { return 1 ; } 
 implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,48,9,count
 implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,74,19,i
 implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,95,9,"add ( count , count ? 1 : 10 )"
