@@ -3,7 +3,7 @@
 from pathlib import Path
 processed = {}
 debug = False
-ATOM_NAME = "assignment-as-value"
+ATOM_NAME = "logic-as-controlflow"
 
 def print_expression_and_position(exp, position, rule_name=""):
     file_path = Path(position[0].file).resolve().absolute()
