@@ -1,17 +1,17 @@
 from asyncio import Event
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
 import csv
+import difflib
 from functools import partial
 import json
 from multiprocessing import Process
 import re
 import tempfile
-import concurrent
+import clang
 import pygit2
 from pathlib import Path
 from src import ROOT_DIR
-from src.run_cocci import find_atoms
+from src.run_cocci import CocciPatch, find_atoms
 from clang.cindex import Index, CursorKind, Config
 
 
@@ -104,25 +104,71 @@ def run_with_process_timeout(task, timeout):
     return True
 
 
+def filter_removed_lines(removed_lines, added_lines):
+    # Using difflib to find matches between removed and added lines
+
+    def find_consecutive_lines(removed_lines):
+        last_line_number = None
+        current_count = 0
+        threhsold = 5
+        consecutive_lines = []
+        current_consecutive = []
+        for line_number in sorted(removed_lines):
+            if last_line_number is not None and line_number == last_line_number + 1:
+                current_count += 1
+                current_consecutive.append(line_number)
+            else:
+                if current_count >= threhsold:
+                    consecutive_lines.extend(current_consecutive)
+                current_count = 0
+                current_consecutive = []
+            if last_line_number is None:
+                current_consecutive.append(line_number)
+            last_line_number = line_number
+        if current_count >= threhsold:
+            consecutive_lines.extend(current_consecutive)
+
+        return consecutive_lines
+
+
+    filtered_lines = defaultdict(list)
+    for file_name, all_removed in removed_lines.items():
+
+        consecutive_lines = find_consecutive_lines([line.old_lineno for line in all_removed])
+        # for simplicity, only campare witht the current file, as it's 
+        # more difficult to determine if it was added to a different file
+        added_lines_file = [line.content.strip() for line in added_lines[file_name]]
+        for removed in all_removed:
+            if removed.old_lineno in consecutive_lines or removed.content.strip() in added_lines_file:
+                continue
+            filtered_lines[file_name].append(removed)
+    return filtered_lines
+ 
+
 def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
     """
+    PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
 
     parent = commit.parents[0]
     diff = repo.diff(parent, commit, context_lines=0, interhunk_lines=0)
     print(f"Current commit: {commit.hex}")
     atoms = []
 
+    added_lines = defaultdict(list)
     removed_lines = defaultdict(list)
     for patch in diff:
-
         file_name = patch.delta.new_file.path
 
         for hunk in patch.hunks:
             for line in hunk.lines:
                 if line.old_lineno != -1:
                     removed_lines[file_name].append(line)
+                if line.new_lineno != -1:
+                    added_lines[file_name].append(line)
+
+    removed_lines = filter_removed_lines(removed_lines, added_lines)
 
     if removed_lines:
         line_numbers_per_files = {}
@@ -140,7 +186,7 @@ def find_removed_atoms(repo, commit):
             output = Path(temp_dir, 'output.csv')
 
             # now, run coccinelle patches
-            task = partial(find_atoms, temp_dir, output)
+            task = partial(find_atoms, temp_dir, output, None, PATCHES_TO_SKIP)
             if run_with_process_timeout(task,  300 ):
                 with open(output, mode="r", newline="") as file:
                     reader = csv.reader(file)
@@ -204,7 +250,6 @@ def get_removed_lines(repo_path, commits):
     count = processed.get("count", 0)
     count_w_atoms = processed.get("count_w_atoms", 0)
     first_commit = processed.get("last_commit")
-    # first_commit = None
 
     found_first_commit = first_commit is None
     for commit_sha in commits:
@@ -231,7 +276,7 @@ def get_removed_lines(repo_path, commits):
             "count_w_atoms": count_w_atoms,
             "last_commit": commit.hex
         }
-        # processed_path.write_text(json.dumps(processed))
+        processed_path.write_text(json.dumps(processed))
         
 
 if __name__ == "__main__":

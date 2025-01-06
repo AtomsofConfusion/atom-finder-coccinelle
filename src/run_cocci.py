@@ -65,11 +65,11 @@ def _is_subset(current, previous):
     return False
 
 def find_atoms(
-    input_path: Path, output: Optional[Path] = None, patch: Optional[CocciPatch] = None
+    input_path: Path, output: Optional[Path] = None, patch: Optional[CocciPatch] = None, patches_to_skip: Optional[list] = None
 ) -> Dict[CocciPatch, str]:
     if patch is None:
-        # run all patche
-        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch]
+        # run all patche, except for patches to skip
+        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch if cocci_patch not in patches_to_skip]
     else:
         patches_to_run = [patch]
 
