@@ -17,38 +17,108 @@ from clang.cindex import Index, CursorKind, Config
 
 Config.set_library_file('/usr/lib/llvm-14/lib/libclang-14.so.1')
 
-def parse_and_modify_functions(code, removed_line_numbers):
+
+def is_control_structure(cursor):
+    """Check if the cursor is a control structure or important flow element."""
+    return cursor.kind in [
+        CursorKind.IF_STMT, CursorKind.FOR_STMT,
+        CursorKind.WHILE_STMT, CursorKind.DO_STMT,
+        CursorKind.SWITCH_STMT
+    ]
+
+
+def save_headers_to_temp(full_code, output_dir, repo, commit, loaded_headers, invalid_headers):
+    _extract_headers(output_dir, full_code, repo, commit, loaded_headers, invalid_headers)
+
+
+def _extract_headers(output_dir, code, repo, commit, processed, invalid):
+    """
+    Recursively extract all unique header file names from the C code.
+
+    :param code: C code from which to extract header files.
+    :param base_path: The base directory where header files are searched (as a Path object).
+    :param processed: A set to keep track of processed header files to avoid cyclic includes.
+    :return: A set of all header files included in the code, directly or indirectly.
+    """
+    header_pattern = re.compile(r'#include\s+<([^>]+)>')
+    headers = set(header_pattern.findall(code))
+    all_headers = set(headers)
+
+    for header in headers:
+        if header in processed[commit] or header in invalid[commit]:
+            continue
+        if header not in processed[commit]:
+            processed[commit].append(header)
+            header_name = str(Path("include", header))
+            try:
+                file_content = get_file_content_at_commit(repo, commit, header_name)
+                path = Path(output_dir / header)
+                path.parent.mkdir(exist_ok=True, parents=True)
+                path.write_text(file_content)
+            except Exception as e:
+                print(f"Cannot load {header} at {commit} due to {e}")
+                invalid[commit].append(header)
+                continue
+            included_headers = _extract_headers(output_dir, file_content, repo, commit, processed, invalid)
+            all_headers.update(included_headers)
+    return all_headers
+
+
+def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_name):
     index = Index.create()
-    tu = index.parse('dummy.c', args=['-std=c11', '-nostdinc'], unsaved_files=[('dummy.c', code)])
+    tu = index.parse(file_name, args=['-std=c11', '-nostdinc', f"-I{include_dir}"], unsaved_files=[(file_name, code)])
     
     lines = code.splitlines()
 
     def prepare_modifications(cursor, removed_line_numbers):
         for child in cursor.get_children():
-            if child.kind == CursorKind.FUNCTION_DECL:
-                function_start = child.extent.start.line
-                function_end = child.extent.end.line
-                function_lines = [line for line in range(function_start, function_end + 1)]
 
-                any_contained = any(line in  removed_line_numbers for line in function_lines)
-                all_contained = all(line in  removed_line_numbers for line in function_lines)
+            is_function = child.kind == CursorKind.FUNCTION_DECL
+            is_control = is_control_structure(child)
+            continue_inner_search = True
+            if is_function or is_control:
+                start = child.extent.start.line
+                end = child.extent.end.line
+                lines = [line for line in range(start, end + 1)]
+
+                any_contained = any(line in removed_line_numbers for line in lines)
+                all_contained = all(line in removed_line_numbers for line in lines)
 
                 # if all contained, the whole function was removed
-                if not any_contained or all_contained:
-                    # Find the compound statement that is the body of the function
-                    for c in child.get_children():
-                        if c.kind == CursorKind.COMPOUND_STMT:
-                            # Calculate the start and end offsets for the body
-                            body_start_line = c.extent.start.line
-                            body_end_line = c.extent.end.line - 2
-                            # Store the offsets and the count of newlines to preserve formatting
-                            lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
-                            break
-            prepare_modifications(child, removed_line_numbers)
+                if is_function:
+                    if not any_contained or all_contained:
+                        # Find the compound statement that is the body of the function
+                        for c in child.get_children():
+                            if c.kind == CursorKind.COMPOUND_STMT:
+                                # Calculate the start and end offsets for the body
+                                body_start_line = c.extent.start.line
+                                body_end_line = c.extent.end.line - 2
+                                # Store the offsets and the count of newlines to preserve formatting
+                                lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
+                                break
+                        continue_inner_search = False
+                    else:
+                        print("inside this function")
+                
+                if is_control:
+                    print("is control")
+                    print(lines)
+                    print(removed_line_numbers)
+                    if all_contained:
+                        for line in lines:
+                            removed_line_numbers.remove(line)
+                        print("removing lines full structure")
+                        continue_inner_search = False
+                    elif not any_contained:
+                        continue_inner_search = False
 
-    prepare_modifications(tu.cursor, set(removed_line_numbers))
+            if continue_inner_search:
+                prepare_modifications(child, removed_line_numbers)
 
-    return "\n".join(lines)
+    modified_line_numbers = list(set(removed_line_numbers))
+    prepare_modifications(tu.cursor, modified_line_numbers)
+
+    return "\n".join(lines), modified_line_numbers
 
 
 def append_rows_to_csv(file_path, data):
@@ -107,39 +177,14 @@ def run_with_process_timeout(task, timeout):
 def filter_removed_lines(removed_lines, added_lines):
     # Using difflib to find matches between removed and added lines
 
-    def find_consecutive_lines(removed_lines):
-        last_line_number = None
-        current_count = 0
-        threhsold = 5
-        consecutive_lines = []
-        current_consecutive = []
-        for line_number in sorted(removed_lines):
-            if last_line_number is not None and line_number == last_line_number + 1:
-                current_count += 1
-                current_consecutive.append(line_number)
-            else:
-                if current_count >= threhsold:
-                    consecutive_lines.extend(current_consecutive)
-                current_count = 0
-                current_consecutive = []
-            if last_line_number is None:
-                current_consecutive.append(line_number)
-            last_line_number = line_number
-        if current_count >= threhsold:
-            consecutive_lines.extend(current_consecutive)
-
-        return consecutive_lines
-
-
     filtered_lines = defaultdict(list)
     for file_name, all_removed in removed_lines.items():
 
-        consecutive_lines = find_consecutive_lines([line.old_lineno for line in all_removed])
         # for simplicity, only campare witht the current file, as it's 
         # more difficult to determine if it was added to a different file
         added_lines_file = [line.content.strip() for line in added_lines[file_name]]
         for removed in all_removed:
-            if removed.old_lineno in consecutive_lines or removed.content.strip() in added_lines_file:
+            if removed.content.strip() in added_lines_file:
                 continue
             filtered_lines[file_name].append(removed)
     return filtered_lines
@@ -152,6 +197,8 @@ def find_removed_atoms(repo, commit):
     PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
 
     parent = commit.parents[0]
+    print("PARENT")
+    print(parent)
     diff = repo.diff(parent, commit, context_lines=0, interhunk_lines=0)
     print(f"Current commit: {commit.hex}")
     atoms = []
@@ -168,16 +215,29 @@ def find_removed_atoms(repo, commit):
                 if line.new_lineno != -1:
                     added_lines[file_name].append(line)
 
-    removed_lines = filter_removed_lines(removed_lines, added_lines)
+    # removed_lines = filter_removed_lines(removed_lines, added_lines)
 
     if removed_lines:
         line_numbers_per_files = {}
+        loaded_headers = defaultdict(list)
+        invalid_headers = defaultdict(list)
+        include_dir = str(Path(repo.path).parent / "include") 
         with tempfile.TemporaryDirectory() as temp_dir:
+            headers_dir = Path(temp_dir, "headers")
             for file_name, removed in removed_lines.items():
                 line_numbers = [line.old_lineno for line in removed]
-                line_numbers_per_files[file_name] = line_numbers
                 content = get_file_content_at_commit(repo, parent, file_name)
-                shorter_content = parse_and_modify_functions(content, line_numbers)
+                save_headers_to_temp(
+                    commit=parent,
+                    output_dir=headers_dir,
+                    repo=repo,
+                    full_code=content,
+                    loaded_headers=loaded_headers,
+                    invalid_headers=invalid_headers
+                )
+                import pdb; pdb.set_trace()
+                shorter_content, modified_lines = parse_and_modify_functions(content, line_numbers, headers_dir, file_name)
+                line_numbers_per_files[file_name] = modified_lines
                 # Define file paths within the temporary directory
                 input = Path(temp_dir, file_name)
                 input.parent.mkdir(parents=True, exist_ok=True)
@@ -249,7 +309,8 @@ def get_removed_lines(repo_path, commits):
 
     count = processed.get("count", 0)
     count_w_atoms = processed.get("count_w_atoms", 0)
-    first_commit = processed.get("last_commit")
+    # first_commit = processed.get("last_commit")
+    first_commit = None
 
     found_first_commit = first_commit is None
     for commit_sha in commits:
@@ -286,5 +347,5 @@ if __name__ == "__main__":
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    # commits = ["c00d738e1673ab801e1577e4e3c780ccf88b1a5b"]
+    commits = ["a3b4647e2f9ae8e8c6829ce637945b3c07a727ad"]
     get_removed_lines(repo_path, commits)
