@@ -38,7 +38,7 @@ class CocciPatch(Enum):
 
 
 # in some cases, subexpressions should be counted as separate atoms, in others, it seems unnecessary
-remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR)
+remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR, CocciPatch.TYPE_CONVERSION)
 
 
 def _check_if_subexpression(start_line, start_col, end_line, end_col, processed):
@@ -65,28 +65,28 @@ def _is_subset(current, previous):
     return False
 
 def find_atoms(
-    input_path: Path, output: Optional[Path] = None, patch: Optional[CocciPatch] = None
+    input_path: Path, output: Optional[Path] = None, patch: Optional[CocciPatch] = None, patches_to_skip: Optional[list] = None
 ) -> Dict[CocciPatch, str]:
     if patch is None:
-        # run all patche
-        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch]
+        # run all patche, except for patches to skip
+        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch if cocci_patch not in patches_to_skip]
     else:
         patches_to_run = [patch]
 
     all_atoms = {}
     for patch_to_run in patches_to_run:
-        atoms = run_cocci(patch_to_run, input_path)
+        atoms = run_cocci(patch_to_run, input_path, output_file=output)
         all_atoms[patch_to_run] = atoms
-
+        
     return all_atoms
 
 
 def run_cocci(cocci_patch_path, c_input_path, output_file=None, opts=None):
     # keep all paths for this file to avoid additional imports from pathlib
-    logging.info(f"Running patch: {cocci_patch_path} against {c_input_path}")
+    logging.debug(f"Running patch: {cocci_patch_path} against {c_input_path}")
     try:
         opts = opts or []
-        cmd = ["spatch", "--sp-file", str(cocci_patch_path), str(c_input_path)] + opts
+        cmd = ["spatch","--jobs 4", "--sp-file", str(cocci_patch_path), str(c_input_path)] + opts
         if output_file is not None:
             output_file.touch()
             cmd.append(">>")
@@ -109,7 +109,7 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path, pat
     filtered_data = [] 
     removed_lines_count = 0
     processed = {}
-    logging.info("Posptocessing: removing duplicate lines")
+    logging.debug("Posptocessing: removing duplicate lines")
     with open(output_file_path, mode='w', newline='', encoding="utf8") as outfile:
         writer = csv.writer(outfile)
         previous_debug_row = None
@@ -119,6 +119,9 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path, pat
                 previous_debug_row = row
                 continue
 
+            if len(row) < 7:
+                filtered_data.append(row)
+                continue
             _, _, start_line, start_col, end_line, end_col, _ = row
             if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
                 if previous_debug_row is not None:
@@ -140,11 +143,12 @@ def postprocess_and_generate_output(file_path: Path, output_file_path: Path, pat
         if filtered_data:
             writer.writerows(filtered_data)
             filtered_data.clear()
-        logging.info(f"Removed {removed_lines_count} lines")
+        logging.debug(f"Removed {removed_lines_count} lines")
         logging.info(f"Save output to {output_file_path}")
 
 
 def run_patches_and_generate_output(input_path: Path, output_dir: Optional[Path] = None, patch: Optional[CocciPatch] = None):
+    logging.info("Running patches")
     if patch is None:
         # run all patche
         patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch]

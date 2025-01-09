@@ -1,4 +1,5 @@
 from pathlib import Path
 
-COCCI_DIR = Path(__file__).parent.parent / "cocci"
+ROOT_DIR = Path(__file__).parent.parent
+COCCI_DIR = ROOT_DIR/ "cocci"
 
