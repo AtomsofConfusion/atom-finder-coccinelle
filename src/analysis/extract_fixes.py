@@ -9,6 +9,7 @@ import re
 import tempfile
 import clang
 import pygit2
+from pygit2.enums import DeltaStatus
 from pathlib import Path
 from src import ROOT_DIR
 from src.run_cocci import CocciPatch, find_atoms
@@ -18,18 +19,40 @@ from clang.cindex import Index, CursorKind, Config
 Config.set_library_file('/usr/lib/llvm-14/lib/libclang-14.so.1')
 
 
-def is_control_structure(cursor):
-    """Check if the cursor is a control structure or important flow element."""
+def is_complex_structure(cursor):
     return cursor.kind in [
         CursorKind.IF_STMT, CursorKind.FOR_STMT,
-        CursorKind.WHILE_STMT, CursorKind.DO_STMT,
-        CursorKind.SWITCH_STMT
+        CursorKind.WHILE_STMT,
+        CursorKind.SWITCH_STMT, CursorKind.STRUCT_DECL,
     ]
 
 
 def save_headers_to_temp(full_code, output_dir, repo, commit, loaded_headers, invalid_headers):
+
+    
     _extract_headers(output_dir, full_code, repo, commit, loaded_headers, invalid_headers)
 
+
+
+def save_all_headers(output_dir, commit, repo):
+    # if it's better to save all headers, this can be used
+    # doesn't seem to make a difference
+    subfolder_tree = commit.tree
+    subfolder_tree = repo.get(subfolder_tree["include"].id)
+    _save_all_headers(output_dir, subfolder_tree, repo, path_prefix="include")
+
+def _save_all_headers(output_dir, tree, repo, path_prefix):
+    for entry in tree:
+        entry_path = f"{path_prefix}/{entry.name}".strip("/")
+        if entry.type == pygit2.GIT_OBJ_TREE:
+            sub_tree = repo.get(entry.id)
+            _save_all_headers(output_dir, sub_tree, repo, entry_path)
+        elif entry.type == pygit2.GIT_OBJ_BLOB:
+            header_name = f"{path_prefix.split('include/')[1]}/{entry.name}"
+            path = Path(output_dir / header_name)
+            file_content = entry.read_raw().decode()
+            path.parent.mkdir(exist_ok=True, parents=True)
+            path.write_text(file_content)
 
 def _extract_headers(output_dir, code, repo, commit, processed, invalid):
     """
@@ -72,11 +95,12 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
 
     def prepare_modifications(cursor, removed_line_numbers):
         for child in cursor.get_children():
-
+            if child.location.file and file_name not in child.location.file.name:
+                continue
             is_function = child.kind == CursorKind.FUNCTION_DECL
-            is_control = is_control_structure(child)
+            is_complex = is_complex_structure(child)
             continue_inner_search = True
-            if is_function or is_control:
+            if is_function or is_complex:
                 start = child.extent.start.line
                 end = child.extent.end.line
                 lines = [line for line in range(start, end + 1)]
@@ -97,17 +121,17 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
                                 lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
                                 break
                         continue_inner_search = False
-                    else:
-                        print("inside this function")
-                
-                if is_control:
-                    print("is control")
-                    print(lines)
-                    print(removed_line_numbers)
+                    elif not any_contained:
+                        continue_inner_search = False
+
+                if is_complex:
+                    if len(lines) == 1:
+                        continue
+                    # print(lines)
+                    # print(removed_line_numbers)
                     if all_contained:
                         for line in lines:
                             removed_line_numbers.remove(line)
-                        print("removing lines full structure")
                         continue_inner_search = False
                     elif not any_contained:
                         continue_inner_search = False
@@ -117,9 +141,35 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
 
     modified_line_numbers = list(set(removed_line_numbers))
     prepare_modifications(tu.cursor, modified_line_numbers)
-
     return "\n".join(lines), modified_line_numbers
 
+
+def map_similar_lines(removed, added):
+    similarity_threshold = 0.8
+    mappings = {}
+
+    for r_file, r_lines in removed.items():
+        for r_line in r_lines:
+            r_line_content = r_line.content.strip()
+            if r_line_content in ("{", "}") or "else" in r_line_content:
+                continue
+            best_match = None
+            best_ratio = 0
+            for _, a_lines in added.items():
+                for a_line in a_lines:
+                    a_line_content = a_line.content.strip()
+                    ratio = difflib.SequenceMatcher(None, r_line_content, a_line_content).ratio()
+                    if ratio > best_ratio:
+                        best_ratio = ratio
+                        best_match = (a_line, best_ratio)
+            
+            if best_ratio > similarity_threshold:
+                mappings[(r_file, r_line)] = best_match
+
+            # if best_match:
+            #     added[r_file].remove(best_match[0]) 
+    
+    return mappings
 
 def append_rows_to_csv(file_path, data):
     """
@@ -170,25 +220,8 @@ def run_with_process_timeout(task, timeout):
         process.terminate()  # Forcefully terminate the process
         process.join()
         return False
-    print("Process completed within timeout.")
     return True
 
-
-def filter_removed_lines(removed_lines, added_lines):
-    # Using difflib to find matches between removed and added lines
-
-    filtered_lines = defaultdict(list)
-    for file_name, all_removed in removed_lines.items():
-
-        # for simplicity, only campare witht the current file, as it's 
-        # more difficult to determine if it was added to a different file
-        added_lines_file = [line.content.strip() for line in added_lines[file_name]]
-        for removed in all_removed:
-            if removed.content.strip() in added_lines_file:
-                continue
-            filtered_lines[file_name].append(removed)
-    return filtered_lines
- 
 
 def find_removed_atoms(repo, commit):
     """
@@ -197,8 +230,6 @@ def find_removed_atoms(repo, commit):
     PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
 
     parent = commit.parents[0]
-    print("PARENT")
-    print(parent)
     diff = repo.diff(parent, commit, context_lines=0, interhunk_lines=0)
     print(f"Current commit: {commit.hex}")
     atoms = []
@@ -206,7 +237,12 @@ def find_removed_atoms(repo, commit):
     added_lines = defaultdict(list)
     removed_lines = defaultdict(list)
     for patch in diff:
+        status = patch.delta.status
+        if status != DeltaStatus.MODIFIED:
+            continue
         file_name = patch.delta.new_file.path
+        if Path(file_name).suffix not in (".c", ".h"):
+            continue
 
         for hunk in patch.hunks:
             for line in hunk.lines:
@@ -215,17 +251,20 @@ def find_removed_atoms(repo, commit):
                 if line.new_lineno != -1:
                     added_lines[file_name].append(line)
 
-    # removed_lines = filter_removed_lines(removed_lines, added_lines)
-
     if removed_lines:
         line_numbers_per_files = {}
         loaded_headers = defaultdict(list)
         invalid_headers = defaultdict(list)
-        include_dir = str(Path(repo.path).parent / "include") 
         with tempfile.TemporaryDirectory() as temp_dir:
             headers_dir = Path(temp_dir, "headers")
+            line_mapping = map_similar_lines(removed_lines, added_lines)
+            # for removed_pair, added_pair in line_mapping.items():
+            #     print(removed_pair[1].content)
+            #     print(added_pair[0].content)
+            #     print(added_pair[1])
+            #     print("--------")
             for file_name, removed in removed_lines.items():
-                line_numbers = [line.old_lineno for line in removed]
+                removed_line_numbers = [line.old_lineno for line in removed]
                 content = get_file_content_at_commit(repo, parent, file_name)
                 save_headers_to_temp(
                     commit=parent,
@@ -235,18 +274,31 @@ def find_removed_atoms(repo, commit):
                     loaded_headers=loaded_headers,
                     invalid_headers=invalid_headers
                 )
-                import pdb; pdb.set_trace()
-                shorter_content, modified_lines = parse_and_modify_functions(content, line_numbers, headers_dir, file_name)
+                shorter_content, modified_lines = parse_and_modify_functions(
+                    content, removed_line_numbers, headers_dir, file_name)
+
                 line_numbers_per_files[file_name] = modified_lines
+
                 # Define file paths within the temporary directory
-                input = Path(temp_dir, file_name)
+                input = Path(temp_dir, "input", file_name)
                 input.parent.mkdir(parents=True, exist_ok=True)
                 input.write_text(shorter_content)
 
-            output = Path(temp_dir, 'output.csv')
 
+            # for now, remove lines with similarity index 1
+            for removed, similarity_data in line_mapping.items():
+                _, similarity = similarity_data
+                if similarity == 1:
+                    file_name, r_line = removed
+                    line_no = r_line.old_lineno
+                    if line_no in line_numbers_per_files[file_name]:
+                        line_numbers_per_files[file_name].remove(line_no)
+
+            output = Path(temp_dir, 'output.csv')
+            input_dir = Path(temp_dir, "input")
             # now, run coccinelle patches
-            task = partial(find_atoms, temp_dir, output, None, PATCHES_TO_SKIP)
+
+            task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
             if run_with_process_timeout(task,  300 ):
                 with open(output, mode="r", newline="") as file:
                     reader = csv.reader(file)
@@ -254,7 +306,7 @@ def find_removed_atoms(repo, commit):
                         if len(row) == 1:
                             continue
                         atom, path, start_line, start_col, end_line, end_col, code = row
-                        file_name = path.split(f"{temp_dir}/")[1]
+                        file_name = path.split(f"{input_dir}/")[1]
                         if int(start_line) in line_numbers_per_files[file_name]:
                             row[1] = file_name
                             output_row = [atom, file_name, commit.hex, start_line, start_col, code]
@@ -347,5 +399,5 @@ if __name__ == "__main__":
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    commits = ["a3b4647e2f9ae8e8c6829ce637945b3c07a727ad"]
+    commits = ["6422cde1b0d5a31b206b263417c1c2b3c80fe82c"]
     get_removed_lines(repo_path, commits)
