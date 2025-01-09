@@ -28,10 +28,7 @@ def is_complex_structure(cursor):
 
 
 def save_headers_to_temp(full_code, output_dir, repo, commit, loaded_headers, invalid_headers):
-
-    
     _extract_headers(output_dir, full_code, repo, commit, loaded_headers, invalid_headers)
-
 
 
 def save_all_headers(output_dir, commit, repo):
@@ -101,12 +98,12 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
             is_complex = is_complex_structure(child)
             continue_inner_search = True
             if is_function or is_complex:
-                start = child.extent.start.line
-                end = child.extent.end.line
-                lines = [line for line in range(start, end + 1)]
+                element_start = child.extent.start.line
+                element_end = child.extent.end.line
+                element_lines = [line for line in range(element_start, element_end + 1)]
 
-                any_contained = any(line in removed_line_numbers for line in lines)
-                all_contained = all(line in removed_line_numbers for line in lines)
+                any_contained = any(line in removed_line_numbers for line in element_lines)
+                all_contained = all(line in removed_line_numbers for line in element_lines)
 
                 # if all contained, the whole function was removed
                 if is_function:
@@ -120,21 +117,13 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
                                 # Store the offsets and the count of newlines to preserve formatting
                                 lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
                                 break
-                        continue_inner_search = False
-                    elif not any_contained:
-                        continue_inner_search = False
-
-                if is_complex:
-                    if len(lines) == 1:
-                        continue
-                    # print(lines)
-                    # print(removed_line_numbers)
-                    if all_contained:
-                        for line in lines:
-                            removed_line_numbers.remove(line)
-                        continue_inner_search = False
-                    elif not any_contained:
-                        continue_inner_search = False
+                
+                if all_contained and len(element_lines) > 1:
+                    for line in element_lines:
+                        removed_line_numbers.remove(line)
+                
+                if all_contained or not any_contained:
+                    continue_inner_search = False
 
             if continue_inner_search:
                 prepare_modifications(child, removed_line_numbers)
@@ -361,8 +350,8 @@ def get_removed_lines(repo_path, commits):
 
     count = processed.get("count", 0)
     count_w_atoms = processed.get("count_w_atoms", 0)
-    # first_commit = processed.get("last_commit")
-    first_commit = None
+    first_commit = processed.get("last_commit")
+    # first_commit = None
 
     found_first_commit = first_commit is None
     for commit_sha in commits:
@@ -399,5 +388,5 @@ if __name__ == "__main__":
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    commits = ["6422cde1b0d5a31b206b263417c1c2b3c80fe82c"]
+    # commits = ["d7b028656c29b22fcde1c6ee1df5b28fbba987b5"]
     get_removed_lines(repo_path, commits)
