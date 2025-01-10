@@ -12,7 +12,7 @@ def list_patches():
     return [patch.name.lower() for patch in CocciPatch]
 
 
-@click.command
+@click.command()
 @click.argument("input-path", type=Path)
 @click.option("-o", "--output-dir", type=Path, default=".")
 # @click.option(
@@ -29,7 +29,7 @@ def list_patches():
     help="Select a patch to apply",
 )
 @click.option(
-    "-v", "--verbosity", type=str, default=0, required=False, help="Enter 0 or 1"
+    "-v", "--verbosity", is_flag=True, show_default=True, default=False, help="This flag will print information for debugging."
 )
 def atom_finder(input_path, output_dir, patch, verbosity):
     cocci_patch = CocciPatch.from_string(patch) if patch else None
