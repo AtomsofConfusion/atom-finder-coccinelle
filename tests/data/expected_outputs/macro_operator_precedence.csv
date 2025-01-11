@@ -1,0 +1,15 @@
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,21,13,M3 + 4
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,22,13,4 + M3
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,18,13,M2 * 2
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,16,13,2 * M2
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,17,13,M1 * 2
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,15,13,2 * M1
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,24,14,- M1
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,23,13,1 - MT1
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,25,14,ABS ( 1 - 2 )
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,19,13,MF1 ( i + 2 )
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,27,14,MF2 ( 1 & 2 )
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,26,14,MF3 ( 1 | 2 )
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,28,14,MF1 ( i - 1 ? r1 : r2 )
+operator-precedence,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/macro_operator_precedence.c,20,13,MF2 ( j ++ )
+

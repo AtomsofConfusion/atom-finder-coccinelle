@@ -1,0 +1,12 @@
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,36,15,"! add ( - 1 , V1 ) ? ( V1 & V3 ) : V5"
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,41,8,V1 % V2 ? 1 : 2
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,30,9,V1 > 4 ? 10 : 20
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,26,13,V1 == 3 ? 2 : 1
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,27,28,V1 == 5 ? 3 : 1
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,35,15,V1 < 32 ? ( ~ 0U >> V1 ) : ~ 0U
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,27,13,V1 == 3 ? 2 : ( V1 == 5 ? 3 : 1 )
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,43,27,( i & 3 ) != 0 ? 1 : - i
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,34,15,s2_p -> s2_s1 ? s2_p -> s2_s1 -> s1_v1 : 0
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,32,13,( V4 & V1 ) ? true : false
+conditional,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/conditional_operator.c,38,15,( ! V1 || V3 ) ? false : ( V2 == V5 )
+

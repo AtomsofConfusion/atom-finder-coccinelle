@@ -1,0 +1,12 @@
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,30,4,a = 0
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,4,2,a = 1
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,38,2,a = 1
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,26,4,a = 3
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,22,4,a = 4
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,28,4,a = - 3
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,5,2,a += 2
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,41,2,b = func1 ( b )
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,6,2,a ++
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,40,4,++a
+repurposed_variable,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/repurposed_variable.c,39,4,--b
+

@@ -1,0 +1,10 @@
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,28,2, int b3 = b1 + b2 ;
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,53,2, int g2 = ( int ) g1 ;
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,32,2,1.5 * 2
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,10,2,return x ;
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,41,2, int e3 = 1.5 ;
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,46,2,abc = 2.5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,42,2,e1 = 1.5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,30,2,1 + ( int ) 1.5
+type_conversion,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/type_conversion.c,31,2,( int ) 1.5 + 1
+

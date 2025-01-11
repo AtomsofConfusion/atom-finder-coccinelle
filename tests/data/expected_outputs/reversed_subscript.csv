@@ -1,0 +1,8 @@
+reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,15,12,i [ arr_char ]
+reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,13,11,1 [ arr_int ]
+reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,19,12,"1 [ ""abcde"" ]"
+reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,17,12,i ++ [ str ]
+reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,22,13,"( x + y ) [ ""abcde"" ]"
+reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,21,13,( 1 + 2 ) [ arr_char ]
+reversed_subscript,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/reversed_subscript.c,20,11,( 1 + 2 - 1 ) [ arr_int ]
+
