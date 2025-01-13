@@ -20,7 +20,13 @@ int post_increment() {
     printf("Value of a: %d\n", a);
     printf("Value of b: %d\n", b);
     
+    do {
+        print("post inc in while");
+    } while (a++ < 0 && b++);
+
     return 0;
+
+
 }
 
 
@@ -42,7 +48,11 @@ int post_decrement() {
     
     printf("Value of a: %d\n", a);
     printf("Value of b: %d\n", b);
-    
+
+    do {
+        print("post dec in while");
+    } while (a-- > 0 && b--);
+
     return 0;
 }
 
