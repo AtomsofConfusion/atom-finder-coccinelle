@@ -20,6 +20,10 @@ int pre_increment() {
     printf("Value of a: %d\n", a);
     printf("Value of b: %d\n", b);
     
+    do {
+        print("pre inc in while");
+    } while (++a < 0 && ++b);
+
     return 0;
 }
 
@@ -42,7 +46,11 @@ int pre_decrement() {
     
     printf("Value of a: %d\n", a);
     printf("Value of b: %d\n", b);
-    
+
+    do {
+        print("pre inc in while");
+    } while (--a < 0 && --b);
+
     return 0;
 }
 
