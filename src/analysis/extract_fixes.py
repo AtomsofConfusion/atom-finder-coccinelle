@@ -176,6 +176,19 @@ def append_rows_to_csv(file_path, data):
             writer.writerow(row)
 
 
+def append_to_json(json_file, item):
+    if not json_file.exists():
+        data = []
+    else:
+        with json_file.open('r') as file:
+            data = json.load(file)
+
+    data.append(item)
+
+    # Step 5: Save back to the file
+    with json_file.open('w') as file:
+        json.dump(data, file, indent=4)  # Save with indentation for readability
+
 def get_file_content_at_commit(repo, commit, file_path):
     """
     Retrieve the content of a file at a specific commit in a Git repository.
@@ -196,25 +209,6 @@ def get_file_content_at_commit(repo, commit, file_path):
     except KeyError:
         return "File not found in the specified commit."
 
-
-class TimeoutException(Exception):
-    pass
-
-def timeout_handler():
-    raise TimeoutException
-
-
-def run_with_process_timeout(func, timeout_duration=300):
-    timer = threading.Timer(timeout_duration, timeout_handler)
-    try:
-        timer.start()
-        func()
-        return True
-    except TimeoutException:
-        print("Task timed out")
-        return False
-    finally:
-        timer.cancel()
 
 
 def find_removed_atoms(repo, commit):
@@ -277,19 +271,18 @@ def find_removed_atoms(repo, commit):
             # now, run coccinelle patches
 
             # task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
-            task = partial(run_patches_and_generate_output, input_dir, output, temp_dir, False, None, PATCHES_TO_SKIP, False)
-            if run_with_process_timeout(task, 300):
-                with open(output, mode="r", newline="") as file:
-                    reader = csv.reader(file)
-                    for row in reader:
-                        if len(row) == 1:
-                            continue
-                        atom, path, start_line, start_col, end_line, end_col, code = row
-                        file_name = path.split(f"{input_dir}/")[1]
-                        if int(start_line) in line_numbers_per_files[file_name]:
-                            row[1] = file_name
-                            output_row = [atom, file_name, commit.hex, start_line, start_col, code]
-                            atoms.append(output_row)
+            run_patches_and_generate_output(input_dir, output, temp_dir, False, None, PATCHES_TO_SKIP, False)
+            with open(output, mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if len(row) == 1:
+                        continue
+                    atom, path, start_line, start_col, end_line, end_col, code = row
+                    file_name = path.split(f"{input_dir}/")[1]
+                    if int(start_line) in line_numbers_per_files[file_name]:
+                        row[1] = file_name
+                        output_row = [atom, file_name, commit.hex, start_line, start_col, code]
+                        atoms.append(output_row)
     return atoms
     
 
@@ -340,6 +333,8 @@ def get_removed_lines(repo_path, commits, index=0):
     else:
         output = Path("./atoms.csv")
         processed_path = Path("./last_processed.json")
+    
+    errors_path = Path("./errors.json")
     processed = {}
     if processed_path.is_file():
         processed = json.loads(processed_path.read_text())
@@ -369,7 +364,7 @@ def get_removed_lines(repo_path, commits, index=0):
                 print(f"Count with atoms: {count_w_atoms}")
             print(f"Total count: {count}")
         except Exception as e:
-            print(e)
+            append_to_json(errors_path, commit_sha)
             continue
         processed = {
             "count": count,
