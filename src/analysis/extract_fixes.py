@@ -271,7 +271,9 @@ def find_removed_atoms(repo, commit):
             # now, run coccinelle patches
 
             # task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
+            print(f"Running patches {commit}")
             run_patches_and_generate_output(input_dir, output, temp_dir, False, None, PATCHES_TO_SKIP, False)
+            print(f"Finished runing patches {commit}")
             with open(output, mode="r", newline="") as file:
                 reader = csv.reader(file)
                 for row in reader:
@@ -404,8 +406,8 @@ if __name__ == "__main__":
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    # commits = ["c82c507126c9c9db350be28f14c83fad1c7969ae"]
-    if number_of_processes == 1:
+    # commits = ["fef5b228dd38378148bc850f7e69a7783f3b95a4"]
+    if len(commits) == 1 or number_of_processes == 1:
         get_removed_lines(repo_path, commits)
     else:
         execute(repo_path, commits, number_of_processes)

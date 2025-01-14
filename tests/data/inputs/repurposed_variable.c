@@ -44,6 +44,11 @@ int fun5(int a, int b) {
   return a + b;
 }
 
+int fun5(int a, int b) {
+  int c = a + b;
+  return c;
+}
+
 
 int main() {
   return 0;

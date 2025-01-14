@@ -24,26 +24,17 @@ expression e;
 expression E;
 @@
 
+  tf fun(..., ti i, ...) {
+<...
 (
-  tf fun(..., ti i, ...) {
-    <+...
-    i a@E@p e
-    ...+>
-  }
+i a@E@p e
 |
-  tf fun(..., ti i, ...) {
-    <+...
-    i++@E@p
-    ...+>
-  }
+i++@E@p
 |
-  tf fun(..., ti i, ...) {
-    <+...
-    i--@E@p
-    ...+>
-  }
+i--@E@p
 )
-
+...>
+}
 
 @script:python@
 p << rule1.p;
@@ -51,7 +42,6 @@ E << rule1.E;
 @@
 
 print_expression_and_position(E, p, "Rule 1")
-
 
 @rule2@
 position p;
@@ -64,9 +54,9 @@ expression E;
 
 (
   tf fun(..., ti i, ...) {
-    <+...
+    <...
     ++i@E@p
-    ...+>
+    ...>
   }
 )
 
@@ -90,9 +80,9 @@ expression E;
 
 (
   tf fun(..., ti i, ...) {
-    <+...
+    <...
     --i@E@p
-    ...+>
+    ...>
   }
 )
 
