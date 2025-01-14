@@ -1,10 +1,8 @@
-from asyncio import Event
 from collections import defaultdict
 import csv
 import difflib
 from functools import partial
 import json
-from multiprocessing import Process
 import multiprocessing
 import re
 import tempfile
@@ -199,8 +197,11 @@ def get_file_content_at_commit(repo, commit, file_path):
         return "File not found in the specified commit."
 
 
+class TimeoutException(Exception):
+    pass
+
 def timeout_handler():
-    raise TimeoutError
+    raise TimeoutException
 
 
 def run_with_process_timeout(func, timeout_duration=300):
@@ -209,7 +210,7 @@ def run_with_process_timeout(func, timeout_duration=300):
         timer.start()
         func()
         return True
-    except TimeoutError:
+    except TimeoutException:
         print("Task timed out")
         return False
     finally:
