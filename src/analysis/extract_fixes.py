@@ -5,9 +5,10 @@ import difflib
 from functools import partial
 import json
 from multiprocessing import Process
+import multiprocessing
 import re
 import tempfile
-import clang
+import threading
 import pygit2
 from pygit2.enums import DeltaStatus
 from pathlib import Path
@@ -198,18 +199,21 @@ def get_file_content_at_commit(repo, commit, file_path):
         return "File not found in the specified commit."
 
 
-def run_with_process_timeout(task, timeout):
-    stop_event = Event()
-    process = Process(target=task)
-    process.start()
-    process.join(timeout)
-    if process.is_alive():
-        print("Process did not complete within timeout.")
-        stop_event.set()
-        process.terminate()  # Forcefully terminate the process
-        process.join()
+def timeout_handler():
+    raise TimeoutError
+
+
+def run_with_process_timeout(func, timeout_duration=300):
+    timer = threading.Timer(timeout_duration, timeout_handler)
+    try:
+        timer.start()
+        func()
+        return True
+    except TimeoutError:
+        print("Task timed out")
         return False
-    return True
+    finally:
+        timer.cancel()
 
 
 def find_removed_atoms(repo, commit):
@@ -325,18 +329,26 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
     Path("commits.json").write_text(json.dumps(commit_fixes))
 
 
-def get_removed_lines(repo_path, commits):
+def get_removed_lines(repo_path, commits, index=0):
     repo = pygit2.Repository(repo_path)
-    output = Path("./atoms.csv")
-    processed_path = Path("./last_processed.json")
+    if index:
+        output = Path(f"./results/atoms{index}.csv")
+        processed_path = Path(f"./last_processed/last_processed{index}.json")
+        output.parent.mkdir(exist_ok=True)
+        processed_path.parent.mkdir(exist_ok=True)
+    else:
+        output = Path("./atoms.csv")
+        processed_path = Path("./last_processed.json")
     processed = {}
     if processed_path.is_file():
         processed = json.loads(processed_path.read_text())
 
     count = processed.get("count", 0)
     count_w_atoms = processed.get("count_w_atoms", 0)
-    # first_commit = processed.get("last_commit")
-    first_commit = None
+    if len(commits) == 1:
+        first_commit = None
+    else:
+        first_commit = processed.get("last_commit")
 
     found_first_commit = first_commit is None
     for commit_sha in commits:
@@ -366,12 +378,38 @@ def get_removed_lines(repo_path, commits):
         processed_path.write_text(json.dumps(processed))
         
 
+
+def execute(repo_path, commits, number_of_processes):
+    """
+    Main function to spawn the processes.
+    """
+    # Create a pool of worker processes
+    chunks = chunkify(commits, number_of_processes)
+    with multiprocessing.Pool(processes=number_of_processes) as pool:
+       # Create a list of tuples, each containing arguments for task_function
+        tasks= []
+        for i in range(number_of_processes):
+            tasks.append((repo_path, chunks[i], i+1))
+        # Use starmap to pass multiple arguments to the task function
+        pool.starmap(get_removed_lines, tasks)
+
+def chunkify(lst, n):
+    """
+    Divide the input list into n chunks.
+    """
+    k, m = divmod(len(lst), n)
+    return [lst[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)]
+
 if __name__ == "__main__":
     # Example usage
+    number_of_processes = 5
     repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
-    # commits = json.loads(Path("commits.json").read_text())
-    commits = ["fe0418eb9bd69a19a948b297c8de815e05f3cde1"]
-    get_removed_lines(repo_path, commits)
+    commits = json.loads(Path("commits.json").read_text())
+    # commits = ["c82c507126c9c9db350be28f14c83fad1c7969ae"]
+    if number_of_processes == 1:
+        get_removed_lines(repo_path, commits)
+    else:
+        execute(repo_path, commits, number_of_processes)
