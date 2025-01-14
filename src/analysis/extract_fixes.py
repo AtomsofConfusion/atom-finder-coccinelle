@@ -12,7 +12,7 @@ import pygit2
 from pygit2.enums import DeltaStatus
 from pathlib import Path
 from src import ROOT_DIR
-from src.run_cocci import CocciPatch, find_atoms
+from src.run_cocci import CocciPatch, run_patches_and_generate_output
 from clang.cindex import Index, CursorKind, Config
 
 
@@ -118,7 +118,7 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
                                 lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
                                 break
                 
-                if all_contained and len(element_lines) > 1:
+                if all_contained and len(element_lines) > 2:
                     for line in element_lines:
                         removed_line_numbers.remove(line)
                 
@@ -246,12 +246,6 @@ def find_removed_atoms(repo, commit):
         invalid_headers = defaultdict(list)
         with tempfile.TemporaryDirectory() as temp_dir:
             headers_dir = Path(temp_dir, "headers")
-            line_mapping = map_similar_lines(removed_lines, added_lines)
-            # for removed_pair, added_pair in line_mapping.items():
-            #     print(removed_pair[1].content)
-            #     print(added_pair[0].content)
-            #     print(added_pair[1])
-            #     print("--------")
             for file_name, removed in removed_lines.items():
                 removed_line_numbers = [line.old_lineno for line in removed]
                 content = get_file_content_at_commit(repo, parent, file_name)
@@ -273,22 +267,13 @@ def find_removed_atoms(repo, commit):
                 input.parent.mkdir(parents=True, exist_ok=True)
                 input.write_text(shorter_content)
 
-
-            # for now, remove lines with similarity index 1
-            for removed, similarity_data in line_mapping.items():
-                _, similarity = similarity_data
-                if similarity == 1:
-                    file_name, r_line = removed
-                    line_no = r_line.old_lineno
-                    if line_no in line_numbers_per_files[file_name]:
-                        line_numbers_per_files[file_name].remove(line_no)
-
             output = Path(temp_dir, 'output.csv')
             input_dir = Path(temp_dir, "input")
             # now, run coccinelle patches
 
-            task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
-            if run_with_process_timeout(task,  300 ):
+            # task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
+            task = partial(run_patches_and_generate_output, input_dir, output, temp_dir, False, None, PATCHES_TO_SKIP, False)
+            if run_with_process_timeout(task, 300):
                 with open(output, mode="r", newline="") as file:
                     reader = csv.reader(file)
                     for row in reader:
@@ -350,8 +335,8 @@ def get_removed_lines(repo_path, commits):
 
     count = processed.get("count", 0)
     count_w_atoms = processed.get("count_w_atoms", 0)
-    first_commit = processed.get("last_commit")
-    # first_commit = None
+    # first_commit = processed.get("last_commit")
+    first_commit = None
 
     found_first_commit = first_commit is None
     for commit_sha in commits:
@@ -387,6 +372,6 @@ if __name__ == "__main__":
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
-    commits = json.loads(Path("commits.json").read_text())
-    # commits = ["d7b028656c29b22fcde1c6ee1df5b28fbba987b5"]
+    # commits = json.loads(Path("commits.json").read_text())
+    commits = ["fe0418eb9bd69a19a948b297c8de815e05f3cde1"]
     get_removed_lines(repo_path, commits)

@@ -1,4 +1,5 @@
 import csv
+import shutil
 import subprocess
 import tempfile
 from enum import Enum
@@ -37,8 +38,10 @@ class CocciPatch(Enum):
         return enum_member
 
 
+
 # in some cases, subexpressions should be counted as separate atoms, in others, it seems unnecessary
 remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMMA_OPERATOR, CocciPatch.TYPE_CONVERSION)
+include_headers_patches = (CocciPatch.COMMA_OPERATOR, CocciPatch.MACRO_OPERATOR_PRECEDENCE)
 
 
 def _check_if_subexpression(start_line, start_col, end_line, end_col, processed):
@@ -64,29 +67,17 @@ def _is_subset(current, previous):
         return True
     return False
 
-def find_atoms(
-    input_path: Path, output: Optional[Path] = None, patch: Optional[CocciPatch] = None, patches_to_skip: Optional[list] = None
-) -> Dict[CocciPatch, str]:
-    if patch is None:
-        # run all patche, except for patches to skip
-        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch if cocci_patch not in patches_to_skip]
-    else:
-        patches_to_run = [patch]
-
-    all_atoms = {}
-    for patch_to_run in patches_to_run:
-        atoms = run_cocci(patch_to_run, input_path, output_file=output)
-        all_atoms[patch_to_run] = atoms
-        
-    return all_atoms
-
 
 def run_cocci(cocci_patch_path, c_input_path, output_file=None, opts=None):
     # keep all paths for this file to avoid additional imports from pathlib
     logging.debug(f"Running patch: {cocci_patch_path} against {c_input_path}")
     try:
         opts = opts or []
+        if cocci_patch_path in [patch.value for patch in include_headers_patches]:
+            opts.append("--include-headers")
+
         cmd = ["spatch","--jobs 4", "--sp-file", str(cocci_patch_path), str(c_input_path)] + opts
+        print(cmd)
         if output_file is not None:
             output_file.touch()
             cmd.append(">>")
@@ -104,63 +95,80 @@ def read_csv_generator(file_path):
             yield row
 
 
-def postprocess_and_generate_output(file_path: Path, output_file_path: Path, patch: CocciPatch):
+def postprocess_and_generate_output(file_path: Path,  patch: CocciPatch, remove_end_line_and_col=True):
     seen = set() 
     filtered_data = [] 
     removed_lines_count = 0
     processed = {}
     logging.debug("Posptocessing: removing duplicate lines")
-    with open(output_file_path, mode='w', newline='', encoding="utf8") as outfile:
-        writer = csv.writer(outfile)
-        previous_debug_row = None
-        for row in read_csv_generator(file_path):
-            key = tuple(row[1:-1])
-            if row[0].startswith("Rule"):
-                previous_debug_row = row
-                continue
 
-            if len(row) < 7:
-                filtered_data.append(row)
-                continue
-            _, _, start_line, start_col, end_line, end_col, _ = row
-            if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
-                if previous_debug_row is not None:
-                    filtered_data.append(previous_debug_row)
-                seen.add(key)
+    previous_debug_row = None
+    for row in read_csv_generator(file_path):
+        key = tuple(row[1:-1])
+        if row[0].startswith("Rule"):
+            previous_debug_row = row
+            continue
 
-                # remove end line and column from the final ouptut
+        if len(row) < 7:
+            filtered_data.append(row)
+            continue
+        _, _, start_line, start_col, end_line, end_col, _ = row
+        if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
+            if previous_debug_row is not None:
+                filtered_data.append(previous_debug_row)
+            seen.add(key)
+
+            # remove end line and column from the final ouptut
+            if remove_end_line_and_col:
                 row = row[:4] + row[6:]
-                filtered_data.append(row)
+            filtered_data.append(row)
 
-                if len(filtered_data) > 10000: 
-                    writer.writerows(filtered_data)
-                    filtered_data.clear()
-            else:
-                removed_lines_count += 1
-
+        else:
+            removed_lines_count += 1
             previous_debug_row = None
 
-        if filtered_data:
-            writer.writerows(filtered_data)
-            filtered_data.clear()
-        logging.debug(f"Removed {removed_lines_count} lines")
-        logging.info(f"Save output to {output_file_path}")
+    logging.debug(f"Removed {removed_lines_count} lines")
+    return filtered_data
 
 
-def run_patches_and_generate_output(input_path: Path, output_dir: Optional[Path] = None, patch: Optional[CocciPatch] = None):
-    logging.info("Running patches")
+def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path] = None, temp_dir: Optional[Path] = None, split_output = True, patch: Optional[CocciPatch] = None,  patches_to_skip: Optional[list] = None, remove_end_line_and_col=True):
+    logging.debug("Running patches")
     if patch is None:
-        # run all patche
-        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch]
+        # run all patche, except for patches to skip
+        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch if cocci_patch not in patches_to_skip]
     else:
         patches_to_run = [patch.value]
-    with tempfile.TemporaryDirectory() as temp_dir:
-        for patch_to_run in patches_to_run:
-            temp_output_file = Path(temp_dir, f"{patch_to_run.stem}.csv")
-            try:
-                run_cocci(patch_to_run, input_path, output_file=temp_output_file)
-            except RunCoccinelleError as e:
-                # log the error and continue
-                logging.error(str(e))
-            output_file = output_dir / f"{patch_to_run.stem}.csv"
-            postprocess_and_generate_output(temp_output_file, output_file, patch)
+
+    delete_temp = temp_dir is None
+    all_atoms = []
+    if temp_dir is None:
+        temp_dir = tempfile.mkdtemp()
+
+    def _write_lines_to_file(file_path, data_list):
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+
+            # Write each row to the CSV file
+            for row in data_list:
+                writer.writerow(row)
+
+    for patch_to_run in patches_to_run:
+        temp_output_file = Path(temp_dir, f"{patch_to_run.stem}.csv")
+        try:
+            run_cocci(patch_to_run, input_path, output_file=temp_output_file)
+        except RunCoccinelleError as e:
+            # log the error and continue
+            logging.error(str(e))
+        
+        atoms = postprocess_and_generate_output(temp_output_file, patch, remove_end_line_and_col)
+        if split_output:
+            output_file = output_path / f"{patch_to_run.stem}.csv"
+            _write_lines_to_file(output_file, atoms)
+        else:
+            all_atoms.extend(atoms)
+    
+    if not split_output:
+        _write_lines_to_file(output_path, all_atoms)
+
+    if delete_temp:
+        shutil.rmtree(temp_dir)
