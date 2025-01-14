@@ -40,7 +40,7 @@ def atom_finder(input_path, output_dir, patch, verbosity):
     if not output_dir.is_dir():
         output_dir.mkdir(parents=True)
 
-    run_patches_and_generate_output(input_path, output_dir, cocci_patch)
+    run_patches_and_generate_output(input_path=input_path, output_path=output_dir, patch=cocci_patch)
 
     # if(scope=='select'):
     #     patch_list = [select(patch_list)]

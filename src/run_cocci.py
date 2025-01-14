@@ -77,7 +77,6 @@ def run_cocci(cocci_patch_path, c_input_path, output_file=None, opts=None):
             opts.append("--include-headers")
 
         cmd = ["spatch","--jobs 4", "--sp-file", str(cocci_patch_path), str(c_input_path)] + opts
-        print(cmd)
         if output_file is not None:
             output_file.touch()
             cmd.append(">>")
@@ -133,6 +132,7 @@ def postprocess_and_generate_output(file_path: Path,  patch: CocciPatch, remove_
 
 def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path] = None, temp_dir: Optional[Path] = None, split_output = True, patch: Optional[CocciPatch] = None,  patches_to_skip: Optional[list] = None, remove_end_line_and_col=True):
     logging.debug("Running patches")
+    patches_to_skip = patches_to_skip or []
     if patch is None:
         # run all patche, except for patches to skip
         patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch if cocci_patch not in patches_to_skip]

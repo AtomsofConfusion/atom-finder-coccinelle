@@ -1,5 +1,18 @@
 #include <stdio.h>
 
+
+#define M1(args)
+
+#define M2(...) printf(__VA_ARGS__)
+
+// Wrapper macro that forwards arguments to M1
+#define M3(args) M2(args)
+
+
+int add(int a, int b) {
+    return a + b;
+}
+
 int main() {
     int v1 = 0;
     int v2 = 1;
@@ -37,9 +50,9 @@ int main() {
         printf("while loop with atom");
     }
 
+    M1((v1, v2));
+
     return 0;
 }
 
-int add(int a, int b) {
-    return a + b;
-}
+
