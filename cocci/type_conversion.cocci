@@ -37,62 +37,36 @@ binary operator bop1, bop2;
 @@
 
 //  using t2 i2 =@d@p <+... i1 ...+>; leads to the patch timing out when running against large files
-(
-  t1 i1 = e;
+t1 i1 = e;
   ...
+(
   t2 i2 =@d@p i1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e1 bop1 i1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p i1 bop1 e1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e1 bop1 i1 bop2 e2;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e2 bop1 i1 bop1 e1;
 |
-  t1 i1 = e;
-  ...
-  t2 i2 =@d@p <+... i1++ ...+>;
-|
-  t1 i1 = e;
-  ...
-  t2 i2 =@d@p <+... i1-- ...+>;
-|
-  t1 i1 = e;
-  ...
-  t2 i2 =@d@p <+... --i1 ...+>;
-|
-  t1 i1 = e;
-  ...
-  t2 i2 =@d@p <+... ++i1 ...+>;
-|
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e1 bop1 (t2) i1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p (t2) i1 bop1 e1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e1 bop1 (t2) i1 bop2 e2;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e2 bop1 (t2)  i1 bop1 e1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p (t2) i1;
+|
+  t2 i2 =@d@p <+... i1++ ...+>;
+|
+  t2 i2 =@d@p <+... i1-- ...+>;
+|
+  t2 i2 =@d@p <+... --i1 ...+>;
+|
+  t2 i2 =@d@p <+... ++i1 ...+>;
 )
 
 
@@ -117,26 +91,17 @@ declaration d;
 binary operator bop1, bop2;
 @@
 
-
+t1 i1 = e;
+...
 (
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e1 bop1 (t2) i1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p (t2) i1 bop1 e1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e1 bop1 (t2) i1 bop2 e2;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p e2 bop1 (t2)  i1 bop1 e1;
 |
-  t1 i1 = e;
-  ...
   t2 i2 =@d@p (t2) i1;
 )
 
@@ -150,7 +115,6 @@ t2 << rule2.t2;
 if t1 != t2:
   if t2 in type_conversion_confusions.get(t1, []):
     print_expression_and_position(d, p, "Rule 2")
-
 
 
 @rule3@
@@ -279,9 +243,11 @@ t i =@d@p c;
 @script:python@
 p << rule7.p;
 d << rule7.d;
+c << rule7.c;
 @@
 
-print_expression_and_position(d, p, "Rule 7")
+if c!= 0:
+  print_expression_and_position(d, p, "Rule 7")
 
 @rule8@
 position p;
