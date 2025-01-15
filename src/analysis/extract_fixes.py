@@ -271,9 +271,7 @@ def find_removed_atoms(repo, commit):
             # now, run coccinelle patches
 
             # task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
-            print(f"Running patches {commit}")
             run_patches_and_generate_output(input_dir, output, temp_dir, False, None, PATCHES_TO_SKIP, False)
-            print(f"Finished runing patches {commit}")
             with open(output, mode="r", newline="") as file:
                 reader = csv.reader(file)
                 for row in reader:
