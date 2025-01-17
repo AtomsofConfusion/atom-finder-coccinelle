@@ -11,6 +11,12 @@ setup(
     packages=["src"],
     include_package_data=True,
     install_requires=["click", "pytest"],
+    extras_require={
+        "selenium": [
+            "selenium>=4.0.0",
+            "webdriver-manager>=3.8.0",
+        ],
+    },
     entry_points={
         "console_scripts": [
             "aoc-cocci = src.tools.aoc_cocci:atom_finder",
