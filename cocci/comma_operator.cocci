@@ -15,10 +15,27 @@ def print_expression_and_position(exp, position, rule_name=""):
 
     print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col},\"{exp}\"")
 
+
+@macro_def_rule@
+identifier macro_name;
+@@
+
+#define macro_name(...)
+
+
+@macro_use_rule@
+identifier macro_def_rule.macro_name;
+position p;
+expression E;
+@@
+
+macro_name((E@p))
+
+
 @rule1@
 expression e1, e2;
 expression E;
-position p;
+position p != macro_use_rule.p;
 @@
 
 e1 ,@E@p e2

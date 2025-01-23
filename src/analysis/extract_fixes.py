@@ -1,18 +1,17 @@
-from asyncio import Event
 from collections import defaultdict
 import csv
 import difflib
 from functools import partial
 import json
-from multiprocessing import Process
+import multiprocessing
 import re
 import tempfile
-import clang
+import threading
 import pygit2
 from pygit2.enums import DeltaStatus
 from pathlib import Path
 from src import ROOT_DIR
-from src.run_cocci import CocciPatch, find_atoms
+from src.run_cocci import CocciPatch, run_patches_and_generate_output
 from clang.cindex import Index, CursorKind, Config
 
 
@@ -118,7 +117,7 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
                                 lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
                                 break
                 
-                if all_contained and len(element_lines) > 1:
+                if all_contained and len(element_lines) > 2:
                     for line in element_lines:
                         removed_line_numbers.remove(line)
                 
@@ -177,6 +176,19 @@ def append_rows_to_csv(file_path, data):
             writer.writerow(row)
 
 
+def append_to_json(json_file, item):
+    if not json_file.exists():
+        data = []
+    else:
+        with json_file.open('r') as file:
+            data = json.load(file)
+
+    data.append(item)
+
+    # Step 5: Save back to the file
+    with json_file.open('w') as file:
+        json.dump(data, file, indent=4)  # Save with indentation for readability
+
 def get_file_content_at_commit(repo, commit, file_path):
     """
     Retrieve the content of a file at a specific commit in a Git repository.
@@ -196,20 +208,6 @@ def get_file_content_at_commit(repo, commit, file_path):
         return blob.data.decode('utf-8')  # Assuming the file content is text and utf-8 encoded
     except KeyError:
         return "File not found in the specified commit."
-
-
-def run_with_process_timeout(task, timeout):
-    stop_event = Event()
-    process = Process(target=task)
-    process.start()
-    process.join(timeout)
-    if process.is_alive():
-        print("Process did not complete within timeout.")
-        stop_event.set()
-        process.terminate()  # Forcefully terminate the process
-        process.join()
-        return False
-    return True
 
 
 def find_removed_atoms(repo, commit):
@@ -246,12 +244,6 @@ def find_removed_atoms(repo, commit):
         invalid_headers = defaultdict(list)
         with tempfile.TemporaryDirectory() as temp_dir:
             headers_dir = Path(temp_dir, "headers")
-            line_mapping = map_similar_lines(removed_lines, added_lines)
-            # for removed_pair, added_pair in line_mapping.items():
-            #     print(removed_pair[1].content)
-            #     print(added_pair[0].content)
-            #     print(added_pair[1])
-            #     print("--------")
             for file_name, removed in removed_lines.items():
                 removed_line_numbers = [line.old_lineno for line in removed]
                 content = get_file_content_at_commit(repo, parent, file_name)
@@ -273,33 +265,23 @@ def find_removed_atoms(repo, commit):
                 input.parent.mkdir(parents=True, exist_ok=True)
                 input.write_text(shorter_content)
 
-
-            # for now, remove lines with similarity index 1
-            for removed, similarity_data in line_mapping.items():
-                _, similarity = similarity_data
-                if similarity == 1:
-                    file_name, r_line = removed
-                    line_no = r_line.old_lineno
-                    if line_no in line_numbers_per_files[file_name]:
-                        line_numbers_per_files[file_name].remove(line_no)
-
             output = Path(temp_dir, 'output.csv')
             input_dir = Path(temp_dir, "input")
             # now, run coccinelle patches
 
-            task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
-            if run_with_process_timeout(task,  300 ):
-                with open(output, mode="r", newline="") as file:
-                    reader = csv.reader(file)
-                    for row in reader:
-                        if len(row) == 1:
-                            continue
-                        atom, path, start_line, start_col, end_line, end_col, code = row
-                        file_name = path.split(f"{input_dir}/")[1]
-                        if int(start_line) in line_numbers_per_files[file_name]:
-                            row[1] = file_name
-                            output_row = [atom, file_name, commit.hex, start_line, start_col, code]
-                            atoms.append(output_row)
+            # task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
+            run_patches_and_generate_output(input_dir, output, temp_dir, False, None, PATCHES_TO_SKIP, False)
+            with open(output, mode="r", newline="") as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if len(row) == 1:
+                        continue
+                    atom, path, start_line, start_col, end_line, end_col, code = row
+                    file_name = path.split(f"{input_dir}/")[1]
+                    if int(start_line) in line_numbers_per_files[file_name]:
+                        row[1] = file_name
+                        output_row = [atom, file_name, commit.hex, start_line, start_col, code]
+                        atoms.append(output_row)
     return atoms
     
 
@@ -340,18 +322,28 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
     Path("commits.json").write_text(json.dumps(commit_fixes))
 
 
-def get_removed_lines(repo_path, commits):
+def get_removed_lines(repo_path, commits, index=0):
     repo = pygit2.Repository(repo_path)
-    output = Path("./atoms.csv")
-    processed_path = Path("./last_processed.json")
+    if index:
+        output = Path(f"./results/atoms{index}.csv")
+        processed_path = Path(f"./last_processed/last_processed{index}.json")
+        output.parent.mkdir(exist_ok=True)
+        processed_path.parent.mkdir(exist_ok=True)
+    else:
+        output = Path("./atoms.csv")
+        processed_path = Path("./last_processed.json")
+    
+    errors_path = Path("./errors.json")
     processed = {}
     if processed_path.is_file():
         processed = json.loads(processed_path.read_text())
 
     count = processed.get("count", 0)
     count_w_atoms = processed.get("count_w_atoms", 0)
-    first_commit = processed.get("last_commit")
-    # first_commit = None
+    if len(commits) == 1:
+        first_commit = None
+    else:
+        first_commit = processed.get("last_commit")
 
     found_first_commit = first_commit is None
     for commit_sha in commits:
@@ -371,7 +363,7 @@ def get_removed_lines(repo_path, commits):
                 print(f"Count with atoms: {count_w_atoms}")
             print(f"Total count: {count}")
         except Exception as e:
-            print(e)
+            append_to_json(errors_path, commit_sha)
             continue
         processed = {
             "count": count,
@@ -381,12 +373,57 @@ def get_removed_lines(repo_path, commits):
         processed_path.write_text(json.dumps(processed))
         
 
+
+def execute(repo_path, commits, number_of_processes):
+    """
+    Main function to spawn the processes.
+    """
+    # Create a pool of worker processes
+    chunks = chunkify(commits, number_of_processes)
+    with multiprocessing.Pool(processes=number_of_processes) as pool:
+       # Create a list of tuples, each containing arguments for task_function
+        tasks= []
+        for i in range(number_of_processes):
+            tasks.append((repo_path, chunks[i], i+1))
+        # Use starmap to pass multiple arguments to the task function
+        pool.starmap(get_removed_lines, tasks)
+
+def chunkify(lst, n):
+    """
+    Divide the input list into n chunks.
+    """
+    k, m = divmod(len(lst), n)
+    return [lst[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)]
+
+
+def combine_results():
+    results_folder = Path("results")
+
+    combined_file_path = results_folder / 'atoms.csv'
+
+    with combined_file_path.open("w", newline="") as combined_file:
+        writer = csv.writer(combined_file)
+
+        for file_path in results_folder.iterdir():
+            if file_path.name != combined_file_path.name:
+                if file_path.is_file() and file_path.suffix == ".csv":
+                    print(f"Adding {file_path.name}")
+                    with file_path.open("r", newline="") as file:
+                        reader = csv.reader(file)
+                        for row in reader:
+                            writer.writerow(row)
+
 if __name__ == "__main__":
     # Example usage
+    number_of_processes = 5
     repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    # commits = ["d7b028656c29b22fcde1c6ee1df5b28fbba987b5"]
-    get_removed_lines(repo_path, commits)
+    # commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
+    if len(commits) == 1 or number_of_processes == 1:
+        get_removed_lines(repo_path, commits)
+    else:
+        execute(repo_path, commits, number_of_processes)
+    # combine_results()

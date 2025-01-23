@@ -24,7 +24,7 @@ def test_cocci_patches(patch, pytestconfig, output_dir):
     if not overwrite and not expected_output_file.is_file():
         pytest.skip(f"Missing expected file {expected_output_file}")
 
-    run_patches_and_generate_output(input_file, output_dir, patch)
+    run_patches_and_generate_output(input_path=input_file, output_path=output_dir, patch=patch)
     output_file_path = output_dir / f"{patch.value.stem}.csv"
     assert output_file_path.is_file()
     actual = output_file_path.read_text()

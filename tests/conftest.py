@@ -35,7 +35,7 @@ def check_spatch_version():
 @fixture(scope="module")
 def output_dir():
     output_dir_path = TEST_DATA_PATH / "output"
-    output_dir_path.mkdir()
+    output_dir_path.mkdir(exist_ok=True)
     yield output_dir_path
     shutil.rmtree(output_dir_path)
 
