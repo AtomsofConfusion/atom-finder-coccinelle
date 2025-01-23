@@ -210,7 +210,6 @@ def get_file_content_at_commit(repo, commit, file_path):
         return "File not found in the specified commit."
 
 
-
 def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
@@ -396,6 +395,24 @@ def chunkify(lst, n):
     k, m = divmod(len(lst), n)
     return [lst[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)]
 
+
+def combine_results():
+    results_folder = Path("results")
+
+    combined_file_path = results_folder / 'atoms.csv'
+
+    with combined_file_path.open("w", newline="") as combined_file:
+        writer = csv.writer(combined_file)
+
+        for file_path in results_folder.iterdir():
+            if file_path.name != combined_file_path.name:
+                if file_path.is_file() and file_path.suffix == ".csv":
+                    print(f"Adding {file_path.name}")
+                    with file_path.open("r", newline="") as file:
+                        reader = csv.reader(file)
+                        for row in reader:
+                            writer.writerow(row)
+
 if __name__ == "__main__":
     # Example usage
     number_of_processes = 5
@@ -404,8 +421,9 @@ if __name__ == "__main__":
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
     commits = json.loads(Path("commits.json").read_text())
-    # commits = ["fef5b228dd38378148bc850f7e69a7783f3b95a4"]
+    # commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
     if len(commits) == 1 or number_of_processes == 1:
         get_removed_lines(repo_path, commits)
     else:
         execute(repo_path, commits, number_of_processes)
+    # combine_results()
