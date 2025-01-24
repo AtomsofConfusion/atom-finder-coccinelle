@@ -1,5 +1,13 @@
+from collections import defaultdict
 import csv
 import difflib
+import tempfile
+
+import pygit2
+
+from src import ROOT_DIR
+from src.analysis.cocci_analysis import run_coccinelle_for_file_at_commit
+from src.analysis.git import get_diff
 
 
 def map_similar_lines(removed, added):
@@ -30,8 +38,40 @@ def map_similar_lines(removed, added):
     return mappings
 
 
+def find_atoms_added_lines(added_lines, commit, patches_to_run):
+    loaded_headers = defaultdict(list)
+    invalid_headers = defaultdict(list)
+
+    # skip all patches that are not contained by pathes to run
+    patches_to_skip = []
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        for file_name, added in added_lines.items():
+            added_line_numbers = [line.old_lineno for line in added_lines]
+
+            atoms = run_coccinelle_for_file_at_commit(
+                repo, file_name, commit, added_line_numbers, temp_dir, loaded_headers, invalid_headers, patches_to_skip)
+
+def find_removed_atoms(repo, atoms_list):
+    for atom_data in atoms_list:
+        atom_name = atom_data["atom-name"]
+        file = atom_data["file"]
+        commit_sha = atom_data["commit"]
+        commit = repo[commit_sha]
+
+        # find all atoms linked with the same file and then analyze added lines
+
+
+        added_lines, removed_lines = get_diff(repo, commit)
+       
+        # should probably analyze added lines that are linked with removed lines
+        lines_map = map_similar_lines(removed_lines, added_lines)
+        
+
+
 def read_csv(filename):
-    with open(filename, mode='r', newline='', encoding='utf-8') as file:
+    
+    with open(filename, mode="r", newline="", encoding="utf-8") as file:
         csv_reader = csv.reader(file)
 
         data_list = []
@@ -40,22 +80,24 @@ def read_csv(filename):
                 raise ValueError("Row does not contain the correct number of fields")
 
             data = {
-                'atom-name': row[0],
-                'file': row[1],
-                'commit': row[2],
-                'start row': int(row[3]),
-                'start col': int(row[4]),
+                "atom-name": row[0],
+                "file": row[1],
+                "commit": row[2],
+                "start row": int(row[3]),
+                "start col": int(row[4]),
                 "code": row[5]
             }
+
             data_list.append(data)
         
         return data_list
 
 if __name__ == "__main__":
     filename = "atoms2.csv"
+    repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
     try:
+        repo = pygit2.Repository(repo_path)
         mapped_data = read_csv(filename)
-        for data in mapped_data:
-            print(len(mapped_data))
+        find_removed_atoms(repo, mapped_data)
     except Exception as e:
         print(f"An error occurred: {str(e)}")

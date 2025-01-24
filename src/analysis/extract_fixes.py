@@ -5,10 +5,10 @@ import multiprocessing
 import re
 import tempfile
 import pygit2
-from pygit2.enums import DeltaStatus
 from pathlib import Path
 from src import ROOT_DIR
-from src.analysis.analysis import run_coccinelle_for_file_at_commit
+from src.analysis.cocci_analysis import run_coccinelle_for_file_at_commit
+from src.analysis.git import get_diff
 from src.run_cocci import CocciPatch
 
 
@@ -50,34 +50,16 @@ def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
     """
-    parent = commit.parents[0]
-    diff = repo.diff(parent, commit, context_lines=0, interhunk_lines=0)
     print(f"Current commit: {commit.hex}")
     atoms = []
 
-    added_lines = defaultdict(list)
-    removed_lines = defaultdict(list)
-    for patch in diff:
-        status = patch.delta.status
-        if status != DeltaStatus.MODIFIED:
-            continue
-        file_name = patch.delta.new_file.path
-        if Path(file_name).suffix not in (".c", ".h"):
-            continue
-
-        for hunk in patch.hunks:
-            for line in hunk.lines:
-                if line.old_lineno != -1:
-                    removed_lines[file_name].append(line)
-                if line.new_lineno != -1:
-                    added_lines[file_name].append(line)
+    _, removed_lines = get_diff(repo, commit)
 
     if removed_lines:
-        line_numbers_per_files = {}
         loaded_headers = defaultdict(list)
         invalid_headers = defaultdict(list)
-
     
+    parent = commit.parents[0]
     output = []
     with tempfile.TemporaryDirectory() as temp_dir:
         for file_name, removed in removed_lines.items():
@@ -179,7 +161,6 @@ def get_removed_lines(repo_path, commits, index=0):
             "last_commit": commit.hex
         }
         processed_path.write_text(json.dumps(processed))
-        
 
 
 def execute(repo_path, commits, number_of_processes):
@@ -228,8 +209,8 @@ if __name__ == "__main__":
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
-    commits = json.loads(Path("commits.json").read_text())
-    # commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
+    # commits = json.loads(Path("commits.json").read_text())
+    commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
     if len(commits) == 1 or number_of_processes == 1:
         get_removed_lines(repo_path, commits)
     else:

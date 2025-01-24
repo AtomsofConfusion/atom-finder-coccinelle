@@ -1,9 +1,9 @@
 import csv
 from pathlib import Path
 import re
-import tempfile
 import pygit2
 from clang.cindex import Index, CursorKind, Config
+from src.analysis.git import get_file_content_at_commit
 from src.run_cocci import run_patches_and_generate_output
 
 
@@ -18,27 +18,6 @@ def is_complex_structure(cursor):
     ]
 
 
-def get_file_content_at_commit(repo, commit, file_path):
-    """
-    Retrieve the content of a file at a specific commit in a Git repository.
-
-    Args:
-    repo_path (str): Path to the repository.
-    commit_sha (str): The SHA of the commit.
-    file_path (str): Path to the file within the repository.
-
-    Returns:
-    str: Content of the file at the specified commit, or an error message if the file does not exist.
-    """
-    try:
-        # Retrieve the entry and blob from the commit's tree
-        file_entry = commit.tree[file_path]
-        blob = repo.get(file_entry.id)
-        return blob.data.decode('utf-8')  # Assuming the file content is text and utf-8 encoded
-    except KeyError:
-        return "File not found in the specified commit."
-
-
 def save_headers_to_temp(full_code, output_dir, repo, commit, loaded_headers, invalid_headers):
     _extract_headers(output_dir, full_code, repo, commit, loaded_headers, invalid_headers)
 
@@ -49,6 +28,7 @@ def save_all_headers(output_dir, commit, repo):
     subfolder_tree = commit.tree
     subfolder_tree = repo.get(subfolder_tree["include"].id)
     _save_all_headers(output_dir, subfolder_tree, repo, path_prefix="include")
+
 
 def _save_all_headers(output_dir, tree, repo, path_prefix):
     for entry in tree:
