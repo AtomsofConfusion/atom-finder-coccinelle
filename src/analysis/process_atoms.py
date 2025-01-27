@@ -1,6 +1,8 @@
 from collections import defaultdict
 import csv
 import difflib
+import json
+from pathlib import Path
 import tempfile
 
 import pygit2
@@ -80,9 +82,23 @@ def find_atoms_added_lines(added_lines, commit, patches_to_run):
 
     return all_atoms
 
-def find_removed_atoms(repo, atoms_data, output_file):       
+def find_removed_atoms(repo, atoms_data, output_file, last_processed_file):       
  
+    last_processed_commit = None
+    last_processed = {}
+    if last_processed_file.is_file():
+        last_processed = json.loads(last_processed_file.read_text())
+        if last_processed:
+            last_processed_commit = last_processed["commit"]
+    
+        
+    found_first = None
     for commit_sha, commit_data in atoms_data.items():
+        if last_processed_commit and not found_first:
+            if commit_sha == last_processed_commit:
+                found_first = True
+            continue
+
         print(f"Current commit {commit_sha}")
         atoms_diff = []
 
@@ -147,8 +163,9 @@ def find_removed_atoms(repo, atoms_data, output_file):
                                     removed_atom["code"]
                                 ])
         append_rows_to_csv(output_file, atoms_diff)
+        last_processed["commit"] = commit_sha
+        last_processed_file.write_text(json.dumps(last_processed, indent=4))
 
-    
 
 def read_and_sort_data(filename):
     
@@ -177,10 +194,13 @@ def read_and_sort_data(filename):
 if __name__ == "__main__":
     filename = "atoms2.csv"
     repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
-    output = "removed_atoms.csv"
+    output = Path("results/removed/atoms.csv")
+    last_processed_file = Path("last_processed/removed/last_processed.json")
+    output.parent.mkdir(exist_ok=True)
+    last_processed_file.parent.mkdir(exist_ok=True)
     try:
         repo = pygit2.Repository(repo_path)
         atoms_data = read_and_sort_data(filename)
-        find_removed_atoms(repo, atoms_data, output)
+        find_removed_atoms(repo, atoms_data, output, last_processed_file)
     except Exception as e:
         print(f"An error occurred: {str(e)}")

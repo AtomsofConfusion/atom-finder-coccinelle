@@ -1,4 +1,5 @@
 import csv
+import json
 
 
 def append_rows_to_csv(file_path, data):

@@ -180,8 +180,8 @@ if __name__ == "__main__":
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
-    # commits = json.loads(Path("commits.json").read_text())
-    commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
+    commits = json.loads(Path("commits.json").read_text())
+    # commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
     if len(commits) == 1 or number_of_processes == 1:
         get_removed_lines(repo_path, commits)
     else:
