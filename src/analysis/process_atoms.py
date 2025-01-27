@@ -8,6 +8,7 @@ import pygit2
 from src import ROOT_DIR
 from src.analysis.cocci_analysis import run_coccinelle_for_file_at_commit
 from src.analysis.git import get_diff
+from src.analysis.utils import append_rows_to_csv
 from src.run_cocci import CocciPatch
 
 
@@ -68,21 +69,22 @@ def find_atoms_added_lines(added_lines, commit, patches_to_run):
 
             atoms = run_coccinelle_for_file_at_commit(
                 repo, file_name, commit, added_line_numbers, temp_dir, loaded_headers, invalid_headers, patches_to_skip)
-            all_atoms.extend(atoms)
+            for atom in atoms:
+                all_atoms.append({
+                    "atom_name": atom[0],
+                    "file": atom[1],
+                    "start_row": int(atom[2]),
+                    "start_col": int(atom[3]),
+                    "code": atom[6]
+                })
+
     return all_atoms
 
-def find_removed_atoms(repo, atoms_data):
-    # sort by ocmmit and filenames
-
-    # file_name = atom_data["file"]
-    # commit_sha = atom_data["commit"]
-    # atom_name = atom_data["ato_-name"]
-    # start_row = atom_data["start_row"]
-    # start_col = atom_data["start_col"]
-    # code = atom_data["code"]
-       
-
+def find_removed_atoms(repo, atoms_data, output_file):       
+ 
     for commit_sha, commit_data in atoms_data.items():
+        print(f"Current commit {commit_sha}")
+        atoms_diff = []
 
         removed_lines_in_files = {
             (data["file"], data["start_row"]) for data in commit_data
@@ -107,7 +109,7 @@ def find_removed_atoms(repo, atoms_data):
         if lines_map:
             patches = set()
             added_files_map = defaultdict(list)
-            removed_atoms = []
+            removed_atoms = defaultdict(list)
             for file_removed_diff, added in lines_map.items():
                 similarity_index = added[1]
                 if similarity_index == 1:
@@ -117,16 +119,36 @@ def find_removed_atoms(repo, atoms_data):
                     if atom_data["file"] == file and atom_data["start_row"] == removed_diff.old_lineno:
                         atom_name = atom_data["atom_name"]
                         patches.add(atom_name_to_patch_mapping[atom_name])
-                        removed_atoms.append(atom_data)
+                        removed_atoms[removed_diff].append(atom_data)
       
                 added_files_map[file].append(added[0])
             
             if len(patches):
                 added_atoms = find_atoms_added_lines(added_files_map, commit, patches)
-                atoms_diff = []
-                if added_atoms:
-                    import pdb; pdb.set_trace()
+                for file_removed_diff, added in lines_map.items():
+                    added_diff = added[0]
+                    file, removed_diff = file_removed_diff
+                    if removed_diff in removed_atoms:
+                        removed_atoms_data = removed_atoms[removed_diff]
+                        for removed_atom in removed_atoms_data:
+                            removed_and_added = False
+                            for added_data in added_atoms:
+                                if added_data["atom_name"] == removed_atom["atom_name"] and \
+                                    added_data["start_row"] == added_diff.new_lineno:
+                                    removed_and_added = True
+                                    break
+                            if not removed_and_added:
+                                atoms_diff.append([
+                                    removed_atom["atom_name"],
+                                    removed_atom["file"],
+                                    removed_atom["commit"],
+                                    removed_atom["start_row"],
+                                    removed_atom["start_col"],
+                                    removed_atom["code"]
+                                ])
+        append_rows_to_csv(output_file, atoms_diff)
 
+    
 
 def read_and_sort_data(filename):
     
@@ -155,9 +177,10 @@ def read_and_sort_data(filename):
 if __name__ == "__main__":
     filename = "atoms2.csv"
     repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
+    output = "removed_atoms.csv"
     try:
         repo = pygit2.Repository(repo_path)
         atoms_data = read_and_sort_data(filename)
-        find_removed_atoms(repo, atoms_data)
+        find_removed_atoms(repo, atoms_data, output)
     except Exception as e:
         print(f"An error occurred: {str(e)}")

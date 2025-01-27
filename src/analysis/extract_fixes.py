@@ -9,41 +9,12 @@ from pathlib import Path
 from src import ROOT_DIR
 from src.analysis.cocci_analysis import run_coccinelle_for_file_at_commit
 from src.analysis.git import get_diff
+from src.analysis.utils import append_rows_to_csv, append_to_json
 from src.run_cocci import CocciPatch
 
 
 PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
 
-
-def append_rows_to_csv(file_path, data):
-    """
-    Appends rows to a CSV file. If the file does not exist, it will be created.
-
-    Args:
-    file_path (str): Path to the CSV file where data will be appended.
-    data (list of lists): Data to append, where each sublist represents a row.
-    """
-    # Open the file in append mode ('a') and create it if it doesn't exist ('a+')
-    with open(file_path, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        
-        # Write each row from the data list to the CSV file
-        for row in data:
-            writer.writerow(row)
-
-
-def append_to_json(json_file, item):
-    if not json_file.exists():
-        data = []
-    else:
-        with json_file.open('r') as file:
-            data = json.load(file)
-
-    data.append(item)
-
-    # Step 5: Save back to the file
-    with json_file.open('w') as file:
-        json.dump(data, file, indent=4)  # Save with indentation for readability
 
 
 def find_removed_atoms(repo, commit):
