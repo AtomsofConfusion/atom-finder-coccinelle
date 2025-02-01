@@ -127,6 +127,7 @@ def map_similar_lines(removed, added):
     # Collect all potential matches that exceed the threshold
     for r_file, r_lines in removed.items():
         for r_line in r_lines:
+
             r_line_content = r_line.content.strip()
             if r_line_content in ("{", "}") or "else" in r_line_content:
                 continue
@@ -143,20 +144,18 @@ def map_similar_lines(removed, added):
     assigned_added = {}
 
     for score, r_file, r_line, a_line in all_potential_matches:
-        current_best = assigned_added.get(a_line, (None, 0))  # Get current best match and its score
-
-        # If the current line has a better match or if the added line is not yet assigned
+        current_best = assigned_added.get(r_line.old_lineno, (None, 0))  # Get current best match and its score
         if score > current_best[1]:
             if current_best[0] is not None:
                 # Previous match is superseded, remove the previous best match
                 del best_matches[(r_file, current_best[0])]
             # Assign the new best match
             best_matches[(r_file, r_line)] = (a_line, score)
-            assigned_added[a_line] = (r_line, score)
-        elif a_line not in assigned_added:
+            assigned_added[r_line.old_lineno] = (a_line, score)
+        elif r_line.old_lineno not in assigned_added:
             # If the added line is not yet used, assign it
             best_matches[(r_file, r_line)] = (a_line, score)
-            assigned_added[a_line] = (r_line, score)
+            assigned_added[r_line.old_lineno] = (a_line, score)
 
     return best_matches
 
@@ -347,6 +346,13 @@ def find_matching_parenthesis(code, start_index):
             return i
     return start_index  
    
+
+def contains_ternary_operator(expression):
+    # This regex looks for patterns resembling ternary operations.
+    pattern = re.compile(r'\?.*:')
+    return bool(pattern.search(expression))
+  
+
 def check_if_parentheses_added(removed_diff, added_diff):
     # I'd like to parse this and use clang to compare the lines
     # however, there are occasional parsing issues (probably something missing)
