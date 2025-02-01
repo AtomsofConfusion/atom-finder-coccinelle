@@ -76,10 +76,13 @@ def _extract_headers(output_dir, code, repo, commit, processed, invalid):
     return all_headers
 
 
-def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_name):
+def parse_file(code, include_dir, file_name):
     index = Index.create()
     tu = index.parse(file_name, args=['-std=c11', '-nostdinc', f"-I{include_dir}"], unsaved_files=[(file_name, code)])
-    
+    return tu
+
+def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_name):
+    tu = parse_file(code, include_dir, file_name)    
     lines = code.splitlines()
 
     def prepare_modifications(cursor, removed_line_numbers):
@@ -124,19 +127,125 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
     prepare_modifications(tu.cursor, modified_line_numbers)
     return "\n".join(lines), modified_line_numbers
 
+
+def _normalize_code(text):
+    """
+    Normalize code by removing extra spaces around punctuation and making it lowercase.
+    This function also standardizes common variations in array declarations.
+    """
+    # text = text.replace('\t', ' ').replace('\n', ' ')
+    # text = re.sub(r'\s+', ' ', text)  # Replace multiple spaces with one
+    # text = re.sub(r'\s*\[\s*', '[', text)  # Remove spaces around [
+    # text = re.sub(r'\s*\]\s*', ']', text)  # Remove spaces around ]
+    # text = re.sub(r'\s*\(\s*', '(', text)  # remove spaces around parentheses
+    # text = re.sub(r'\s*\)\s*', ')', text)  # remove spaces around parentheses
+    # text = re.sub(r'\s*\)\s*', '*', text)  # remove spaces around *
+    return text.replace(" ", "")
+
+
+def contains_expression(node, expression, line_number=None):
+    """
+    Check if the normalized node text contains the normalized expression.
+    """
+    if line_number:
+        if line_number < node.extent.start.line or line_number > node.extent.end.line:
+            return False
+    node_text = " ".join([token.spelling for token in node.get_tokens()])
+    if expression.endswith(";"):
+        expression = expression[:-1]
+    normalized_node_text = _normalize_code(node_text)
+    normalized_expression = _normalize_code(expression)
+    return normalized_expression in normalized_node_text
+
+def find_smallest_containing_node(
+    node, expression, line_number, ancestors, best_match=None
+):
+    """
+    Recursively find the smallest node that contains the given expression.
+    """
+    expression = expression.strip()
+    import pdb; pdb.set_trace()
+    if contains_expression(node, expression, line_number):
+        ancestors.append(node)
+        best_match = node
+        # print("--------------------")
+        # node_text = " ".join([token.spelling for token in node.get_tokens()])
+        # print(node_text)
+        # print("**************************88")
+        children = [child for child in node.get_children()]
+        for child in children:
+            # node_text = " ".join([token.spelling for token in child.get_tokens()])
+            # print(node_text)
+            # print("***************8")
+            inner_best_match = find_smallest_containing_node(
+                child, expression, line_number, ancestors, best_match
+            )
+            if inner_best_match is not None:
+                best_match = inner_best_match
+                break
+    return best_match
+
  
-def run_coccinelle_for_file_at_commit(repo, file_name, commit, modified_line_numbers, temp_dir, loaded_headers, invalid_headers, patches_to_skip=None):
+
+def get_code_from_extent(code, extent):
+    lines = code.splitlines()
+    start = extent.start
+    end = extent.end
+
+    if start.line == end.line:
+        return lines[start.line - 1][start.column - 1 : end.column - 1]
+
+    code_lines = []
+    code_lines.append(lines[start.line - 1][start.column - 1 :])
+    for line in range(start.line, end.line - 1):
+        code_lines.append(lines[line])
+    try:
+        code_lines.append(lines[end.line - 1][: end.column - 1])
+    except:
+        pass
+    return code_lines
+
+
+def get_function_or_statement_context(root_node, full_code, source_code, line_number):
+
+    # _run_diagnostics(tu, file_path)
+
+    ancestors = []
+    try:
+        node = find_smallest_containing_node(
+            root_node, source_code, line_number, ancestors
+        )
+    except UnicodeDecodeError as e:
+        print(f"Could not parse file")
+        return None, None
+
+    # if node is not None:
+    #     ancestors.reverse()
+    #     # Ensure we capture broader context by moving up the AST if needed
+    #     for parent_node in ancestors:
+    #         if parent_node.kind in (clang.cindex.CursorKind.FUNCTION_DECL,
+    #                                    clang.cindex.CursorKind.CXX_METHOD,
+    #                                    clang.cindex.CursorKind.STRUCT_DECL,
+    #                                    clang.cindex.CursorKind.CLASS_DECL):
+    #             node = parent_node
+    #             break
+    if node is not None and node != root_node:
+        return node, get_code_from_extent(full_code, node.extent)
+    return None, None
+
+def run_coccinelle_for_file_at_commit(repo, file_name, commit, modified_line_numbers, temp_dir, loaded_headers, invalid_headers, patches_to_skip=None, save_headers=True):
     atoms = []
     headers_dir = Path(temp_dir, "headers")
     content = get_file_content_at_commit(repo, commit, file_name)
-    save_headers_to_temp(
-        commit=commit,
-        output_dir=headers_dir,
-        repo=repo,
-        full_code=content,
-        loaded_headers=loaded_headers,
-        invalid_headers=invalid_headers
-    )
+    if save_headers:
+        save_headers_to_temp(
+            commit=commit,
+            output_dir=headers_dir,
+            repo=repo,
+            full_code=content,
+            loaded_headers=loaded_headers,
+            invalid_headers=invalid_headers
+        )
     shorter_content, modified_lines = parse_and_modify_functions(
         content, modified_line_numbers, headers_dir, file_name)
 

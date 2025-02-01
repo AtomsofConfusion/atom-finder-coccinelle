@@ -417,7 +417,7 @@ print_expression_and_position(E, p, "rule19")
 
 @rule20@
 position p;
-expression e1, e2, e3;
+expression e1, e2;
 binary operator b1 = {+, -, *, /, &, &&, ||};
 expression E;
 @@
@@ -437,7 +437,7 @@ print_expression_and_position(E, p, "rule20")
 
 @rule21@
 position p;
-expression e1, e2, e3;
+expression e1, e2;
 binary operator b1 = {+, -, *, /, %, &&, ||, >, >=, <, <=, ==};
 expression E;
 @@
@@ -493,9 +493,8 @@ binary operator b1 = {-, /, %, &&, ||, >, >=, <, <=, ==};
 expression E;
 @@
 
+  // !e1 ?@E@p e2 : e3 - causes false positives
 (
-  !e1 ?@E@p e2 : e3
-|
   +e1 ?@E@p e2 : e3
 |
   -e1 ?@E@p e2 : e3
@@ -511,7 +510,7 @@ print_expression_and_position(E, p, "Rule24")
 
 @rule25@
 position p;
-expression e1, e2, e3, e4;
+expression e1, e2, e3;
 binary operator b1 = {+, -, *, /, %, &&, ||, >, >=, <, <=, ==};
 identifier i1, i2;
 expression E;
