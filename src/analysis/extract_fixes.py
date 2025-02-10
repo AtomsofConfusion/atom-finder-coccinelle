@@ -7,14 +7,13 @@ import tempfile
 import pygit2
 from pathlib import Path
 from src import ROOT_DIR
-from src.analysis.cocci_analysis import run_coccinelle_for_file_at_commit
+from src.analysis.parsing import run_coccinelle_for_file_at_commit
 from src.analysis.git import get_diff
 from src.analysis.utils import append_rows_to_csv, append_to_json
 from src.run_cocci import CocciPatch
 
 
 PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
-
 
 
 def find_removed_atoms(repo, commit):
