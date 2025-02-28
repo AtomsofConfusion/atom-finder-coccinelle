@@ -28,28 +28,36 @@ def find_removed_atoms(repo, commit):
     if removed_lines:
         loaded_headers = defaultdict(list)
         invalid_headers = defaultdict(list)
-    
+
     parent = commit.parents[0]
     output = []
     with tempfile.TemporaryDirectory() as temp_dir:
         for file_name, removed in removed_lines.items():
             removed_line_numbers = [line.old_lineno for line in removed]
             atoms = run_coccinelle_for_file_at_commit(
-                repo, file_name, parent, removed_line_numbers, temp_dir, loaded_headers, invalid_headers, PATCHES_TO_SKIP)
+                repo,
+                file_name,
+                parent,
+                removed_line_numbers,
+                temp_dir,
+                loaded_headers,
+                invalid_headers,
+                PATCHES_TO_SKIP,
+            )
 
             for row in atoms:
                 atom, path, start_line, start_col, end_line, end_col, code = row
                 output_row = [atom, file_name, commit.hex, start_line, start_col, code]
                 output.append(output_row)
-        
+
     return output
-    
+
 
 def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
     """
     Iterate through commits, check commit message, and retrieve removed code if condition is met.
     Stop iteration when the stop_commit is reached.
-    
+
     Args:
         repo_path (str): Path to the repository.
         stop_commit (str): SHA of the commit where the iteration should stop.
@@ -77,7 +85,7 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
 
         # Stop when the specific commit is reached
         if str(commit.hex) == stop_commit:
-            stop_iteration = True        
+            stop_iteration = True
 
     Path("commits.json").write_text(json.dumps(commit_fixes))
 
@@ -92,7 +100,7 @@ def get_removed_lines(repo_path, commits, index=0):
     else:
         output = Path("./atoms.csv")
         processed_path = Path("./last_processed.json")
-    
+
     errors_path = Path("./errors.json")
     processed = {}
     if processed_path.is_file():
@@ -128,7 +136,7 @@ def get_removed_lines(repo_path, commits, index=0):
         processed = {
             "count": count,
             "count_w_atoms": count_w_atoms,
-            "last_commit": commit.hex
+            "last_commit": commit.hex,
         }
         processed_path.write_text(json.dumps(processed))
 
@@ -140,25 +148,26 @@ def execute(repo_path, commits, number_of_processes):
     # Create a pool of worker processes
     chunks = chunkify(commits, number_of_processes)
     with multiprocessing.Pool(processes=number_of_processes) as pool:
-       # Create a list of tuples, each containing arguments for task_function
-        tasks= []
+        # Create a list of tuples, each containing arguments for task_function
+        tasks = []
         for i in range(number_of_processes):
-            tasks.append((repo_path, chunks[i], i+1))
+            tasks.append((repo_path, chunks[i], i + 1))
         # Use starmap to pass multiple arguments to the task function
         pool.starmap(get_removed_lines, tasks)
+
 
 def chunkify(lst, n):
     """
     Divide the input list into n chunks.
     """
     k, m = divmod(len(lst), n)
-    return [lst[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)]
+    return [lst[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n)]
 
 
 def combine_results():
     results_folder = Path("results")
 
-    combined_file_path = results_folder / 'atoms.csv'
+    combined_file_path = results_folder / "atoms.csv"
 
     with combined_file_path.open("w", newline="") as combined_file:
         writer = csv.writer(combined_file)
@@ -172,10 +181,13 @@ def combine_results():
                         for row in reader:
                             writer.writerow(row)
 
+
 if __name__ == "__main__":
     # Example usage
     number_of_processes = 5
-    repo_path = ROOT_DIR.parent / "atoms/projects/linux"  # Change this to your repo path
+    repo_path = (
+        ROOT_DIR.parent / "atoms/projects/linux"
+    )  # Change this to your repo path
     stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
     # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 

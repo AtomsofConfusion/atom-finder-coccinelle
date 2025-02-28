@@ -32,7 +32,7 @@ position p1 != rule01.p;
 position p;
 @@
 
-if (e@E@p1) s1 else s2
+if (e@p1@E@p) s1 else s2
 
 
 @script:python@

@@ -7,19 +7,25 @@ from src.analysis.git import get_file_content_at_commit
 from src.run_cocci import run_patches_and_generate_output
 
 
-Config.set_library_file('/usr/lib/llvm-14/lib/libclang-14.so.1')
+Config.set_library_file("/usr/lib/llvm-14/lib/libclang-14.so.1")
 
 
 def is_complex_structure(cursor):
     return cursor.kind in [
-        CursorKind.IF_STMT, CursorKind.FOR_STMT,
+        CursorKind.IF_STMT,
+        CursorKind.FOR_STMT,
         CursorKind.WHILE_STMT,
-        CursorKind.SWITCH_STMT, CursorKind.STRUCT_DECL,
+        CursorKind.SWITCH_STMT,
+        CursorKind.STRUCT_DECL,
     ]
 
 
-def save_headers_to_temp(full_code, output_dir, repo, commit, loaded_headers, invalid_headers):
-    _extract_headers(output_dir, full_code, repo, commit, loaded_headers, invalid_headers)
+def save_headers_to_temp(
+    full_code, output_dir, repo, commit, loaded_headers, invalid_headers
+):
+    _extract_headers(
+        output_dir, full_code, repo, commit, loaded_headers, invalid_headers
+    )
 
 
 def save_all_headers(output_dir, commit, repo):
@@ -43,6 +49,7 @@ def _save_all_headers(output_dir, tree, repo, path_prefix):
             path.parent.mkdir(exist_ok=True, parents=True)
             path.write_text(file_content)
 
+
 def _extract_headers(output_dir, code, repo, commit, processed, invalid):
     """
     Recursively extract all unique header file names from the C code.
@@ -52,7 +59,7 @@ def _extract_headers(output_dir, code, repo, commit, processed, invalid):
     :param processed: A set to keep track of processed header files to avoid cyclic includes.
     :return: A set of all header files included in the code, directly or indirectly.
     """
-    header_pattern = re.compile(r'#include\s+<([^>]+)>')
+    header_pattern = re.compile(r"#include\s+<([^>]+)>")
     headers = set(header_pattern.findall(code))
     all_headers = set(headers)
 
@@ -71,18 +78,25 @@ def _extract_headers(output_dir, code, repo, commit, processed, invalid):
                 print(f"Cannot load {header} at {commit} due to {e}")
                 invalid[commit].append(header)
                 continue
-            included_headers = _extract_headers(output_dir, file_content, repo, commit, processed, invalid)
+            included_headers = _extract_headers(
+                output_dir, file_content, repo, commit, processed, invalid
+            )
             all_headers.update(included_headers)
     return all_headers
 
 
 def parse_file(code, include_dir, file_name):
     index = Index.create()
-    tu = index.parse(file_name, args=['-std=c11', '-nostdinc', f"-I{include_dir}"], unsaved_files=[(file_name, code)])
+    tu = index.parse(
+        file_name,
+        args=["-std=c11", "-nostdinc", f"-I{include_dir}"],
+        unsaved_files=[(file_name, code)],
+    )
     return tu
 
+
 def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_name):
-    tu = parse_file(code, include_dir, file_name)    
+    tu = parse_file(code, include_dir, file_name)
     lines = code.splitlines()
 
     def prepare_modifications(cursor, removed_line_numbers):
@@ -97,8 +111,12 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
                 element_end = child.extent.end.line
                 element_lines = [line for line in range(element_start, element_end + 1)]
 
-                any_contained = any(line in removed_line_numbers for line in element_lines)
-                all_contained = all(line in removed_line_numbers for line in element_lines)
+                any_contained = any(
+                    line in removed_line_numbers for line in element_lines
+                )
+                all_contained = all(
+                    line in removed_line_numbers for line in element_lines
+                )
 
                 # if all contained, the whole function was removed
                 if is_function:
@@ -110,13 +128,16 @@ def parse_and_modify_functions(code, removed_line_numbers, include_dir, file_nam
                                 body_start_line = c.extent.start.line
                                 body_end_line = c.extent.end.line - 2
                                 # Store the offsets and the count of newlines to preserve formatting
-                                lines[body_start_line:body_end_line + 1] = ["" for _ in range(body_end_line - body_start_line + 1)]
+                                lines[body_start_line : body_end_line + 1] = [
+                                    ""
+                                    for _ in range(body_end_line - body_start_line + 1)
+                                ]
                                 break
-                
+
                 if all_contained and len(element_lines) > 2:
                     for line in element_lines:
                         removed_line_numbers.remove(line)
-                
+
                 if all_contained or not any_contained:
                     continue_inner_search = False
 
@@ -157,6 +178,7 @@ def contains_expression(node, expression, line_number=None):
     normalized_expression = _normalize_code(expression)
     return normalized_expression in normalized_node_text
 
+
 def find_smallest_containing_node(
     node, expression, line_number, ancestors, best_match=None
 ):
@@ -164,7 +186,6 @@ def find_smallest_containing_node(
     Recursively find the smallest node that contains the given expression.
     """
     expression = expression.strip()
-    import pdb; pdb.set_trace()
     if contains_expression(node, expression, line_number):
         ancestors.append(node)
         best_match = node
@@ -185,7 +206,6 @@ def find_smallest_containing_node(
                 break
     return best_match
 
- 
 
 def get_code_from_extent(code, extent):
     lines = code.splitlines()
@@ -233,7 +253,18 @@ def get_function_or_statement_context(root_node, full_code, source_code, line_nu
         return node, get_code_from_extent(full_code, node.extent)
     return None, None
 
-def run_coccinelle_for_file_at_commit(repo, file_name, commit, modified_line_numbers, temp_dir, loaded_headers, invalid_headers, patches_to_skip=None, save_headers=True):
+
+def run_coccinelle_for_file_at_commit(
+    repo,
+    file_name,
+    commit,
+    modified_line_numbers,
+    temp_dir,
+    loaded_headers,
+    invalid_headers,
+    patches_to_skip=None,
+    save_headers=True,
+):
     atoms = []
     headers_dir = Path(temp_dir, "headers")
     content = get_file_content_at_commit(repo, commit, file_name)
@@ -244,23 +275,26 @@ def run_coccinelle_for_file_at_commit(repo, file_name, commit, modified_line_num
             repo=repo,
             full_code=content,
             loaded_headers=loaded_headers,
-            invalid_headers=invalid_headers
+            invalid_headers=invalid_headers,
         )
     shorter_content, modified_lines = parse_and_modify_functions(
-        content, modified_line_numbers, headers_dir, file_name)
+        content, modified_line_numbers, headers_dir, file_name
+    )
 
     # Define file paths within the temporary directory
     input = Path(temp_dir, "input", file_name)
     input.parent.mkdir(parents=True, exist_ok=True)
     input.write_text(shorter_content)
 
-    output = Path(temp_dir, 'output.csv')
+    output = Path(temp_dir, "output.csv")
     input_dir = Path(temp_dir, "input")
     # now, run coccinelle patches
 
     # task = partial(find_atoms, input_dir, output, None, PATCHES_TO_SKIP)
-    run_patches_and_generate_output(input_dir, output, temp_dir, False, None, patches_to_skip, False)
-          
+    run_patches_and_generate_output(
+        input_dir, output, temp_dir, False, None, patches_to_skip, False
+    )
+
     with open(output, mode="r", newline="") as file:
         reader = csv.reader(file)
         for row in reader:
@@ -273,5 +307,3 @@ def run_coccinelle_for_file_at_commit(repo, file_name, commit, modified_line_num
                 atoms.append(row)
 
     return atoms
-
-

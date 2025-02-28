@@ -2,6 +2,7 @@ from collections import defaultdict
 from pathlib import Path
 from pygit2.enums import DeltaStatus
 
+
 def get_file_content_at_commit(repo, commit, file_path):
     """
     Retrieve the content of a file at a specific commit in a Git repository.
@@ -18,10 +19,12 @@ def get_file_content_at_commit(repo, commit, file_path):
         # Retrieve the entry and blob from the commit's tree
         file_entry = commit.tree[file_path]
         blob = repo.get(file_entry.id)
-        return blob.data.decode('utf-8')  # Assuming the file content is text and utf-8 encoded
+        return blob.data.decode(
+            "utf-8"
+        )  # Assuming the file content is text and utf-8 encoded
     except KeyError:
         return "File not found in the specified commit."
-    
+
 
 def get_diff(repo, commit):
     parent = commit.parents[0]
