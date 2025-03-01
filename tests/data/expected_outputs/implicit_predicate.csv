@@ -1,3 +1,9 @@
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,42,13,"add ( a , b )"
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,40,6,"add ( 1 , 2 )"
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,85,6,"add ( a % b ? 1 : 2 , 3 )"
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,22,6,a % b
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,24,13,b % a
+implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,128,6,c -> s_i
 implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,48,9,count
 implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,74,19,i
 implicit-predicate,/home/ubuntu/atom-finder-coccinelle/tests/data/inputs/implicit_predicate.c,95,9,"add ( count , count ? 1 : 10 )"
