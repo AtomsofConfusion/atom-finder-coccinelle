@@ -11,6 +11,7 @@ from src.analysis.utils.parsing import run_coccinelle_for_file_at_commit
 from src.analysis.utils.git import get_diff
 from src.analysis.utils.utils import append_rows_to_csv, append_to_json, safely_load_json
 from src.run_cocci import CocciPatch
+from src.log import logger
 
 
 PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
@@ -18,15 +19,15 @@ REPO_PATH = (ROOT_DIR.parent / "atoms/projects/linux").absolute()  # Path to the
 COMMITS_FILE_PATH = Path("../commits.json")  # Path to a JSON file containing commit hashes
 RESULTS_DIR = Path("../results")
 LAST_PROCESSED_DIR = Path("../last_processed")
-ERRORS_FILE_PATH = Path("./errors.json")
-NUMBER_OF_PROCESSES = 5 
+ERRORS_FILE_DIR = RESULTS_DIR/ "extract"
+NUMBER_OF_PROCESSES = 5
 
 
 def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
     """
-    print(f"Current commit: {commit.hex}")
+    logger.info(f"Current commit: {commit.hex}")
     atoms = []
 
     _, removed_lines = get_diff(repo, commit)
@@ -103,11 +104,10 @@ def load_processed_data(processed_path):
     return {"count": 0, "count_w_atoms": 0, "last_commit": None}
 
 
-def get_removed_lines(repo_path, commits, output, processed_path):
+def get_removed_lines(repo_path, commits, output, processed_path, errors_path):
     """Process commits and extract lines removed in each commit."""
     repo = pygit2.Repository(str(repo_path))
     processed = load_processed_data(processed_path)
-    errors_path = ERRORS_FILE_PATH
     count, count_w_atoms = processed["count"], processed["count_w_atoms"]
     first_commit = processed["last_commit"]
     found_first_commit = first_commit is None
@@ -120,20 +120,21 @@ def get_removed_lines(repo_path, commits, output, processed_path):
             continue
         try:
             commit = repo.get(commit_sha)
-            atoms = find_removed_atoms(repo, commit)  # Define this function as needed
+            atoms = find_removed_atoms(repo, commit)
             count += 1
             if atoms:
-                append_rows_to_csv(output, atoms)  # Define this function as needed
+                append_rows_to_csv(output, atoms)
                 count_w_atoms += 1
-            print(f"Processed {count} commits, {count_w_atoms} with atoms.")
+            logger.info(f"Processed {count} commits, {count_w_atoms} with atoms.")
         except Exception as e:
-            append_to_json(errors_path, {"commit_sha": commit_sha, "error": str(e)})  # Define this function as needed
+            logger.error(e)
+            append_to_json(errors_path, {"commit_sha": commit_sha, "error": str(e)})
             continue
         processed.update({"count": count, "count_w_atoms": count_w_atoms, "last_commit": commit.hex})
         processed_path.write_text(json.dumps(processed))
 
 
-def execute(repo_path, commits, number_of_processes, results_dir, last_procesed_dir):
+def execute(repo_path, commits, number_of_processes, results_dir, last_procesed_dir, errors_dir):
     """
     Main function to spawn the processes.
     """
@@ -143,7 +144,7 @@ def execute(repo_path, commits, number_of_processes, results_dir, last_procesed_
         # Create a list of tuples, each containing arguments for task_function
         tasks = []
         for i in range(number_of_processes):
-            tasks.append((repo_path, chunks[i], results_dir / f"atoms{i+1}.json", last_procesed_dir / f"last_processed{i+1}.json"))
+            tasks.append((repo_path, chunks[i], results_dir / f"atoms{i+1}.csv", last_procesed_dir / f"last_processed{i+1}.json",  errors_dir / f"errors{i+1}.json"))
         # Use starmap to pass multiple arguments to the task function
         pool.starmap(get_removed_lines, tasks)
 
@@ -181,13 +182,16 @@ if __name__ == "__main__":
     if not commits or commits[-1] != stop_commit:
         iterate_commits_and_extract_removed_code(REPO_PATH, stop_commit)
 
+    LAST_PROCESSED_DIR.mkdir(exist_ok=True)
+    RESULTS_DIR.mkdir(exist_ok=True)
+    ERRORS_FILE_DIR.parent.mkdir(exist_ok=True)
 
     commits = json.loads(Path(COMMITS_FILE_PATH).read_text())
     # commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
 
     if len(commits) == 1 or NUMBER_OF_PROCESSES == 1:
-        get_removed_lines(REPO_PATH, commits, RESULTS_DIR / "atoms.csv", LAST_PROCESSED_DIR / "last_processed.json")
+        get_removed_lines(REPO_PATH, commits, RESULTS_DIR / "atoms.csv", LAST_PROCESSED_DIR / "last_processed.json", ERRORS_FILE_DIR / "errors.json")
     else:
-        execute(REPO_PATH, commits, NUMBER_OF_PROCESSES, RESULTS_DIR, LAST_PROCESSED_DIR)
+        execute(REPO_PATH, commits, NUMBER_OF_PROCESSES, RESULTS_DIR, LAST_PROCESSED_DIR, ERRORS_FILE_DIR)
 
     combine_results()
