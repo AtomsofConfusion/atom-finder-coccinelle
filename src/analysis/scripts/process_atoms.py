@@ -10,11 +10,19 @@ from typing import Dict, List, Set, Tuple
 import pygit2
 
 from src import ROOT_DIR
-from src.analysis.parsing import run_coccinelle_for_file_at_commit
-from src.analysis.git import get_diff
-from src.analysis.utils import append_to_json
+from src.analysis.utils.parsing import run_coccinelle_for_file_at_commit
+from src.analysis.utils.git import get_diff
+from src.analysis.utils.utils import append_to_json
 from src.run_cocci import CocciPatch
 from src.log import logger
+
+
+ALL_ATOMS_FILE = Path("../atoms2.csv")  # Path to CSV file with data on atoms extracted from source code fixes
+REPO_PATH = (ROOT_DIR.parent / "atoms/projects/linux").absolute()  # Path to the Linux kernel Git repository
+OUTPUT_PATH = Path("../results/removed/atoms.json")  # File path to output the results of the script
+LAST_PROCESSED_PATH = Path("../last_processed/removed/last_processed.json")  # File to store the last processed commit
+RESTART = False # Whether to start traversal through commits from the beginning. Set to true when changing atom types to find
+ATOM_TYPES = [CocciPatch.CONDITIONAL_OPERATOR] # A list of atom types that we want to process
 
 
 atom_name_to_patch_mapping = {
@@ -185,7 +193,7 @@ def map_similar_lines(removed, added):
     return best_matches
 
 
-def find_atoms_added_lines(temp_dir, added_lines, commit, patches_to_run):
+def find_atoms_added_lines(repo, temp_dir, added_lines, commit, patches_to_run):
     loaded_headers = defaultdict(list)
     invalid_headers = defaultdict(list)
 
@@ -276,7 +284,7 @@ def find_removed_atoms(
             if len(patches):
                 with tempfile.TemporaryDirectory() as temp_dir:
                     added_atoms = find_atoms_added_lines(
-                        temp_dir, added_files_map, commit, patches
+                        repo, temp_dir, added_files_map, commit, patches
                     )
                     for file_removed_diff, added in lines_map.items():
                         added_diff = added[0]
@@ -324,18 +332,12 @@ def find_removed_atoms(
 
         atoms_json = [
             {
-                "atom": data[0],
-                "file": data[1],
-                "commit": data[2],
-                "start-row": data[3],
-                "added-row": data[5],
-                "removed": data[7],
-                "added": data[8],
+                **data,
                 "commit-message": commit.message,
             }
             for data in atoms_diff
             if atom_types_to_find is None
-            or atom_name_to_patch_mapping[data[0]] in atom_types_to_find
+            or atom_name_to_patch_mapping[data["atom_name"]] in atom_types_to_find
         ]
 
         if atoms_json:
@@ -348,14 +350,14 @@ def filter_atoms(data):
     # Group the data by 'start_row'
     grouped_by_row = {}
     for item in data:
-        start_row = item[3]  # 'start_row' is the fourth element
+        start_row = "start_row"
         if start_row not in grouped_by_row:
             grouped_by_row[start_row] = []
         grouped_by_row[start_row].append(item)
 
     # Function to determine the "largest" code (assuming largest by string length)
     def get_largest_code(items):
-        return max(items, key=lambda x: len(x[6]))  # 'code' is the seventh element
+        return max(items, key=lambda x: len(x["code"]))
 
     # Filter out only the largest codes for each start_row
     filtered_data = []
@@ -366,8 +368,6 @@ def filter_atoms(data):
         else:
             filtered_data.extend(items)
 
-    if len(data) > len(filtered_data):
-        print("something removed here...")
     return filtered_data
 
 
@@ -481,17 +481,32 @@ def read_and_sort_data(filename):
     return atoms_by_commit
 
 
-if __name__ == "__main__":
-    filename = "atoms2.csv"
-    repo_path = (
-        ROOT_DIR.parent / "atoms/projects/linux"
-    )  # Change this to your repo path
-    output = Path("results/removed/atoms.json")
-    last_processed_file = Path("last_processed/removed/last_processed.json")
-    output.parent.mkdir(exist_ok=True)
-    last_processed_file.parent.mkdir(exist_ok=True)
-    repo = pygit2.Repository(repo_path)
-    atoms_data = read_and_sort_data(filename)
+def main():
+
+    # Ensure output directories exist
+    OUTPUT_PATH.parent.mkdir(exist_ok=True)
+    LAST_PROCESSED_PATH.parent.mkdir(exist_ok=True)
+
+    # Initialize repository object
+    try:
+        repo = pygit2.Repository(REPO_PATH)
+    except Exception as e:
+        logger.error("Failed to initialize repository: %s", e)
+        return
+
+    # Load data from CSV file
+    try:
+        atoms_data = read_and_sort_data(ALL_ATOMS_FILE)
+    except Exception as e:
+        logger.error("Failed to read atom data: %s", e)
+        return
+
+    # Process the atoms data
     find_removed_atoms(
-        repo, atoms_data, output, last_processed_file, [CocciPatch.CONDITIONAL_OPERATOR]
+        repo, atoms_data, OUTPUT_PATH, LAST_PROCESSED_PATH, ATOM_TYPES, RESTART
     )
+
+if __name__ == "__main__":
+    logger.info("Starting the atom processing script.")
+    main()
+    logger.info("Script execution completed.")

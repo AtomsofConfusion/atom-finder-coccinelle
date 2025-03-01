@@ -1,5 +1,6 @@
 import csv
 import json
+from pathlib import Path
 
 
 def append_rows_to_csv(file_path, data):
@@ -31,3 +32,27 @@ def append_to_json(json_file, item):
 
     with json_file.open("w") as file:
         json.dump(data, file, indent=4)
+
+def safely_load_json(file_path):
+    """
+    Safely load JSON data from a specified file.
+
+    Args:
+        file_path (Path or str): Path to the JSON file.
+
+    Returns:
+        dict: The content of the JSON file as a dictionary.
+
+    Raises:
+        ValueError: If the JSON data is malformed.
+    """
+    file_path = Path(file_path)  # Ensure the file_path is a Path object
+    if not file_path.exists():
+        return {}  # Return an empty dictionary if the file does not exist
+
+    try:
+        with file_path.open('r', encoding='utf-8') as file:
+            return json.load(file)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"The JSON file '{file_path}' contains invalid JSON. Detail: {e}")
+    

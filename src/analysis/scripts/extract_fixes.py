@@ -7,13 +7,19 @@ import tempfile
 import pygit2
 from pathlib import Path
 from src import ROOT_DIR
-from src.analysis.parsing import run_coccinelle_for_file_at_commit
-from src.analysis.git import get_diff
-from src.analysis.utils import append_rows_to_csv, append_to_json
+from src.analysis.utils.parsing import run_coccinelle_for_file_at_commit
+from src.analysis.utils.git import get_diff
+from src.analysis.utils.utils import append_rows_to_csv, append_to_json, safely_load_json
 from src.run_cocci import CocciPatch
 
 
 PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
+REPO_PATH = (ROOT_DIR.parent / "atoms/projects/linux").absolute()  # Path to the Linux kernel Git repository
+COMMITS_FILE_PATH = Path("../commits.json")  # Path to a JSON file containing commit hashes
+RESULTS_DIR = Path("../results")
+LAST_PROCESSED_DIR = Path("../last_processed")
+ERRORS_FILE_PATH = Path("./errors.json")
+NUMBER_OF_PROCESSES = 5 
 
 
 def find_removed_atoms(repo, commit):
@@ -87,61 +93,47 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
         if str(commit.hex) == stop_commit:
             stop_iteration = True
 
-    Path("commits.json").write_text(json.dumps(commit_fixes))
+    Path(COMMITS_FILE_PATH).write_text(json.dumps(commit_fixes))
 
 
-def get_removed_lines(repo_path, commits, index=0):
-    repo = pygit2.Repository(repo_path)
-    if index:
-        output = Path(f"./results/atoms{index}.csv")
-        processed_path = Path(f"./last_processed/last_processed{index}.json")
-        output.parent.mkdir(exist_ok=True)
-        processed_path.parent.mkdir(exist_ok=True)
-    else:
-        output = Path("./atoms.csv")
-        processed_path = Path("./last_processed.json")
-
-    errors_path = Path("./errors.json")
-    processed = {}
+def load_processed_data(processed_path):
+    """Load processed data from a JSON file."""
     if processed_path.is_file():
-        processed = json.loads(processed_path.read_text())
+        return json.loads(processed_path.read_text())
+    return {"count": 0, "count_w_atoms": 0, "last_commit": None}
 
-    count = processed.get("count", 0)
-    count_w_atoms = processed.get("count_w_atoms", 0)
-    if len(commits) == 1:
-        first_commit = None
-    else:
-        first_commit = processed.get("last_commit")
 
+def get_removed_lines(repo_path, commits, output, processed_path):
+    """Process commits and extract lines removed in each commit."""
+    repo = pygit2.Repository(str(repo_path))
+    processed = load_processed_data(processed_path)
+    errors_path = ERRORS_FILE_PATH
+    count, count_w_atoms = processed["count"], processed["count_w_atoms"]
+    first_commit = processed["last_commit"]
     found_first_commit = first_commit is None
+
     for commit_sha in commits:
-        if first_commit and commit_sha == first_commit:
-            found_first_commit = True
-            # alreadt processed, skip
+        if first_commit and not found_first_commit:
+            found_first_commit = commit_sha == first_commit
             continue
         if not found_first_commit:
             continue
-        commit = repo.get(commit_sha)
         try:
-            atoms = find_removed_atoms(repo, commit)
+            commit = repo.get(commit_sha)
+            atoms = find_removed_atoms(repo, commit)  # Define this function as needed
             count += 1
             if atoms:
-                append_rows_to_csv(output, atoms)
+                append_rows_to_csv(output, atoms)  # Define this function as needed
                 count_w_atoms += 1
-                print(f"Count with atoms: {count_w_atoms}")
-            print(f"Total count: {count}")
+            print(f"Processed {count} commits, {count_w_atoms} with atoms.")
         except Exception as e:
-            append_to_json(errors_path, commit_sha)
+            append_to_json(errors_path, {"commit_sha": commit_sha, "error": str(e)})  # Define this function as needed
             continue
-        processed = {
-            "count": count,
-            "count_w_atoms": count_w_atoms,
-            "last_commit": commit.hex,
-        }
+        processed.update({"count": count, "count_w_atoms": count_w_atoms, "last_commit": commit.hex})
         processed_path.write_text(json.dumps(processed))
 
 
-def execute(repo_path, commits, number_of_processes):
+def execute(repo_path, commits, number_of_processes, results_dir, last_procesed_dir):
     """
     Main function to spawn the processes.
     """
@@ -151,7 +143,7 @@ def execute(repo_path, commits, number_of_processes):
         # Create a list of tuples, each containing arguments for task_function
         tasks = []
         for i in range(number_of_processes):
-            tasks.append((repo_path, chunks[i], i + 1))
+            tasks.append((repo_path, chunks[i], results_dir / f"atoms{i+1}.json", last_procesed_dir / f"last_processed{i+1}.json"))
         # Use starmap to pass multiple arguments to the task function
         pool.starmap(get_removed_lines, tasks)
 
@@ -165,7 +157,7 @@ def chunkify(lst, n):
 
 
 def combine_results():
-    results_folder = Path("results")
+    results_folder = RESULTS_DIR
 
     combined_file_path = results_folder / "atoms.csv"
 
@@ -183,18 +175,19 @@ def combine_results():
 
 
 if __name__ == "__main__":
-    # Example usage
-    number_of_processes = 5
-    repo_path = (
-        ROOT_DIR.parent / "atoms/projects/linux"
-    )  # Change this to your repo path
-    stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d"  # Replace with the commit SHA to stop at
-    # iterate_commits_and_extract_removed_code(repo_path, stop_commit)
 
-    commits = json.loads(Path("commits.json").read_text())
+    stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d" # this is the commit when the fix: convention was introduced
+    commits = safely_load_json(COMMITS_FILE_PATH)
+    if not commits or commits[-1] != stop_commit:
+        iterate_commits_and_extract_removed_code(REPO_PATH, stop_commit)
+
+
+    commits = json.loads(Path(COMMITS_FILE_PATH).read_text())
     # commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
-    if len(commits) == 1 or number_of_processes == 1:
-        get_removed_lines(repo_path, commits)
+
+    if len(commits) == 1 or NUMBER_OF_PROCESSES == 1:
+        get_removed_lines(REPO_PATH, commits, RESULTS_DIR / "atoms.csv", LAST_PROCESSED_DIR / "last_processed.json")
     else:
-        execute(repo_path, commits, number_of_processes)
-    # combine_results()
+        execute(REPO_PATH, commits, NUMBER_OF_PROCESSES, RESULTS_DIR, LAST_PROCESSED_DIR)
+
+    combine_results()

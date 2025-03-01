@@ -3,7 +3,7 @@ from pathlib import Path
 import re
 import pygit2
 from clang.cindex import Index, CursorKind, Config
-from src.analysis.git import get_file_content_at_commit
+from src.analysis.utils.git import get_file_content_at_commit
 from src.run_cocci import run_patches_and_generate_output
 
 
