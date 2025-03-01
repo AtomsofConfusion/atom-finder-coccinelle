@@ -22,6 +22,22 @@ int main() {
   fun3(a1, a2);
   fun3(a2, a1);
 
+
+  long d1 = 0;
+  long d2 = 1;
+
+  if (d2 > 0) {
+    printf("test");
+  }
+
+  if (!d1 || d2 > 0) {
+      printf("The condition was true.\n");
+  } else {
+      printf("The condition was false.\n");
+  }
+
+
+
   //Binary expression
   int b1 = 1;
   double b2 = 1.5;
