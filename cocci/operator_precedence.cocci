@@ -2,7 +2,7 @@
 @@
 from pathlib import Path
 processed = {}
-debug = False
+debug = True
 ATOM_NAME = "operator-precedence"
 
 def print_expression_and_position(exp, position, rule_name=""):
