@@ -2,7 +2,7 @@
 @@
 from pathlib import Path
 processed = {}
-debug = True
+debug = False
 ATOM_NAME = "operator-precedence"
 
 def print_expression_and_position(exp, position, rule_name=""):
@@ -13,11 +13,11 @@ def print_expression_and_position(exp, position, rule_name=""):
     start_line, start_col = position[0].line, position[0].column
     end_line, end_col = position[0].line_end, position[0].column_end
 
-    print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col},\"{exp}\"")
+    print(f"{ATOM_NAME},{file_path}:{start_line}, {start_col} \"{exp}\"")
 
 @rule1@
 position p;
-binary operator b1 = {&, |, ^};
+binary operator b1 = {&, |, ^, <<, >>};
 expression e1, e2;
 expression E;
 @@
@@ -34,27 +34,8 @@ p << rule1.p;
 @@
 print_expression_and_position(E, p, "Rule1")
 
+
 @rule2@
-position p;
-binary operator b1 = {<<, >>};
-expression e1, e2;
-expression E;
-@@
-
-(
-  ! e1 b1@E@p e2
-|
-  ~ e1 b1@E@p e2
-)
-
-@script:python@
-E << rule2.E;
-p << rule2.p;
-@@
-print_expression_and_position(E, p, "Rule2")
-
-
-@rule3@
 position p;
 binary operator b1 = {*, /, %, +, -, >>, <<, &, ^, |};
 expression e1, e2, e3, e4;
@@ -66,13 +47,13 @@ expression E;
 )
 
 @script:python@
-E << rule3.E;
-p << rule3.p;
+E << rule2.E;
+p << rule2.p;
 @@
-print_expression_and_position(E, p, "Rule3")
+print_expression_and_position(E, p, "Rule2")
 
 
-@rule4@
+@rule3@
 position p;
 binary operator b1 = {<<, >>};
 expression e1, e2, e3;
@@ -87,17 +68,13 @@ expression E;
   e1 b1 e2 ^@E@p e3
 |
   e1 b1@E@p e2 * e3
+|
+  e1 * e2 b1@E@p e3
 )
 
 
 @script:python@
-E << rule4.E;
-p << rule4.p;
+E << rule3.E;
+p << rule3.p;
 @@
-print_expression_and_position(E, p, "Rule4")
-
-
-
-
-
-
+print_expression_and_position(E, p, "Rule3")
