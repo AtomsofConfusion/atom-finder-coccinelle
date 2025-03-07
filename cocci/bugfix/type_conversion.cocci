@@ -17,7 +17,7 @@ def print_expression_and_position(exp, position, rule_name=""):
 
 @rule1@
 position p;
-type t;
+type t = unsigned;
 identifier i;
 expression E, e, e1, e2;
 binary operator b = {<, <=, ==, >=, >};
@@ -26,8 +26,8 @@ binary operator b = {<, <=, ==, >=, >};
 
 t i = e;
 ...
-i b @E@p 
-...
+i b @E@p 0
+
 
  
 @script:python@
@@ -36,7 +36,6 @@ t << rule1.t;
 E << rule1.E;
 @@
 
-if t == "unsigned":
-  print_expression_and_position(E, p, "Rule 1")
+print_expression_and_position(E, p, "Rule 1")
 
 

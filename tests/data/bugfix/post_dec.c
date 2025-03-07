@@ -14,8 +14,11 @@ int post_decrement() {
 
     while(a--) {
         print("inside the loop");
-        array[a];
         print("inside the loop");
+    }
+
+    while(a--) {
+        array[a];
     }
 
     while(a-- >= 0) {
@@ -23,16 +26,34 @@ int post_decrement() {
         array[a];
     }
 
-    while(b && a--) {
+    while(b || a--) {
         print("inside the loop");
         array[a];
     }
     
-    while(a-- && b ) {
+    while(b-- && a--) {
+        print("inside the loop");
+        array[a];
+        array[b];
+    }
+    
+    while(a-- >= 0 && b ) {
         print("inside the loop");
         array[a];
     }
-    while(b && c && a-- && d) {
+
+    while(b && a-- >= 0 ) {
+        print("inside the loop");
+        array[a];
+    }
+
+    while(b-- && c && a-- && d + 4) {
+        array[a];
+        array[b];
+        print("inside the loop");
+    }
+
+    while(b && c && a-- >=0 && d) {
         array[a];
         print("inside the loop");
     }
