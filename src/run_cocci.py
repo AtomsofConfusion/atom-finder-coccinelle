@@ -4,9 +4,7 @@ import subprocess
 import tempfile
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Dict
-from io import StringIO
-from sys import stderr
+from typing import Optional
 
 from src import COCCI_DIR
 from src.log import logging
@@ -15,20 +13,24 @@ from src.utils import run, check_cocci_version
 
 
 class CocciPatch(Enum):
-    ASSIGNMENT_AS_VALUE = Path(COCCI_DIR / "assignment_as_value.cocci")
-    CHANGE_OF_LITERAL_ENCODING = Path(COCCI_DIR / "change_of_literal_encoding.cocci")
-    COMMA_OPERATOR = Path(COCCI_DIR / "comma_operator.cocci")
-    CONDITIONAL_OPERATOR = Path(COCCI_DIR / "conditional_operator.cocci")
-    IMPLICIT_PREDICATE = Path(COCCI_DIR / "implicit_predicate.cocci")
-    LOGIC_AS_CONTROLFLOW = Path(COCCI_DIR / "logic_as_controlflow.cocci")
-    MACRO_OPERATOR_PRECEDENCE = Path(COCCI_DIR / "macro_operator_precedence.cocci")
-    OMITTED_CURLY_BRACES = Path(COCCI_DIR / "omitted_curly_braces.cocci")
-    OPERATOR_PRECEDENCE = Path(COCCI_DIR / "operator_precedence.cocci")
-    POST_INCDEC = Path(COCCI_DIR / "post_incdec.cocci")
-    PRE_INCDEC = Path(COCCI_DIR / "pre_incdec.cocci")
-    REPURPOSED_VARIABLE = Path(COCCI_DIR / "repurposed_variable.cocci")
-    REVERSED_SUBSCRIPT = Path(COCCI_DIR / "reversed_subscripts.cocci")
-    TYPE_CONVERSION = Path(COCCI_DIR / "type_conversion.cocci")
+    ASSIGNMENT_AS_VALUE = "assignment_as_value.cocci"
+    CHANGE_OF_LITERAL_ENCODING = "change_of_literal_encoding.cocci"
+    COMMA_OPERATOR = "comma_operator.cocci"
+    CONDITIONAL_OPERATOR = "conditional_operator.cocci"
+    IMPLICIT_PREDICATE = "implicit_predicate.cocci"
+    LOGIC_AS_CONTROLFLOW = "logic_as_controlflow.cocci"
+    MACRO_OPERATOR_PRECEDENCE = "macro_operator_precedence.cocci"
+    OMITTED_CURLY_BRACES = "omitted_curly_braces.cocci"
+    OPERATOR_PRECEDENCE = "operator_precedence.cocci"
+    POST_INCDEC = "post_incdec.cocci"
+    PRE_INCDEC = "pre_incdec.cocci"
+    REPURPOSED_VARIABLE = "repurposed_variable.cocci"
+    REVERSED_SUBSCRIPT = "reversed_subscripts.cocci"
+    TYPE_CONVERSION = "type_conversion.cocci"
+
+    def get_full_path(self, cocci_dir):
+        """ Return the full path of the cocci file. """
+        return cocci_dir / self.value
 
     @staticmethod
     def from_string(value):
@@ -36,7 +38,6 @@ class CocciPatch(Enum):
         # Lookup the enum member from the mapping
         enum_member = patch_mapping[value.lower()]
         return enum_member
-
 
 
 # in some cases, subexpressions should be counted as separate atoms, in others, it seems unnecessary
@@ -130,14 +131,14 @@ def postprocess_and_generate_output(file_path: Path,  patch: CocciPatch, remove_
     return filtered_data
 
 
-def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path] = None, temp_dir: Optional[Path] = None, split_output = True, patch: Optional[CocciPatch] = None,  patches_to_skip: Optional[list] = None, remove_end_line_and_col=True):
+def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path] = None, temp_dir: Optional[Path] = None, split_output = True, patch: Optional[CocciPatch] = None,  patches_to_skip: Optional[list] = None, remove_end_line_and_col: Optional[bool]=True, cocci_dir:Optional[Path]=COCCI_DIR):
     logging.debug("Running patches")
     patches_to_skip = patches_to_skip or []
     if patch is None:
         # run all patche, except for patches to skip
-        patches_to_run = [cocci_patch.value for cocci_patch in CocciPatch if cocci_patch not in patches_to_skip]
+        patches_to_run = [cocci_patch for cocci_patch in CocciPatch if cocci_patch not in patches_to_skip]
     else:
-        patches_to_run = [patch.value]
+        patches_to_run = [patch]
 
     delete_temp = temp_dir is None
     all_atoms = []
@@ -153,16 +154,19 @@ def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path
                 writer.writerow(row)
 
     for patch_to_run in patches_to_run:
-        temp_output_file = Path(temp_dir, f"{patch_to_run.stem}.csv")
+        full_patch_path = patch_to_run.get_full_path(cocci_dir)
+        temp_output_file = Path(temp_dir, f"{full_patch_path.stem}.csv")
+        if not full_patch_path.is_file():
+            continue
         try:
-            run_cocci(patch_to_run, input_path, output_file=temp_output_file)
+            run_cocci(full_patch_path, input_path, output_file=temp_output_file)
         except RunCoccinelleError as e:
             # log the error and continue
             logging.error(str(e))
         
         atoms = postprocess_and_generate_output(temp_output_file, patch, remove_end_line_and_col)
         if split_output:
-            output_file = output_path / f"{patch_to_run.stem}.csv"
+            output_file = output_path / f"{full_patch_path.stem}.csv"
             _write_lines_to_file(output_file, atoms)
         else:
             all_atoms.extend(atoms)

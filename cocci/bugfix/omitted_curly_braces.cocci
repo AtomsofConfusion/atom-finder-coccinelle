@@ -22,9 +22,6 @@ position p;
 expression e1, e2, E;
 @@
 
-// first match the case that is not an atom, do not note the position
-// then if that is not match, it will match the atom that is beneath it
-
 
 (
 if (...) {...} else S
