@@ -10,6 +10,8 @@ int main() {
         a--, 
     b--;
 
+    while (a) a--, b--;
+
 
     // this is fine
     if (a < b) {

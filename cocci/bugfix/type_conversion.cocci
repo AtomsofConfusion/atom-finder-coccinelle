@@ -20,7 +20,7 @@ position p;
 type t = unsigned;
 identifier i;
 expression E, e, e1, e2;
-binary operator b = {<, <=, ==, >=, >};
+binary operator b = {<, <=};
 @@
 
 

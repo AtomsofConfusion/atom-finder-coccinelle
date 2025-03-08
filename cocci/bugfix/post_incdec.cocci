@@ -23,19 +23,11 @@ identifier arr;
 @@
 
 (
-while(e-- @E@p ){ ... arr[e] ...}
-|
 while(e-- @E@p >=0 ) { ... arr[e] ...}
-|
-while(e1 b1 e-- @E@p) { ... arr[e] ...}
 |
 while(e1 b1 (e-- @E@p >= 0) ) { ... arr[e] ...}
 |
-while(e-- @E@p b1 e1) { ... arr[e] ...}
-|
 while((e--  @E@p >= 0) b1 e1) { ... arr[e] ...}
-|
-while(e1 b1 e-- @E@p b2 e2) { ... arr[e] ...}
 |
 while(e1 b1 (e-- @E@p >= 0)  b2 e2) { ... arr[e] ...}
 )
