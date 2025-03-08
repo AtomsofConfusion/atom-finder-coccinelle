@@ -9,7 +9,7 @@ from typing import Optional
 from src import COCCI_DIR
 from src.log import logging
 from src.exceptions import RunCoccinelleError
-from src.utils import run, check_cocci_version
+from src.utils import empty_directory, run, check_cocci_version
 
 
 class CocciPatch(Enum):
@@ -176,3 +176,5 @@ def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path
 
     if delete_temp:
         shutil.rmtree(temp_dir)
+    else:
+       empty_directory(temp_dir, files_to_keep=[output_path])

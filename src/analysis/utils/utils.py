@@ -33,6 +33,25 @@ def append_to_json(json_file, item):
     with json_file.open("w") as file:
         json.dump(data, file, indent=4)
 
+
+def copy_from_csv(source_csv_path, target_csv_path):
+    try:
+        # Open the target CSV file in append mode
+        with open(target_csv_path, mode='a', newline='') as target_file:
+            writer = csv.writer(target_file)
+
+            # Open the source CSV file in read mode
+            with open(source_csv_path, mode='r', newline='') as source_file:
+                reader = csv.reader(source_file)
+
+                # Write rows from the source file to the target file
+                for row in reader:
+                    writer.writerow(row)
+    
+    except FileNotFoundError:
+        print("One of the files was not found. Please check the paths.")
+
+
 def safely_load_json(file_path):
     """
     Safely load JSON data from a specified file.
