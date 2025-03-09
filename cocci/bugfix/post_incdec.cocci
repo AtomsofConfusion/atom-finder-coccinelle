@@ -12,25 +12,35 @@ def print_expression_and_position(exp, position, rule_name=""):
     start_line, start_col = position[0].line, position[0].column
     end_line, end_col = position[0].line_end, position[0].column_end
 
-    print(f"{ATOM_NAME}, {file_path}, {start_line},{start_col}, \"{exp}\"")
+    print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col},\"{exp}\"")
 
 
 @rule1@
 expression e, e1, e2, E;
 binary operator b1 = {&&, ||}, b2 = {&&, ||};
 position p;
-identifier arr;
+identifier arr, var, fun; 
 @@
 
+while (
 (
-while(e-- @E@p >=0 ) { ... arr[e] ...}
+    e-- @E@p >=0 
 |
-while(e1 b1 (e-- @E@p >= 0) ) { ... arr[e] ...}
+    e1 b1 (e-- @E@p >= 0)
 |
-while((e--  @E@p >= 0) b1 e1) { ... arr[e] ...}
+    (e--  @E@p >= 0) b1 e1
 |
-while(e1 b1 (e-- @E@p >= 0)  b2 e2) { ... arr[e] ...}
+    e1 b1 (e-- @E@p >= 0)  b2 e2
+) )
+{ 
+...
+( 
+    var->arr[e]
+| 
+   arr[e]
 )
+...
+}
 
 @script:python@
 p << rule1.p;
