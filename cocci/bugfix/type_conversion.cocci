@@ -21,21 +21,44 @@ type t = unsigned;
 identifier i;
 expression E, e, e1, e2;
 binary operator b = {<, <=};
+statement S;
 @@
 
 
 t i = e;
 ...
-i b @E@p 0
 
+i b @E@p 0
 
  
 @script:python@
 p << rule1.p;
-t << rule1.t;
 E << rule1.E;
 @@
 
 print_expression_and_position(E, p, "Rule 1")
 
 
+@rule2@
+position p;
+type t = unsigned;
+identifier var;
+expression e;
+statement S;
+binary operator b = {>, >=};
+@@
+
+t var = e;
+...
+(
+while (var@p) S
+|
+while (var@p b 0) S
+)
+
+@script:python@
+p << rule2.p;
+var << rule2.var;
+@@
+
+print_expression_and_position(var, p, "Rule 2")

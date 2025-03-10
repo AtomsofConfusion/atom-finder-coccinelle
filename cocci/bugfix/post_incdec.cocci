@@ -24,7 +24,7 @@ identifier arr, var, fun;
 
 while (
 (
-    e-- @E@p >=0 
+    e-- @E@p >= 0 
 |
     e1 b1 (e-- @E@p >= 0)
 |
@@ -37,7 +37,9 @@ while (
 ( 
     var->arr[e]
 | 
-   arr[e]
+    arr[e]
+|
+    fun(..., e, ...)
 )
 ...
 }

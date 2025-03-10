@@ -1,6 +1,11 @@
 
 #include <stdio.h>
 
+
+int fun1(int v1) {
+    return v1;
+}
+
 int post_decrement() {
     int a = 10;
     int b = a--;
@@ -8,22 +13,19 @@ int post_decrement() {
     int d = 4;
     int array[5] = {1, 2, 3, 4, 5};
 
-    while(b + c + a--) {
+    while(a-- >= 0) {
         print("inside the loop");
-    }
-
-    while(a--) {
-        print("inside the loop");
-        print("inside the loop");
-    }
-
-    while(a--) {
         array[a];
     }
 
     while(a-- >= 0) {
         print("inside the loop");
-        array[a];
+        array[a] + b;
+    }
+
+    while(a-- >= 0) {
+        print("inside the loop");
+        func1(array[a] + b);
     }
 
     while(b || a--) {
@@ -54,7 +56,7 @@ int post_decrement() {
     }
 
     while(b && c && a-- >=0 && d) {
-        array[a];
+        fun1(a);
         print("inside the loop");
     }
 

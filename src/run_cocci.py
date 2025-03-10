@@ -112,7 +112,15 @@ def postprocess_and_generate_output(file_path: Path,  patch: CocciPatch, remove_
         if len(row) < 7:
             filtered_data.append(row)
             continue
-        _, _, start_line, start_col, end_line, end_col, _ = row
+        start_line = row[2]
+        start_col = row[3]
+        end_line = row[4]
+        end_col = row[5]
+        if len(row) > 7:
+            code = ",".join(row[6:])
+            row = row[:6]
+            row.append(code)
+            
         if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
             if previous_debug_row is not None:
                 filtered_data.append(previous_debug_row)

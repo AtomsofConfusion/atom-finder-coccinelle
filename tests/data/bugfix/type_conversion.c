@@ -36,6 +36,18 @@ int type_conversion() {
         print("this is fine, this is an integer");
     }
 
+    while(a--) {
+        print("a will be UNIT MAX at the end");
+    }
+
+    while(a) {
+        print("a will be UNIT MAX at the end");
+    }
+
+    while(a >= 0) {
+        print("a will be UNIT MAX at the end");
+    }
+
 
     return 0;
 }
