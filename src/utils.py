@@ -1,8 +1,10 @@
 import csv
 import io
 import os
+from pathlib import Path
 import re
 import subprocess
+from typing import List, Optional
 from src.log import logging
 from src.config import config 
 from src.exceptions import SPatchVersionError
@@ -34,6 +36,13 @@ def parse_csv_data(data):
     data_io = io.StringIO(data)
     reader = csv.reader(data_io)
     return list(reader)
+
+
+def empty_directory(dir_path: Path, files_to_keep: Optional[List[Path]]=None):
+    if dir_path.exists() and dir_path.is_dir():
+        for file in dir_path.iterdir():
+            if file.is_file() and not file in files_to_keep:
+                file.unlink()
 
 
 def run(command, **kwargs):
