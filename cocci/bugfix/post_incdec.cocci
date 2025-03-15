@@ -50,3 +50,50 @@ E << rule1.E;
 @@
 
 print_expression_and_position(E, p, "Rule 1")
+
+
+
+@rule2@
+position p, p2;
+type t = unsigned;
+expression e, E, e1, e2, e3;
+statement S, s;
+binary operator b1 = {&&, ||}, b2 = {&&, ||};
+binary operator b = {>, >=};
+assignment operator aop;
+@@
+
+while (
+(
+    e-- @E@p
+|
+    e1 b1 (e-- @E@p)
+|
+    (e-- @E@p) b1 e1
+|
+    e1 b1 ((e-- @E@p))  b2 e2
+) ) S
+...
+(
+return e;
+|
+for (e = e1;...;...) s
+|
+e aop e3
+|
+e < 0
+|
+e == -1
+|
+e@p2
+)
+
+
+@script:python@
+p << rule2.p;
+p2 << rule2.p2;
+E << rule2.E;
+@@
+
+if p2[0].line > p[0].line:
+    print_expression_and_position(E, p, "Rule 2")

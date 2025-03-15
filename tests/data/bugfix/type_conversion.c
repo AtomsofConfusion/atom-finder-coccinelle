@@ -41,10 +41,10 @@ int type_conversion() {
     }
 
     while(a) {
-        print("a will be UNIT MAX at the end");
+        print("a will not be UNIT MAX at the end");
     }
 
-    while(a >= 0) {
+    while(a-- >= 0) {
         print("a will be UNIT MAX at the end");
     }
 

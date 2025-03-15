@@ -37,7 +37,7 @@ p1 << r1.p1;
 p2 << r1.p2;
 @@
 
-if p1[0].line != p2[0].line:
+if p1[0].line_end != p2[0].line:
     print_expression_and_position(E, p, "Rule 1")
 
 @r2 disable braces0, neg_if@
@@ -58,7 +58,7 @@ p2 << r2.p2;
 E << r2.E;
 @@
 
-if p1[0].line != p2[0].line:
+if p1[0].line_end != p2[0].line:
     print_expression_and_position(E, p, "Rule 2")
 
 @r3 disable braces0@
@@ -90,5 +90,5 @@ p2 << r3.p2;
 E << r3.E;
 @@
 
-if p1[0].line != p2[0].line:
+if p1[0].line_end != p2[0].line:
     print_expression_and_position(E, p, "Rule 3")

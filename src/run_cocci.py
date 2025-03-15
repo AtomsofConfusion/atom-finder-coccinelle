@@ -45,6 +45,17 @@ remove_subexpressions_patches = (CocciPatch.ASSIGNMENT_AS_VALUE, CocciPatch.COMM
 include_headers_patches = (CocciPatch.COMMA_OPERATOR, CocciPatch.MACRO_OPERATOR_PRECEDENCE)
 
 
+def _check_if_already_added(start_line, start_col, end_line, end_col, processed):
+    if not len(processed) or start_line not in processed:
+        new_range = {'start_line': int(start_line), 'start_col': int(start_col), 'end_line': int(end_line), 'end_col': int(end_col)}
+        processed[start_line] = [new_range]
+        return False
+    already_added = any(line["start_line"] == int(start_line) and line["end_line"] == int(end_line) and
+        line["start_col"] == int(start_col) and line["end_col"] == int(end_col)
+        for  line in processed[start_line])
+    return already_added
+
+
 def _check_if_subexpression(start_line, start_col, end_line, end_col, processed):
     new_range = {'start_line': int(start_line), 'start_col': int(start_col), 'end_line': int(end_line), 'end_col': int(end_col)}
     if start_line in processed:
@@ -121,12 +132,14 @@ def postprocess_and_generate_output(file_path: Path,  patch: CocciPatch, remove_
             row = row[:6]
             row.append(code)
             
-        if key not in seen and (patch not in remove_subexpressions_patches or not _check_if_subexpression(start_line, start_col, end_line, end_col, processed)):
+        if key not in seen and (
+            patch not in remove_subexpressions_patches and not _check_if_already_added(
+                start_line, start_col, end_line, end_col, processed)) or \
+                not _check_if_subexpression(start_line, start_col, end_line, end_col, processed):
             if previous_debug_row is not None:
                 filtered_data.append(previous_debug_row)
             seen.add(key)
 
-            # remove end line and column from the final ouptut
             if remove_end_line_and_col:
                 row = row[:4] + row[6:]
             filtered_data.append(row)
@@ -157,7 +170,6 @@ def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path
         with open(file_path, mode='w', newline='') as file:
             writer = csv.writer(file)
 
-            # Write each row to the CSV file
             for row in data_list:
                 writer.writerow(row)
 

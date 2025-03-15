@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from src import COCCI_DIR, ROOT_DIR
 from src.analysis.utils.utils import copy_from_csv
-from src.run_cocci import run_patches_and_generate_output
+from src.run_cocci import CocciPatch, run_patches_and_generate_output
 from src.log import logger
 
 
@@ -49,9 +49,10 @@ def process_with_continuation(directory: Path, output: Path):
                                                     output_path=temp_output, 
                                                     temp_dir=Path(temp_dir), 
                                                     cocci_dir=cocci_dir,
-                                                    split_output=False)
+                                                    split_output=False,
+                                                    remove_end_line_and_col=False,
+                                                    patches_to_skip=[CocciPatch.OPERATOR_PRECEDENCE])
                     
-
                     # Write the name of the last processed file to the state file
                     with LAST_PROCESSED_PATH.open('w') as file:
                         file.write(c_file.name)
