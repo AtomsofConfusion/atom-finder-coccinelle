@@ -51,7 +51,7 @@ def process_with_continuation(directory: Path, output: Path):
                                                     cocci_dir=cocci_dir,
                                                     split_output=False,
                                                     remove_end_line_and_col=False,
-                                                    patches_to_skip=[CocciPatch.OPERATOR_PRECEDENCE])
+                                                    patch=CocciPatch.POST_INCDEC)
                     
                     # Write the name of the last processed file to the state file
                     with LAST_PROCESSED_PATH.open('w') as file:

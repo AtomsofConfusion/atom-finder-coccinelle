@@ -56,10 +56,10 @@ print_expression_and_position(E, p, "Rule 1")
 @rule2@
 position p, p2;
 type t = unsigned;
-expression e, E, e1, e2, e3;
+expression e, E, e1, e2, e3, e4;
 statement S, s;
 binary operator b1 = {&&, ||}, b2 = {&&, ||};
-binary operator b = {>, >=};
+binary operator bop1, bop2;
 assignment operator aop;
 @@
 
@@ -76,6 +76,12 @@ while (
 ...
 (
 return e;
+|
+return e3 bop1 e;
+|
+return e bop1 e3;
+|
+return e3 bop1 e bop2 e4;
 |
 for (e = e1;...;...) s
 |

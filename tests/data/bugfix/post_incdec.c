@@ -41,7 +41,7 @@ int testCheckExactNegativeOne(int d) {
     while (d--) {
         // Simulate some operations
     }
-    if (!d) {
+    if (2 && !d && 1) {
         printf("will not be true id d == -1");
     }
     return d;
@@ -51,7 +51,7 @@ int testCheckExactNegativeOne(int e) {
     while (e--) {
         // Simulate some operations
     }
-    if (e) {
+    if (e == 0) {
         printf("will be true if e == -1");
     }
     return e;
