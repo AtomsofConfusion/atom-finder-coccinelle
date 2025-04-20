@@ -33,15 +33,13 @@ while (
     e1 b1 (e-- @E@p >= 0)  b2 e2
 ) )
 { 
-...
+<+...
 ( 
     var->arr[e]
 | 
     arr[e]
-|
-    fun(..., e, ...)
 )
-...
+...+>
 }
 
 @script:python@
@@ -85,11 +83,17 @@ return e3 bop1 e bop2 e4;
 |
 for (e = e1;...;...) s
 |
+e--
+|
+e++
+|
 e aop e3
 |
 e < 0
 |
 e == -1
+|
+e >= 0
 |
 e@p2
 )
