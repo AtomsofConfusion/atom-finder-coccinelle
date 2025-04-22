@@ -6,6 +6,9 @@ import re
 import tempfile
 import pygit2
 from pathlib import Path
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..','..')))
 from src import ROOT_DIR
 from src.analysis.utils.parsing import run_coccinelle_for_file_at_commit
 from src.analysis.utils.git import get_diff
@@ -15,7 +18,7 @@ from src.log import logger
 
 
 PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
-REPO_PATH = (ROOT_DIR.parent / "atoms/projects/linux").absolute()  # Path to the Linux kernel Git repository
+REPO_PATH = (ROOT_DIR.parent.parent / "linux").absolute()  # Path to the Linux kernel Git repository "atoms/projects/linux").absolute()
 COMMITS_FILE_PATH = Path("../commits.json")  # Path to a JSON file containing commit hashes
 RESULTS_DIR = Path("../results")
 LAST_PROCESSED_DIR = Path("../last_processed")
@@ -27,7 +30,7 @@ def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
     """
-    logger.info(f"Current commit: {commit.hex}")
+    logger.info(f"Current commit: {str(commit.id)}")
     atoms = []
 
     _, removed_lines = get_diff(repo, commit)
@@ -39,8 +42,10 @@ def find_removed_atoms(repo, commit):
     parent = commit.parents[0]
     output = []
     with tempfile.TemporaryDirectory() as temp_dir:
+        temp_dir = Path(temp_dir)
         for file_name, removed in removed_lines.items():
             removed_line_numbers = [line.old_lineno for line in removed]
+            print(f"Removed lines in {file_name}: {removed_line_numbers}", type(temp_dir))
             atoms = run_coccinelle_for_file_at_commit(
                 repo,
                 file_name,
@@ -54,7 +59,7 @@ def find_removed_atoms(repo, commit):
 
             for row in atoms:
                 atom, path, start_line, start_col, end_line, end_col, code = row
-                output_row = [atom, file_name, commit.hex, start_line, start_col, code]
+                output_row = [atom, file_name, str(commit.id), start_line, start_col, code]
                 output.append(output_row)
 
     return output
@@ -88,10 +93,10 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
 
         # Check the condition using the regex
         if fixes_pattern.search(commit_message):
-            commit_fixes.append(commit.hex)
+            commit_fixes.append(str(commit.id))
 
         # Stop when the specific commit is reached
-        if str(commit.hex) == stop_commit:
+        if str(str(commit.id)) == stop_commit:
             stop_iteration = True
 
     Path(COMMITS_FILE_PATH).write_text(json.dumps(commit_fixes))
@@ -130,7 +135,7 @@ def get_removed_lines(repo_path, commits, output, processed_path, errors_path):
             logger.error(e)
             append_to_json(errors_path, {"commit_sha": commit_sha, "error": str(e)})
             continue
-        processed.update({"count": count, "count_w_atoms": count_w_atoms, "last_commit": commit.hex})
+        processed.update({"count": count, "count_w_atoms": count_w_atoms, "last_commit": str(commit.id)})
         processed_path.write_text(json.dumps(processed))
 
 

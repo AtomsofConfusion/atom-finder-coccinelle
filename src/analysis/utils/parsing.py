@@ -5,10 +5,11 @@ import pygit2
 from clang.cindex import Index, CursorKind, Config
 from src.analysis.utils.git import get_file_content_at_commit
 from src.run_cocci import run_patches_and_generate_output
+from src.analysis.utils.parsing_with_cscope import parse_and_modify_with_cscope
+import json 
 
 
-Config.set_library_file("/usr/lib/llvm-14/lib/libclang-14.so.1")
-
+Config.set_library_file("/home/stavan/miniconda3/envs/atoms/lib/libclang.so")
 
 def is_complex_structure(cursor):
     return cursor.kind in [
@@ -277,9 +278,27 @@ def run_coccinelle_for_file_at_commit(
             loaded_headers=loaded_headers,
             invalid_headers=invalid_headers,
         )
-    shorter_content, modified_lines = parse_and_modify_functions(
-        content, modified_line_numbers, headers_dir, file_name
+    shorter_content, modified_lines = parse_and_modify_with_cscope(
+        content, modified_line_numbers, temp_dir, file_name
     )
+    # shorter_content, modified_lines = parse_and_modify_functions(
+    #     content, modified_line_numbers, headers_dir, file_name
+    # )
+    # # DEBUG: Save content and modified lines to permanent Debug directory
+    # debug_dir = Path("Debug_cscope")
+    # debug_dir.mkdir(parents=True, exist_ok=True)
+
+    # # Save shorter_content
+    # debug_content_path = debug_dir / f"{file_name}.shorter"
+    # debug_content_path.parent.mkdir(parents=True, exist_ok=True)  # Ensure all parent directories exist
+    # debug_content_path.write_text(shorter_content)
+
+
+    # # Save modified_line_numbers as JSON for easier inspection
+    # debug_lines_path = debug_dir / f"{file_name}.modified_lines.json"
+    # debug_lines_path.parent.mkdir(parents=True, exist_ok=True)
+    # debug_lines_path.write_text(json.dumps(modified_line_numbers, indent=2))
+
 
     # Define file paths within the temporary directory
     input = Path(temp_dir, "input", file_name)
