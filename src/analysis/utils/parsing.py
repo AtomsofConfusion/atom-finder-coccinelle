@@ -269,15 +269,15 @@ def run_coccinelle_for_file_at_commit(
     atoms = []
     headers_dir = Path(temp_dir, "headers")
     content = get_file_content_at_commit(repo, commit, file_name)
-    if save_headers:
-        save_headers_to_temp(
-            commit=commit,
-            output_dir=headers_dir,
-            repo=repo,
-            full_code=content,
-            loaded_headers=loaded_headers,
-            invalid_headers=invalid_headers,
-        )
+    # if save_headers:
+    #     save_headers_to_temp(
+    #         commit=commit,
+    #         output_dir=headers_dir,
+    #         repo=repo,
+    #         full_code=content,
+    #         loaded_headers=loaded_headers,
+    #         invalid_headers=invalid_headers,
+    #     )
     shorter_content, modified_lines = parse_and_modify_with_cscope(
         content, modified_line_numbers, temp_dir, file_name
     )
