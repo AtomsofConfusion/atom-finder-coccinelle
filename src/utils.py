@@ -39,6 +39,7 @@ def parse_csv_data(data):
 
 
 def empty_directory(dir_path: Path, files_to_keep: Optional[List[Path]]=None):
+    dir_path = Path(dir_path)  # Convert str to Path
     if dir_path.exists() and dir_path.is_dir():
         for file in dir_path.iterdir():
             if file.is_file() and not file in files_to_keep:
