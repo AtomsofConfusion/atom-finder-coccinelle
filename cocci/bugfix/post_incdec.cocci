@@ -57,7 +57,7 @@ type t = unsigned;
 expression e, E, e1, e2, e3, e4;
 statement S, s;
 binary operator b1 = {&&, ||}, b2 = {&&, ||};
-binary operator bop1, bop2;
+binary operator b3 = {&&, ||}, b4 = {&&, ||};
 assignment operator aop;
 iterator iter;
 identifier fun;
@@ -75,32 +75,41 @@ while (
 ) ) S
 ...
 (
-return e;
-|
-return e3 bop1 e;
-|
-return e bop1 e3;
-|
-return e3 bop1 e bop2 e4;
-|
 for (e = e1;...;...) s
 |
 e--
 |
 e++
-fun(..., e, ...)
 |
 iter(..., e, ...) { ... }
 |
 e aop e3
 |
-e < 0
+(
+if (
+(
+    e@p2
 |
-e == -1
+    e@p2 == 0
 |
-e >= 0
+    e3 b3 e@p2
 |
-e@p2
+    e3 b3 !e@p2
+|
+    e3 b3 e@p2 == 0
+|
+    e@p2 b3 e3
+|
+    e@p2 == 0 b3 e3
+|
+    e3 b3 e@p2 b4 e4
+|
+    e3 b3 !e@p2 b4 e4
+|
+    e3 b3 e@p2 == 0 b4 e4
+))
+s
+)
 )
 
 
