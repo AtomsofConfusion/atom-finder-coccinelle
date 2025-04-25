@@ -4,15 +4,15 @@ from pathlib import Path
 debug = False
 ATOM_NAME = "post-increment"
 
-def print_expression_and_position(exp, position, rule_name=""):
+def print_expression_and_position(exp, position, position2, rule_name=""):
     file_path = Path(position[0].file).resolve().absolute()
     if rule_name and debug:
         print(rule_name)
     exp = exp.replace('"', '""')
-    start_line, start_col = position[0].line, position[0].column
-    end_line, end_col = position[0].line_end, position[0].column_end
+    p1_line, p1_col = position[0].line, position[0].column
+    p2_line, p2_col = position2[0].line, position2[0].column
 
-    print(f"{ATOM_NAME},{file_path},{start_line},{start_col},{end_line},{end_col},\"{exp}\"")
+    print(f"{ATOM_NAME},{file_path},{p1_line},{p1_col},{p2_line},{p2_col},\"{exp}\"")
 
 
 @rule1@
@@ -59,6 +59,8 @@ statement S, s;
 binary operator b1 = {&&, ||}, b2 = {&&, ||};
 binary operator bop1, bop2;
 assignment operator aop;
+iterator iter;
+identifier fun;
 @@
 
 while (
@@ -86,6 +88,9 @@ for (e = e1;...;...) s
 e--
 |
 e++
+fun(..., e, ...)
+|
+iter(..., e, ...) { ... }
 |
 e aop e3
 |
@@ -106,4 +111,4 @@ E << rule2.E;
 @@
 
 if p2[0].line > p[0].line:
-    print_expression_and_position(E, p, "Rule 2")
+    print_expression_and_position(E, p, p2, "Rule 2")
