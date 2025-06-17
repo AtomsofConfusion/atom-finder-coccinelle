@@ -3,7 +3,7 @@ from pathlib import Path
 from io import StringIO
 
 from src.option_select import select
-from src.run_cocci import run_cocci, COCCI_DIR, find_atoms, CocciPatch, run_patches_and_generate_output
+from src.run_cocci import run_cocci, COCCI_DIR, CocciPatch, run_patches_and_generate_output#, find_atoms
 from src.utils import append_to_csv
 from src.log import logging
 

@@ -152,7 +152,16 @@ def postprocess_and_generate_output(file_path: Path,  patch: CocciPatch, remove_
     return filtered_data
 
 
-def run_patches_and_generate_output(input_path: Path, output_path: Optional[Path] = None, temp_dir: Optional[Path] = None, split_output = True, patch: Optional[CocciPatch] = None,  patches_to_skip: Optional[list] = None, remove_end_line_and_col: Optional[bool]=True, cocci_dir:Optional[Path]=COCCI_DIR):
+def run_patches_and_generate_output(
+        input_path: Path, 
+        output_path: Optional[Path] = None, 
+        temp_dir: Optional[Path] = None, 
+        split_output = True, 
+        patch: Optional[CocciPatch] = None,  
+        patches_to_skip: Optional[list] = None, 
+        remove_end_line_and_col: Optional[bool]=True, 
+        cocci_dir:Optional[Path]=COCCI_DIR
+):
     logging.debug("Running patches")
     patches_to_skip = patches_to_skip or []
     if patch is None:

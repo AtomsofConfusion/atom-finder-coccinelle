@@ -5,7 +5,9 @@ import multiprocessing
 import re
 import tempfile
 import pygit2
+import time
 from pathlib import Path
+from timelength import TimeLength
 from src import ROOT_DIR
 from src.analysis.utils.parsing import run_coccinelle_for_file_at_commit
 from src.analysis.utils.git import get_diff
@@ -13,21 +15,13 @@ from src.analysis.utils.utils import append_rows_to_csv, append_to_json, safely_
 from src.run_cocci import CocciPatch
 from src.log import logger
 
-
 PATCHES_TO_SKIP = [CocciPatch.OMITTED_CURLY_BRACES]
-REPO_PATH = (ROOT_DIR.parent / "atoms/projects/linux").absolute()  # Path to the Linux kernel Git repository
-COMMITS_FILE_PATH = Path("../commits.json")  # Path to a JSON file containing commit hashes
-RESULTS_DIR = Path("../results")
-LAST_PROCESSED_DIR = Path("../last_processed")
-ERRORS_FILE_DIR = RESULTS_DIR/ "extract"
-NUMBER_OF_PROCESSES = 5
-
 
 def find_removed_atoms(repo, commit):
     """
     Get removed lines (lines removed in a commit) by comparing the commit to its parent.
     """
-    logger.info(f"Current commit: {commit.hex}")
+    logger.info(f"Current commit: {commit.id}")
     atoms = []
 
     _, removed_lines = get_diff(repo, commit)
@@ -54,13 +48,13 @@ def find_removed_atoms(repo, commit):
 
             for row in atoms:
                 atom, path, start_line, start_col, end_line, end_col, code = row
-                output_row = [atom, file_name, commit.hex, start_line, start_col, code]
+                output_row = [atom, file_name, str(commit.id), start_line, start_col, code]
                 output.append(output_row)
 
     return output
 
 
-def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
+def iterate_commits_and_extract_removed_code(repo_path, stop_commit, commits_file_path ,history_length = None):
     """
     Iterate through commits, check commit message, and retrieve removed code if condition is met.
     Stop iteration when the stop_commit is reached.
@@ -76,11 +70,24 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
     # Regular expression to match 'Fixes: <SHA>'
     fixes_pattern = re.compile(r"Fixes:\s+([0-9a-fA-F]{6,12})", re.IGNORECASE)
 
+    # Calculate cutoff timestamp if history_length is provided
+    cutoff_timestamp = None
+    if history_length is not None:
+        tl = TimeLength(history_length)
+        now = int(time.time())
+        cutoff_timestamp = now - int(tl.to_minutes()*60)
+
+
     commit_fixes = []
 
     stop_iteration = False
     for commit in repo.walk(head, pygit2.GIT_SORT_TIME):
         commit_message = commit.message.strip()
+        #print(commit.id)
+
+        # Filter by cutoff timestamp if set
+        if cutoff_timestamp is not None and commit.commit_time < cutoff_timestamp:
+            break
 
         # make sure the last pair is added
         if stop_iteration:
@@ -88,13 +95,13 @@ def iterate_commits_and_extract_removed_code(repo_path, stop_commit):
 
         # Check the condition using the regex
         if fixes_pattern.search(commit_message):
-            commit_fixes.append(commit.hex)
+            commit_fixes.append(str(commit.id))
 
         # Stop when the specific commit is reached
-        if str(commit.hex) == stop_commit:
+        if str(commit.id) == stop_commit:
             stop_iteration = True
 
-    Path(COMMITS_FILE_PATH).write_text(json.dumps(commit_fixes))
+    commits_file_path.write_text(json.dumps(commit_fixes))
 
 
 def load_processed_data(processed_path):
@@ -104,6 +111,9 @@ def load_processed_data(processed_path):
     return {"count": 0, "count_w_atoms": 0, "last_commit": None}
 
 
+'''
+Single thread version 
+'''
 def get_removed_lines(repo_path, commits, output, processed_path, errors_path):
     """Process commits and extract lines removed in each commit."""
     repo = pygit2.Repository(str(repo_path))
@@ -130,14 +140,18 @@ def get_removed_lines(repo_path, commits, output, processed_path, errors_path):
             logger.error(e)
             append_to_json(errors_path, {"commit_sha": commit_sha, "error": str(e)})
             continue
-        processed.update({"count": count, "count_w_atoms": count_w_atoms, "last_commit": commit.hex})
+        processed.update({"count": count, "count_w_atoms": count_w_atoms, "last_commit": str(commit.id)})
         processed_path.write_text(json.dumps(processed))
 
-
+'''
+Mutliprocessing using static commit lists
+'''
 def execute(repo_path, commits, number_of_processes, results_dir, last_procesed_dir, errors_dir):
     """
     Main function to spawn the processes.
     """
+    if not number_of_processes:
+        number_of_processes = multiprocessing.cpu_count()
     # Create a pool of worker processes
     chunks = chunkify(commits, number_of_processes)
     with multiprocessing.Pool(processes=number_of_processes) as pool:
@@ -157,8 +171,83 @@ def chunkify(lst, n):
     return [lst[i * k + min(i, m) : (i + 1) * k + min(i + 1, m)] for i in range(n)]
 
 
-def combine_results():
-    results_folder = RESULTS_DIR
+def _get_removed_lines_worker(repo_path, commit_queue, output, processed_path, errors_path):
+    """
+    Worker function that pulls commits from the shared queue.
+    """
+    repo = pygit2.Repository(str(repo_path))
+    processed = load_processed_data(processed_path)
+    count, count_w_atoms = processed["count"], processed["count_w_atoms"]
+    first_commit = processed["last_commit"]
+    found_first_commit = first_commit is None
+
+    while True:
+        try:
+            commit_sha = commit_queue.get_nowait()
+        except Exception:
+            break  # Queue is empty
+
+        if first_commit and not found_first_commit:
+            found_first_commit = commit_sha == first_commit
+            continue
+        if not found_first_commit:
+            continue
+        try:
+            commit = repo.get(commit_sha)
+            atoms = find_removed_atoms(repo, commit)
+            count += 1
+            if atoms:
+                append_rows_to_csv(output, atoms)
+                count_w_atoms += 1
+            logger.info(f"Processed {count} commits, {count_w_atoms} with atoms.")
+        except Exception as e:
+            logger.error(e)
+            append_to_json(errors_path, {"commit_sha": commit_sha, "error": str(e)})
+            continue
+        processed.update({"count": count, "count_w_atoms": count_w_atoms, "last_commit": str(commit.id)})
+        processed_path.write_text(json.dumps(processed))
+
+
+def execute_queue(repo_path, commits, number_of_processes, results_dir, last_procesed_dir, errors_dir):
+    '''
+    Multiprocessing using shared queue of commits 
+
+    Args:
+        repo_path (str): Path to the repository.
+        commits (list[str]): list of commits to be processed
+        number_of_processes (int): number of worker processes to use
+        *_dir (path): output directories 
+    '''
+    if not number_of_processes:
+        number_of_processes = multiprocessing.cpu_count()
+
+    manager = multiprocessing.Manager()
+    commit_queue = manager.Queue()
+    for commit in commits:
+        commit_queue.put(commit)
+
+    processes = []
+    for i in range(number_of_processes):
+        p = multiprocessing.Process(
+            target=_get_removed_lines_worker,
+            args=(
+                repo_path,
+                commit_queue,
+                results_dir / f"atoms{i+1}.csv",
+                last_procesed_dir / f"last_processed{i+1}.json",
+                errors_dir / f"errors{i+1}.json",
+            ),
+        )
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
+
+'''
+Combines multiprocessing results into single data set
+'''
+def combine_results(results_folder):
 
     combined_file_path = results_folder / "atoms.csv"
 
@@ -174,24 +263,3 @@ def combine_results():
                         for row in reader:
                             writer.writerow(row)
 
-
-if __name__ == "__main__":
-
-    stop_commit = "c511851de162e8ec03d62e7d7feecbdf590d881d" # this is the commit when the fix: convention was introduced
-    commits = safely_load_json(COMMITS_FILE_PATH)
-    if not commits or commits[-1] != stop_commit:
-        iterate_commits_and_extract_removed_code(REPO_PATH, stop_commit)
-
-    LAST_PROCESSED_DIR.mkdir(exist_ok=True)
-    RESULTS_DIR.mkdir(exist_ok=True)
-    ERRORS_FILE_DIR.parent.mkdir(exist_ok=True)
-
-    commits = json.loads(Path(COMMITS_FILE_PATH).read_text())
-    # commits = ["e589f9b7078e1c0191613cd736f598e81d2390de"]
-
-    if len(commits) == 1 or NUMBER_OF_PROCESSES == 1:
-        get_removed_lines(REPO_PATH, commits, RESULTS_DIR / "atoms.csv", LAST_PROCESSED_DIR / "last_processed.json", ERRORS_FILE_DIR / "errors.json")
-    else:
-        execute(REPO_PATH, commits, NUMBER_OF_PROCESSES, RESULTS_DIR, LAST_PROCESSED_DIR, ERRORS_FILE_DIR)
-
-    combine_results()

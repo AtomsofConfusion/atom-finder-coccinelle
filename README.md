@@ -38,3 +38,13 @@ aoc-cocci dir-with-c-files --patch reversed_subscript --output-dir output
 
 This command specifies that only the reversed subscript patch should be applied and the results should be saved to 
 the output directory.
+
+To run the linux fixes tool use the command `aoc-linux-fixes`. This tool is used to examine bug fix commits to the linux kernel.
+
+```bash
+aoc-linux-fixes dir-with-linux-repo --output-dir output_dir --history_length "1 year" --cpus 4
+```
+
+This command specifies to run atoms patches on linux kernel commits going back 1 year from now using 4 worker processes.
+If history length is not specified, all commits going back to the introduction of specific commit messages for bug fixes.
+If cpus is set to 0, it will use the system's cpu count, default is 4.
